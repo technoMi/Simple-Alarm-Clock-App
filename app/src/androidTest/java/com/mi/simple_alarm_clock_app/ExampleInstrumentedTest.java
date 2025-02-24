@@ -1,4 +1,4 @@
-package com.mi.simple_alarm_clock;
+package com.mi.simple_alarm_clock_app;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.mi.simple_alarm_clock", appContext.getPackageName());
+        assertEquals("com.mi.simple_alarm_clock_app", appContext.getPackageName());
     }
 }

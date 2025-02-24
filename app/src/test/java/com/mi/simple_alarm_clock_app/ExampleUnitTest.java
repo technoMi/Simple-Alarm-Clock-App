@@ -1,4 +1,4 @@
-package com.mi.simple_alarm_clock;
+package com.mi.simple_alarm_clock_app;
 
 import org.junit.Test;
 
