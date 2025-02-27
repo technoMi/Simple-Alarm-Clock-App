@@ -41,6 +41,9 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
 
+    // Material
+    implementation(libs.material.v1130alpha11)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

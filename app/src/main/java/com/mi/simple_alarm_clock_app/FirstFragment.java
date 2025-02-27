@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -17,9 +18,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
+import com.mi.simple_alarm_clock_app.entities.MyTimePicker;
 
 public class FirstFragment extends Fragment implements MenuProvider {
 
@@ -42,11 +48,21 @@ public class FirstFragment extends Fragment implements MenuProvider {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         MaterialToolbar toolbar = view.findViewById(R.id.mtToolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
 
         requireActivity().addMenuProvider(this, getViewLifecycleOwner());
+
+        binding.btnAdd.setOnClickListener(btnAddView -> {
+
+            MyTimePicker timePicker = new MyTimePicker();
+
+            timePicker.getTimePickerFragment().addOnPositiveButtonClickListener(tpView -> {
+                Toast.makeText(requireContext(), String.valueOf(timePicker.getHour()), Toast.LENGTH_LONG).show();
+            });
+
+            timePicker.getTimePickerFragment().show(requireActivity().getSupportFragmentManager(), "time_picker");
+        });
     }
 
     @Override
