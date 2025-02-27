@@ -9,5 +9,15 @@
         android:id="@+id/firstFragment"
         android:name="com.mi.simple_alarm_clock_app.FirstFragment"
         android:label="fragment_first"
-        tools:layout="@layout/fragment_first" />
+        tools:layout="@layout/fragment_first">
+        <action
+            android:id="@+id/action_firstFragment_to_secondFragment"
+            app:destination="@id/secondFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/secondFragment"
+        android:name="com.mi.simple_alarm_clock_app.SecondFragment"
+        android:label="fragment_second"
+        tools:layout="@layout/fragment_second"/>
 </navigation>
