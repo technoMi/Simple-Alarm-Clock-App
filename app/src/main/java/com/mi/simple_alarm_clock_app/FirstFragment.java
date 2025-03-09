@@ -1,14 +1,16 @@
 package com.mi.simple_alarm_clock_app;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -18,20 +20,28 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
 import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
-import com.mi.simple_alarm_clock_app.entities.MyTimePicker;
+
+import java.util.Calendar;
 
 public class FirstFragment extends Fragment implements MenuProvider {
 
     private FragmentFirstBinding binding;
 
     private NavController navController;
+
+    private Context context;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        context = requireContext();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,13 +65,16 @@ public class FirstFragment extends Fragment implements MenuProvider {
 
         binding.btnAdd.setOnClickListener(btnAddView -> {
 
-            MyTimePicker timePicker = new MyTimePicker();
+            MaterialTimePicker timePicker = Tools.getTimePickerFragment();
 
-            timePicker.getTimePickerFragment().addOnPositiveButtonClickListener(tpView -> {
-                Toast.makeText(requireContext(), String.valueOf(timePicker.getHour()), Toast.LENGTH_LONG).show();
+            timePicker.addOnPositiveButtonClickListener(tpView -> {
+                int hour = timePicker.getHour();
+                int minute = timePicker.getMinute();
+                AlarmClockManager manager = new AlarmClockManager(context);
+                manager.setAlarmClock(Tools.getTimeInMillis(hour, minute));
             });
 
-            timePicker.getTimePickerFragment().show(requireActivity().getSupportFragmentManager(), "time_picker");
+            timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
         });
     }
 
