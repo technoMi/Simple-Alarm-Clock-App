@@ -1,14 +1,20 @@
 package com.mi.simple_alarm_clock_app;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -28,7 +34,7 @@ import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
 
 import java.util.Calendar;
 
-public class FirstFragment extends Fragment implements MenuProvider {
+public class FirstFragment extends Fragment implements MenuProvider  {
 
     private FragmentFirstBinding binding;
 
@@ -64,18 +70,31 @@ public class FirstFragment extends Fragment implements MenuProvider {
         requireActivity().addMenuProvider(this, getViewLifecycleOwner());
 
         binding.btnAdd.setOnClickListener(btnAddView -> {
-
-            MaterialTimePicker timePicker = Tools.getTimePickerFragment();
-
-            timePicker.addOnPositiveButtonClickListener(tpView -> {
-                int hour = timePicker.getHour();
-                int minute = timePicker.getMinute();
-                AlarmClockManager manager = new AlarmClockManager(context);
-                manager.setAlarmClock(Tools.getTimeInMillis(hour, minute));
-            });
-
-            timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                String notificationPermission = Manifest.permission.POST_NOTIFICATIONS;
+                boolean notificationGranted = PermissionTools.getPermissionStatus(
+                        context, notificationPermission
+                );
+                if (notificationGranted) {
+                   createTimePicker();
+                } else {
+                    PermissionTools.requestPermissions(requireActivity(), notificationPermission, 0);
+                }
+            }
         });
+    }
+
+    private void createTimePicker() {
+        MaterialTimePicker timePicker = Tools.getTimePickerFragment();
+
+        timePicker.addOnPositiveButtonClickListener(tpView -> {
+            int hour = timePicker.getHour();
+            int minute = timePicker.getMinute();
+            AlarmClockManager manager = new AlarmClockManager(context);
+            manager.setAlarmClock(Tools.getTimeInMillis(hour, minute));
+        });
+
+        timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
     }
 
     @Override
