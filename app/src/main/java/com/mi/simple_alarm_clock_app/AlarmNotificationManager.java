@@ -6,6 +6,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.core.app.ActivityCompat;
@@ -20,6 +23,10 @@ public class AlarmNotificationManager {
 
     private final int NOTIFICATION_ID = 1;
 
+    private NotificationManagerCompat notificationManager;
+
+    private Ringtone ringtone;
+
     public AlarmNotificationManager(Context context) {
         this.context = context;
     }
@@ -27,6 +34,22 @@ public class AlarmNotificationManager {
     public void showAlarmNotification() {
         createNotificationChannel();
         createNotification();
+        playSound();
+    }
+
+    private void playSound() {
+
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+        if (soundUri == null) {
+            soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        }
+
+        ringtone = RingtoneManager.getRingtone(context, soundUri);
+
+        if (ringtone != null) {
+            ringtone.play();
+        }
     }
 
     private void createNotification() {
@@ -40,10 +63,20 @@ public class AlarmNotificationManager {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentTitle("Будильник")
                 .addAction(R.drawable.baseline_alarm_24, "Отключить", pendingIntent)
-                .setAutoCancel(false);
+                .setAutoCancel(false)
+                .setSilent(true);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager = NotificationManagerCompat.from(context);
+
         notificationManager.notify(NOTIFICATION_ID, builder.build());
+    }
+
+    public void notificationClose() {
+        if (notificationManager == null) {
+            notificationManager = NotificationManagerCompat.from(context);
+        }
+        notificationManager.cancel(NOTIFICATION_ID);
+        ringtone.stop();
     }
 
     private void createNotificationChannel() {
