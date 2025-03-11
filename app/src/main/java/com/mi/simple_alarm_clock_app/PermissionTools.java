@@ -12,19 +12,4 @@ public class PermissionTools {
         int status = ContextCompat.checkSelfPermission(context, permission);
         return (status == PackageManager.PERMISSION_GRANTED);
     }
-
-    public static void requestPermissions(
-            FragmentActivity fragmentActivity,
-            String notification,
-            int requestCode) {
-        String[] notifications = new String[] {notification};
-        ActivityCompat.requestPermissions(fragmentActivity, notifications, requestCode);
-    }
-
-    public static void requestPermissions(
-            FragmentActivity fragmentActivity,
-            String[] notifications,
-            int requestCode) {
-        ActivityCompat.requestPermissions(fragmentActivity, notifications, requestCode);
-    }
 }

@@ -1,11 +1,9 @@
 package com.mi.simple_alarm_clock_app;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -14,12 +12,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,8 +30,6 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
 
-import java.util.Calendar;
-
 public class FirstFragment extends Fragment implements MenuProvider  {
 
     private FragmentFirstBinding binding;
@@ -42,11 +38,23 @@ public class FirstFragment extends Fragment implements MenuProvider  {
 
     private Context context;
 
+    private ActivityResultLauncher<String> requestPermissionResult;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         context = requireContext();
+
+        requestPermissionResult = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        createTimePicker();
+                    } else {
+                        Tools.showToast(context, getString(R.string.permission_denied));
+                    }
+                });
     }
 
     @Override
@@ -78,8 +86,18 @@ public class FirstFragment extends Fragment implements MenuProvider  {
                 if (notificationGranted) {
                    createTimePicker();
                 } else {
-                    PermissionTools.requestPermissions(requireActivity(), notificationPermission, 0);
+                    if (shouldShowRequestPermissionRationale(notificationPermission)) {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+                        intent.setData(uri);
+                        context.startActivity(intent);
+                        Tools.showToast(context, getString(R.string.request_permission));
+                    } else {
+                        requestPermissionResult.launch(notificationPermission);
+                    }
                 }
+            } else {
+                createTimePicker();
             }
         });
     }
