@@ -4,7 +4,11 @@
     <!-- Android12 -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" /> <!-- Android13 -->
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +21,9 @@
         android:theme="@style/Theme.Light"
         tools:targetApi="31">
         <activity
+            android:name=".AlarmActivity"
+            android:exported="false" />
+        <activity
             android:name=".AlarmClockActivity"
             android:exported="false" />
 
@@ -24,6 +31,10 @@
             android:name=".AlarmReceiver"
             android:enabled="true"
             android:exported="true" />
+
+        <service
+            android:name=".NotificationService"
+            android:foregroundServiceType="shortService"/>
 
         <activity
             android:name=".MainActivity"

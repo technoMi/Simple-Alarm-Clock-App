@@ -15,20 +15,16 @@ import androidx.core.app.NotificationManagerCompat;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
-    private static AlarmNotificationManager alarmManager;
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if (alarmManager == null) {
-            alarmManager = new AlarmNotificationManager(context);
-        }
-
-        if (intent.getAction().equals(Constants.ALARM_CLOCK_OFF_ACTION)) {
-            alarmManager.notificationClose();
-        }
         if (intent.getAction().equals(Constants.INTENT_TO_SHOW_ALARM_CLOCK_NOTIFICATION)) {
-            alarmManager.showAlarmNotification();
+            Intent serviceIntent = new Intent(context, NotificationService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(serviceIntent);
+            } else {
+                context.startService(serviceIntent);
+            }
         }
     }
 }
