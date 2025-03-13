@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/firstFragment"
-        android:name="com.mi.simple_alarm_clock_app.FirstFragment"
+        android:name="com.mi.simple_alarm_clock_app.fragments.FirstFragment"
         android:label="fragment_first"
         tools:layout="@layout/fragment_first">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/secondFragment"
-        android:name="com.mi.simple_alarm_clock_app.SecondFragment"
+        android:name="com.mi.simple_alarm_clock_app.fragments.SecondFragment"
         android:label="fragment_second"
         tools:layout="@layout/fragment_second"/>
 </navigation>

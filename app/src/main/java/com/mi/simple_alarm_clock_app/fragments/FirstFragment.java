@@ -1,4 +1,4 @@
-package com.mi.simple_alarm_clock_app;
+package com.mi.simple_alarm_clock_app.fragments;
 
 import android.Manifest;
 import android.content.Context;
@@ -24,10 +24,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
+import com.mi.simple_alarm_clock_app.AlarmClockManager;
+import com.mi.simple_alarm_clock_app.PermissionTools;
+import com.mi.simple_alarm_clock_app.R;
+import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
 
 public class FirstFragment extends Fragment implements MenuProvider  {

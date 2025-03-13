@@ -15,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        // todo в последнюю очередь закончить с разрешениями
         if (!Settings.canDrawOverlays(this)) {
 
             // If not, form up an Intent to launch the permission request

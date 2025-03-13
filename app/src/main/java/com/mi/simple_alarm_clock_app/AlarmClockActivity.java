@@ -1,5 +1,7 @@
 package com.mi.simple_alarm_clock_app;
 
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -15,7 +17,7 @@ import com.mi.simple_alarm_clock_app.databinding.ActivityAlarmClockBinding;
 
 public class AlarmClockActivity extends AppCompatActivity {
 
-    private Ringtone ringtone;
+    private MediaPlayer mediaPlayer;
 
     private ActivityAlarmClockBinding binding;
 
@@ -43,23 +45,21 @@ public class AlarmClockActivity extends AppCompatActivity {
 
         Uri ringtonUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 
-        if (ringtonUri == null) {
-            ringtonUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        }
-
-        if (ringtonUri != null) {
-            ringtone = RingtoneManager.getRingtone(getApplicationContext(), ringtonUri);
-            ringtone.play();
-        }
+        mediaPlayer = MediaPlayer.create(this, ringtonUri);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
     }
 
     private void stopAlarmSound() {
-        ringtone.stop();
+        mediaPlayer.stop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ringtone = null;
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 }
