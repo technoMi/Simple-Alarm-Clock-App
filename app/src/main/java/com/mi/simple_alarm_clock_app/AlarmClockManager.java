@@ -19,20 +19,25 @@ public class AlarmClockManager {
     public void setAlarmClock(long timeInMillis) {
 
         AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(
-                timeInMillis, getAlarmInfo()
+                timeInMillis, getAlarmInfoIntent()
         );
 
         alarmManager.setAlarmClock(alarmClockInfo, getAlarmPendingIntent());
     }
 
-    private PendingIntent getAlarmInfo() {
+    private PendingIntent getAlarmInfoIntent() {
         Intent intent = new Intent(context, MainActivity.class);
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     private PendingIntent getAlarmPendingIntent() {
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.setAction(Constants.INTENT_TO_SHOW_ALARM_CLOCK_NOTIFICATION);
-        return PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_IMMUTABLE);
+//        Intent intent = new Intent(context, AlarmReceiver.class);
+//        intent.setAction(Constants.INTENT_TO_SHOW_ALARM_CLOCK_NOTIFICATION);
+//        return PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        Intent intent = new Intent(context, AlarmClockActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        return PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 }

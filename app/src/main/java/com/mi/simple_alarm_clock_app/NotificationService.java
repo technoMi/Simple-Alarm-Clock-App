@@ -23,7 +23,7 @@ public class NotificationService extends Service {
 
         startService();
 
-        Intent intent1 = new Intent(this, AlarmActivity.class);
+        Intent intent1 = new Intent(this, AlarmClockActivity.class);
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         this.startActivity(intent1);
 
