@@ -44,6 +44,10 @@ dependencies {
     // Material
     implementation(libs.material.v1130alpha11)
 
+    // Room Database
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.annotation)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

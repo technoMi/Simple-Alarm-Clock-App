@@ -16,6 +16,8 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -31,6 +33,7 @@ import com.mi.simple_alarm_clock_app.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.PermissionTools;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
+import com.mi.simple_alarm_clock_app.database.AppDatabase;
 import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
 
 public class FirstFragment extends Fragment implements MenuProvider  {
@@ -43,11 +46,16 @@ public class FirstFragment extends Fragment implements MenuProvider  {
 
     private ActivityResultLauncher<String> requestPermissionResult;
 
+    private RoomDatabase database;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         context = requireContext();
+
+        database = Room.databaseBuilder(context, AppDatabase.class, "database.db").build();
+        database.
 
         requestPermissionResult = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
