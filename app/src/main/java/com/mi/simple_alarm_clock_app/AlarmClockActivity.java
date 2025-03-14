@@ -1,25 +1,16 @@
 package com.mi.simple_alarm_clock_app;
 
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.mi.simple_alarm_clock_app.databinding.ActivityAlarmClockBinding;
 
 public class AlarmClockActivity extends AppCompatActivity {
 
-    private MediaPlayer mediaPlayer;
-
     private ActivityAlarmClockBinding binding;
+
+    private AlarmSoundPlayer soundPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +19,8 @@ public class AlarmClockActivity extends AppCompatActivity {
         binding = ActivityAlarmClockBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
+
+        soundPlayer = new AlarmSoundPlayer(this);
 
         binding.btnCloseAlarm.setOnClickListener(v -> {
             stopAlarmSound();
@@ -42,24 +35,17 @@ public class AlarmClockActivity extends AppCompatActivity {
     }
 
     private void playAlarmSound() {
-
-        Uri ringtonUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-
-        mediaPlayer = MediaPlayer.create(this, ringtonUri);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
+        soundPlayer.playSound();
     }
 
     private void stopAlarmSound() {
-        mediaPlayer.stop();
+        soundPlayer.stopSound();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+        soundPlayer.stopSound();
+        soundPlayer = null;
     }
 }
