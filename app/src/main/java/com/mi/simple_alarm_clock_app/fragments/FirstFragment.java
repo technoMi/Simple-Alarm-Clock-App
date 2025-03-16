@@ -1,9 +1,11 @@
 package com.mi.simple_alarm_clock_app.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -26,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -34,7 +37,11 @@ import com.mi.simple_alarm_clock_app.PermissionTools;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.database.AppDatabase;
+import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClock;
+import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClockDao;
 import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
+
+import java.util.List;
 
 public class FirstFragment extends Fragment implements MenuProvider  {
 
@@ -46,7 +53,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
 
     private ActivityResultLauncher<String> requestPermissionResult;
 
-    private RoomDatabase database;
+    private ScheduledAlarmClockDao databaseDao;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,8 +61,9 @@ public class FirstFragment extends Fragment implements MenuProvider  {
 
         context = requireContext();
 
-        database = Room.databaseBuilder(context, AppDatabase.class, "database.db").build();
-        database.
+        AppDatabase database = Room.databaseBuilder(requireContext(), AppDatabase.class, "database.db").build();
+        databaseDao = database.getScheduledAlarmClockDao();
+
 
         requestPermissionResult = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -113,6 +121,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
         });
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void createTimePicker() {
         MaterialTimePicker timePicker = Tools.getTimePickerFragment();
 
@@ -121,6 +130,16 @@ public class FirstFragment extends Fragment implements MenuProvider  {
             int minute = timePicker.getMinute();
             AlarmClockManager manager = new AlarmClockManager(context);
             manager.setAlarmClock(Tools.getTimeInMillis(hour, minute));
+
+            new Thread() {
+                @Override
+                public void run() {
+                    ScheduledAlarmClock alarmCLock = new ScheduledAlarmClock();
+                    alarmCLock.timeOfDay = Tools.getTimeInMillis(hour, minute);
+                    databaseDao.insertNewScheduledAlarmClock(alarmCLock);
+                    super.run();
+                }
+            }.start();
         });
 
         timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");

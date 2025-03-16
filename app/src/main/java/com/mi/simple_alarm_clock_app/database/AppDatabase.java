@@ -5,5 +5,5 @@ import androidx.room.RoomDatabase;
 
 @Database(entities = {ScheduledAlarmClock.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
-    abstract ScheduledAlarmClockDao getScheduledAlarmClockDao();
+    public abstract ScheduledAlarmClockDao getScheduledAlarmClockDao();
 }
