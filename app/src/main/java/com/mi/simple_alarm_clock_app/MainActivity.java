@@ -18,13 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
         // todo в последнюю очередь закончить с разрешениями
         if (!Settings.canDrawOverlays(this)) {
-
-            // If not, form up an Intent to launch the permission request
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-
-            // Launch Intent, with the supplied request code
             startActivityForResult(intent, 9);
-
         }
     }
 }

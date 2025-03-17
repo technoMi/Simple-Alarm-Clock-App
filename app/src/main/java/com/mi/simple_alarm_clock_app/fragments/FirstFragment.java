@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -18,8 +17,6 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.room.Room;
-import androidx.room.RoomDatabase;
 
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -28,20 +25,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.mi.simple_alarm_clock_app.AlarmClockManager;
-import com.mi.simple_alarm_clock_app.PermissionTools;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
-import com.mi.simple_alarm_clock_app.database.AppDatabase;
+import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClock;
 import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClockDao;
 import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
-
-import java.util.List;
 
 public class FirstFragment extends Fragment implements MenuProvider  {
 
@@ -61,9 +54,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
 
         context = requireContext();
 
-        AppDatabase database = Room.databaseBuilder(requireContext(), AppDatabase.class, "database.db").build();
-        databaseDao = database.getScheduledAlarmClockDao();
-
+        databaseDao = DatabaseManager.getDatabase(context).getScheduledAlarmClockDao();
 
         requestPermissionResult = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -77,7 +68,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         binding = FragmentFirstBinding.inflate(inflater, container, false);
@@ -99,7 +90,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
         binding.btnAdd.setOnClickListener(btnAddView -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 String notificationPermission = Manifest.permission.POST_NOTIFICATIONS;
-                boolean notificationGranted = PermissionTools.getPermissionStatus(
+                boolean notificationGranted = Tools.getPermissionStatus(
                         context, notificationPermission
                 );
                 if (notificationGranted) {
