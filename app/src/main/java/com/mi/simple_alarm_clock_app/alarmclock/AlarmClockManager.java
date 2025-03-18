@@ -1,9 +1,12 @@
-package com.mi.simple_alarm_clock_app;
+package com.mi.simple_alarm_clock_app.alarmclock;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+
+import com.mi.simple_alarm_clock_app.ui.activities.AlarmClockActivity;
+import com.mi.simple_alarm_clock_app.ui.activities.MainActivity;
 
 public class AlarmClockManager {
 
@@ -32,10 +35,6 @@ public class AlarmClockManager {
     }
 
     private PendingIntent getAlarmPendingIntent() {
-//        Intent intent = new Intent(context, AlarmReceiver.class);
-//        intent.setAction(Constants.INTENT_TO_SHOW_ALARM_CLOCK_NOTIFICATION);
-//        return PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_IMMUTABLE);
-
         Intent intent = new Intent(context, AlarmClockActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         return PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_IMMUTABLE);

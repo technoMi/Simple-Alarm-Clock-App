@@ -1,4 +1,4 @@
-package com.mi.simple_alarm_clock_app;
+package com.mi.simple_alarm_clock_app.alarmclock;
 
 import android.content.Context;
 import android.media.MediaPlayer;

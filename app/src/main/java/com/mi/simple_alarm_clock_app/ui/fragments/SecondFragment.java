@@ -1,4 +1,4 @@
-package com.mi.simple_alarm_clock_app.fragments;
+package com.mi.simple_alarm_clock_app.ui.fragments;
 
 import android.os.Bundle;
 

@@ -1,4 +1,4 @@
-package com.mi.simple_alarm_clock_app.database;
+package com.mi.simple_alarm_clock_app.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

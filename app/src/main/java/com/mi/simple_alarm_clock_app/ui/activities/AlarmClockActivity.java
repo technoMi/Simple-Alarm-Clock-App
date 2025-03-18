@@ -1,9 +1,10 @@
-package com.mi.simple_alarm_clock_app;
+package com.mi.simple_alarm_clock_app.ui.activities;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmSoundPlayer;
 import com.mi.simple_alarm_clock_app.databinding.ActivityAlarmClockBinding;
 
 public class AlarmClockActivity extends AppCompatActivity {

@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.mi.simple_alarm_clock_app.AlarmClockManager;
-import com.mi.simple_alarm_clock_app.database.DatabaseManager;
-import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClock;
+import androidx.room.Room;
+
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
+import com.mi.simple_alarm_clock_app.database.AppDatabase;
+import com.mi.simple_alarm_clock_app.model.ScheduledAlarmClock;
 import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClockDao;
 
 import java.util.List;
@@ -17,24 +19,30 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
 
-                ScheduledAlarmClockDao databaseDao = (
-                        DatabaseManager.getDatabase(context).getScheduledAlarmClockDao()
-                );
+            ScheduledAlarmClockDao databaseDao = (
+                    Room.databaseBuilder(
+                                    context,
+                                    AppDatabase.class,
+                                    "database.db"
+                            )
+                            .build()
+                            .getScheduledAlarmClockDao()
+            );
 
-                new Thread() {
-                    @Override
-                    public void run() {
-                        super.run();
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
 
-                        List<ScheduledAlarmClock> alarmClocks = databaseDao.getAll();
+                    List<ScheduledAlarmClock> alarmClocks = databaseDao.getAllAlarmClocks();
 
-                        AlarmClockManager manager = new AlarmClockManager(context);
+                    AlarmClockManager manager = new AlarmClockManager(context);
 
-                        for (ScheduledAlarmClock alarmClock : alarmClocks) {
-                            manager.setAlarmClock(alarmClock.timeOfDay);
-                        }
+                    for (ScheduledAlarmClock alarmClock : alarmClocks) {
+                        manager.setAlarmClock(alarmClock.timeOfDay);
                     }
-                }.start();
+                }
+            }.start();
         }
     }
 }

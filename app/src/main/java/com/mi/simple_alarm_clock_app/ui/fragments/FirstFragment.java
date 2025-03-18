@@ -1,4 +1,4 @@
-package com.mi.simple_alarm_clock_app.fragments;
+package com.mi.simple_alarm_clock_app.ui.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -28,11 +28,11 @@ import android.view.ViewGroup;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
-import com.mi.simple_alarm_clock_app.AlarmClockManager;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
-import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClock;
+import com.mi.simple_alarm_clock_app.model.ScheduledAlarmClock;
 import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClockDao;
 import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
 
