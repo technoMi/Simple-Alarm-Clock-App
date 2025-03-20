@@ -28,10 +28,10 @@ import android.view.ViewGroup;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
+import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
-import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.ScheduledAlarmClock;
 import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClockDao;
 import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
@@ -54,7 +54,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
 
         context = requireContext();
 
-        databaseDao = DatabaseManager.getDatabase(context).getScheduledAlarmClockDao();
+        databaseDao = App.getInstance().getScheduledAlarmClockDao();
 
         requestPermissionResult = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
