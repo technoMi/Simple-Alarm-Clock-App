@@ -3,9 +3,11 @@ package com.mi.simple_alarm_clock_app.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 import androidx.room.Room;
 
+import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.database.AppDatabase;
 import com.mi.simple_alarm_clock_app.model.ScheduledAlarmClock;
@@ -19,15 +21,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
 
-            ScheduledAlarmClockDao databaseDao = (
-                    Room.databaseBuilder(
-                                    context,
-                                    AppDatabase.class,
-                                    "database.db"
-                            )
-                            .build()
-                            .getScheduledAlarmClockDao()
-            );
+            ScheduledAlarmClockDao databaseDao = App.getInstance().getScheduledAlarmClockDao();
 
             new Thread() {
                 @Override

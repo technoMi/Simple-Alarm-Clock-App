@@ -1,6 +1,8 @@
 package com.mi.simple_alarm_clock_app;
 
 import android.app.Application;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.room.Room;
 
@@ -12,7 +14,7 @@ public class App extends Application  {
     private AppDatabase database;
     private ScheduledAlarmClockDao scheduledAlarmClockDao;
 
-    private static App instance;
+    private static App instance = null;
 
     // Singleton.
     public static App getInstance() {
@@ -20,19 +22,23 @@ public class App extends Application  {
     }
 
     public ScheduledAlarmClockDao getScheduledAlarmClockDao() {
-        return scheduledAlarmClockDao;
+        return database.getScheduledAlarmClockDao();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        instance = this;
+        if (instance == null) {
+            instance = this;
 
-        database = Room.databaseBuilder(
-                getApplicationContext(),
-                AppDatabase.class,
-                "database.db"
-        ).build();
+            database = Room.databaseBuilder(
+                    getApplicationContext(),
+                    AppDatabase.class,
+                    "database.db"
+            ).build();
+        }
     }
+
+
 }
