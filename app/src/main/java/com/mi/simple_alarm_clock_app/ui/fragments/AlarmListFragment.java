@@ -32,13 +32,13 @@ import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
+import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
 import com.mi.simple_alarm_clock_app.model.ScheduledAlarmClock;
 import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClockDao;
-import com.mi.simple_alarm_clock_app.databinding.FragmentFirstBinding;
 
-public class FirstFragment extends Fragment implements MenuProvider  {
+public class AlarmListFragment extends Fragment implements MenuProvider  {
 
-    private FragmentFirstBinding binding;
+    private FragmentAlarmListBinding binding;
 
     private NavController navController;
 
@@ -60,7 +60,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
                     if (isGranted) {
-                        createTimePicker();
+                        navigate(R.id.action_firstFragment_to_alarmEditFragment);
                     } else {
                         Tools.showToast(context, getString(R.string.permission_denied));
                     }
@@ -71,7 +71,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
+        binding = FragmentAlarmListBinding.inflate(inflater, container, false);
 
         navController = Navigation.findNavController(requireActivity(), R.id.fragmentContainerView);
 
@@ -94,7 +94,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
                         context, notificationPermission
                 );
                 if (notificationGranted) {
-                   createTimePicker();
+                   navigate(R.id.action_firstFragment_to_alarmEditFragment);
                 } else {
                     if (shouldShowRequestPermissionRationale(notificationPermission)) {
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -107,7 +107,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
                     }
                 }
             } else {
-                createTimePicker();
+                navigate(R.id.action_firstFragment_to_alarmEditFragment);
             }
         });
     }
@@ -145,7 +145,7 @@ public class FirstFragment extends Fragment implements MenuProvider  {
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         int itemId = menuItem.getItemId();
         if (itemId == R.id.miSettings) {
-            navigate(R.id.action_firstFragment_to_secondFragment);
+            navigate(R.id.action_firstFragment_to_alarmEditFragment);
         }
         return true;
     }

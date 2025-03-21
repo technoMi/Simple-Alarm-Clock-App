@@ -12,4 +12,7 @@ public class ScheduledAlarmClock {
 
     @ColumnInfo(name = "time_of_day")
     public long timeOfDay;
+
+    @ColumnInfo(name = "enabled")
+    public boolean isEnabled;
 }

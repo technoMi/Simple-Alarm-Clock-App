@@ -3,21 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/firstFragment">
+    app:startDestination="@id/alarmListFragment">
 
     <fragment
-        android:id="@+id/firstFragment"
-        android:name="com.mi.simple_alarm_clock_app.ui.fragments.FirstFragment"
+        android:id="@+id/alarmListFragment"
+        android:name="com.mi.simple_alarm_clock_app.ui.fragments.AlarmListFragment"
         android:label="fragment_first"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/fragment_alarm_list">
         <action
-            android:id="@+id/action_firstFragment_to_secondFragment"
-            app:destination="@id/secondFragment" />
+            android:id="@+id/action_firstFragment_to_alarmEditFragment"
+            app:destination="@id/alarmEditFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/secondFragment"
-        android:name="com.mi.simple_alarm_clock_app.ui.fragments.SecondFragment"
+        android:id="@+id/alarmEditFragment"
+        android:name="com.mi.simple_alarm_clock_app.ui.fragments.AlarmEditFragment"
         android:label="fragment_second"
-        tools:layout="@layout/fragment_second"/>
+        tools:layout="@layout/fragment_alarm_edit"/>
 </navigation>
