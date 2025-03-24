@@ -20,7 +20,8 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
+import com.mi.simple_alarm_clock_app.alarmclock.TimeInfoForAlarm;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmEditBinding;
 
 import java.util.Calendar;
@@ -36,37 +37,7 @@ public class AlarmEditFragment extends Fragment {
 
     private FragmentActivity fragmentActivity;
 
-    private TimeInfoForAlarmCLock timeInfoForAlarmCLock;
-
-    private static class TimeInfoForAlarmCLock {
-        private int hour = -1;
-        private int minute = -1;
-        private long selectedDayInMillis = -1;
-
-        public int getHour() {
-            return hour;
-        }
-
-        public void setHour(int hour) {
-            this.hour = hour;
-        }
-
-        public int getMinute() {
-            return minute;
-        }
-
-        public void setMinute(int minute) {
-            this.minute = minute;
-        }
-
-        public long getSelectedDayInMillis() {
-            return selectedDayInMillis;
-        }
-
-        public void setSelectedDayInMillis(long selectedDayInMillis) {
-            this.selectedDayInMillis = selectedDayInMillis;
-        }
-    }
+    private TimeInfoForAlarm timeInfoForAlarm;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,11 +69,11 @@ public class AlarmEditFragment extends Fragment {
 
             timePicker.addOnPositiveButtonClickListener(pV -> {
 
-                if (timeInfoForAlarmCLock == null) {
-                    timeInfoForAlarmCLock = new TimeInfoForAlarmCLock();
+                if (timeInfoForAlarm == null) {
+                    timeInfoForAlarm = new TimeInfoForAlarm();
                 }
-                timeInfoForAlarmCLock.setHour(timePicker.getHour());
-                timeInfoForAlarmCLock.setMinute(timePicker.getMinute());
+                timeInfoForAlarm.setHour(timePicker.getHour());
+                timeInfoForAlarm.setMinute(timePicker.getMinute());
 
                 updateAlarmInfoOnTheScreen();
             });
@@ -114,11 +85,15 @@ public class AlarmEditFragment extends Fragment {
             datePicker.show(fragmentActivity.getSupportFragmentManager(), "date_picker");
 
             datePicker.addOnPositiveButtonClickListener(selection -> {
-                if (timeInfoForAlarmCLock == null) {
-                    timeInfoForAlarmCLock = new TimeInfoForAlarmCLock();
+                if (timeInfoForAlarm == null) {
+                    timeInfoForAlarm = new TimeInfoForAlarm();
                 }
-                timeInfoForAlarmCLock.setSelectedDayInMillis(selection);
+                timeInfoForAlarm.setSelectedDayInMillis(selection);
+                timeInfoForAlarm.setDateTittle(datePicker.getHeaderText());
+
+                updateAlarmInfoOnTheScreen();
             });
+
         });
 
         binding.btnCansel.setOnClickListener(v -> {
@@ -128,14 +103,17 @@ public class AlarmEditFragment extends Fragment {
         binding.btnSave.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-            calendar.setTimeInMillis(timeInfoForAlarmCLock.getSelectedDayInMillis());
+            calendar.setTimeInMillis(timeInfoForAlarm.getSelectedDayInMillis());
 
-            calendar.set(Calendar.HOUR_OF_DAY, timeInfoForAlarmCLock.getHour());
-            calendar.set(Calendar.MINUTE, timeInfoForAlarmCLock.getMinute());
+            calendar.set(Calendar.HOUR_OF_DAY, timeInfoForAlarm.getHour());
+            calendar.set(Calendar.MINUTE, timeInfoForAlarm.getMinute());
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
 
-            AlarmClockManager manager = new AlarmClockManager(context);
+            AlarmManager manager = new AlarmManager(context);
+
+
+
             manager.setAlarmClock(calendar.getTimeInMillis());
 
             Toast.makeText(context, String.valueOf(calendar.getTimeInMillis()), Toast.LENGTH_LONG).show();
@@ -148,16 +126,19 @@ public class AlarmEditFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     private void updateAlarmInfoOnTheScreen() {
-        if (timeInfoForAlarmCLock != null) {
-            if (timeInfoForAlarmCLock.getHour() != -1 && timeInfoForAlarmCLock.getMinute() != -1) {
-                String hour = String.valueOf(timeInfoForAlarmCLock.getHour());
-                String minute = String.valueOf(timeInfoForAlarmCLock.getMinute());
-                binding.tvTime.setText(hour + ":" + minute);
-            }
-            if (timeInfoForAlarmCLock.getSelectedDayInMillis() != -1) {
+        if (timeInfoForAlarm != null) {
+            if (timeInfoForAlarm.getHour() != -1 && timeInfoForAlarm.getMinute() != -1) {
+                String hour = String.valueOf(timeInfoForAlarm.getHour());
 
+                String minute = String.valueOf(timeInfoForAlarm.getMinute());
+
+                String formattedMinute = (minute.equals("0") ? "00" : minute);
+
+                binding.tvTime.setText(hour + ":" + formattedMinute);
+            }
+            if (timeInfoForAlarm.getDateTittle() != null) {
+                binding.alarmDate.setText(timeInfoForAlarm.getDateTittle());
             }
         }
-
     }
 }

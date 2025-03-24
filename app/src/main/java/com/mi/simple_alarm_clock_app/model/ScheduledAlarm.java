@@ -5,9 +5,10 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "scheduled_alarm_clock")
-public class ScheduledAlarmClock {
+public class ScheduledAlarm {
     @ColumnInfo(name = "id")
-    @PrimaryKey(autoGenerate = true)
+    //@PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     public int id;
 
     @ColumnInfo(name = "time_of_day")

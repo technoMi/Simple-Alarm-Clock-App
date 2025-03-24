@@ -29,12 +29,12 @@ import android.view.ViewGroup;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.mi.simple_alarm_clock_app.App;
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
-import com.mi.simple_alarm_clock_app.model.ScheduledAlarmClock;
-import com.mi.simple_alarm_clock_app.database.ScheduledAlarmClockDao;
+import com.mi.simple_alarm_clock_app.model.ScheduledAlarm;
+import com.mi.simple_alarm_clock_app.database.ScheduledAlarmDao;
 
 public class AlarmListFragment extends Fragment implements MenuProvider  {
 
@@ -46,7 +46,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider  {
 
     private ActivityResultLauncher<String> requestPermissionResult;
 
-    private ScheduledAlarmClockDao databaseDao;
+    private ScheduledAlarmDao databaseDao;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,13 +119,13 @@ public class AlarmListFragment extends Fragment implements MenuProvider  {
         timePicker.addOnPositiveButtonClickListener(tpView -> {
             int hour = timePicker.getHour();
             int minute = timePicker.getMinute();
-            AlarmClockManager manager = new AlarmClockManager(context);
+            AlarmManager manager = new AlarmManager(context);
             manager.setAlarmClock(Tools.getTimeInMillis(hour, minute));
 
             new Thread() {
                 @Override
                 public void run() {
-                    ScheduledAlarmClock alarmCLock = new ScheduledAlarmClock();
+                    ScheduledAlarm alarmCLock = new ScheduledAlarm();
                     alarmCLock.timeOfDay = Tools.getTimeInMillis(hour, minute);
                     databaseDao.insertNewScheduledAlarmClock(alarmCLock);
                     super.run();

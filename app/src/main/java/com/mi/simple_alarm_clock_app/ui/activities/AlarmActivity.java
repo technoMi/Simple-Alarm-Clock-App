@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmSoundPlayer;
 import com.mi.simple_alarm_clock_app.databinding.ActivityAlarmClockBinding;
 
-public class AlarmClockActivity extends AppCompatActivity {
+public class AlarmActivity extends AppCompatActivity {
 
     private ActivityAlarmClockBinding binding;
 
