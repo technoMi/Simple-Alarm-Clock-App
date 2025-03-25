@@ -40,6 +40,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".receivers.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
+
         <activity
             android:name=".ui.activities.MainActivity"
             android:exported="true">

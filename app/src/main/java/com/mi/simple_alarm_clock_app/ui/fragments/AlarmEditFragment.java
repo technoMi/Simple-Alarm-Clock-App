@@ -14,7 +14,7 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.CheckBox;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -22,8 +22,10 @@ import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
 import com.mi.simple_alarm_clock_app.alarmclock.TimeInfoForAlarm;
+import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmEditBinding;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -34,8 +36,6 @@ public class AlarmEditFragment extends Fragment {
     private NavController navController;
 
     private Context context;
-
-    private FragmentActivity fragmentActivity;
 
     private TimeInfoForAlarm timeInfoForAlarm;
 
@@ -50,9 +50,7 @@ public class AlarmEditFragment extends Fragment {
 
         binding = FragmentAlarmEditBinding.inflate(getLayoutInflater());
 
-        fragmentActivity = requireActivity();
-
-        navController = Navigation.findNavController(fragmentActivity, R.id.fragmentContainerView);
+        navController = Navigation.findNavController(requireActivity(), R.id.fragmentContainerView);
 
         context = requireContext();
 
@@ -65,10 +63,9 @@ public class AlarmEditFragment extends Fragment {
         binding.btnSetTime.setOnClickListener(stV -> {
             MaterialTimePicker timePicker = Tools.getTimePickerFragment();
 
-            timePicker.show(fragmentActivity.getSupportFragmentManager(), "time_picker");
+            timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
 
             timePicker.addOnPositiveButtonClickListener(pV -> {
-
                 if (timeInfoForAlarm == null) {
                     timeInfoForAlarm = new TimeInfoForAlarm();
                 }
@@ -82,7 +79,7 @@ public class AlarmEditFragment extends Fragment {
         binding.btnSetDate.setOnClickListener(sdV -> {
             MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker().build();
 
-            datePicker.show(fragmentActivity.getSupportFragmentManager(), "date_picker");
+            datePicker.show(requireActivity().getSupportFragmentManager(), "date_picker");
 
             datePicker.addOnPositiveButtonClickListener(selection -> {
                 if (timeInfoForAlarm == null) {
@@ -101,22 +98,30 @@ public class AlarmEditFragment extends Fragment {
         });
 
         binding.btnSave.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-            calendar.setTimeInMillis(timeInfoForAlarm.getSelectedDayInMillis());
+            long dayTimeInMillis = timeInfoForAlarm.getSelectedDayInMillis();
+            int hour = timeInfoForAlarm.getHour();
+            int minute = timeInfoForAlarm.getMinute();
 
-            calendar.set(Calendar.HOUR_OF_DAY, timeInfoForAlarm.getHour());
-            calendar.set(Calendar.MINUTE, timeInfoForAlarm.getMinute());
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
+            long alarmTime = Tools.getTimeInMillis(dayTimeInMillis, hour, minute);
 
             AlarmManager manager = new AlarmManager(context);
 
+            int id = DatabaseManager.getNewItemID();
 
+            ArrayList<String> daysOfWeek = new ArrayList<>();
+            if (binding.cbMonday.isChecked()) daysOfWeek.add("MON");
+            if (binding.cbTuesday.isChecked()) daysOfWeek.add("TUE");
+            if (binding.cbWednesday.isChecked()) daysOfWeek.add("WED");
+            if (binding.cbThursday.isChecked()) daysOfWeek.add("THU");
+            if (binding.cbFriday.isChecked()) daysOfWeek.add("FRI");
+            if (binding.cbSaturday.isChecked()) daysOfWeek.add("SAT");
+            if (binding.cbSunday.isChecked()) daysOfWeek.add("SUN");
 
-            manager.setAlarmClock(calendar.getTimeInMillis());
+            Bundle alarmParameters = new Bundle();
+            alarmParameters.putInt("id", id);
+            alarmParameters.putStringArrayList("daysOfWeek", daysOfWeek);
 
-            Toast.makeText(context, String.valueOf(calendar.getTimeInMillis()), Toast.LENGTH_LONG).show();
+            manager.setAlarmClock(alarmParameters, alarmTime);
 
             navController.popBackStack();
         });
@@ -129,12 +134,12 @@ public class AlarmEditFragment extends Fragment {
         if (timeInfoForAlarm != null) {
             if (timeInfoForAlarm.getHour() != -1 && timeInfoForAlarm.getMinute() != -1) {
                 String hour = String.valueOf(timeInfoForAlarm.getHour());
+                String formattedHour = Tools.getFormattedTimeForAlarmClock(hour);
 
                 String minute = String.valueOf(timeInfoForAlarm.getMinute());
+                String formattedMinute = Tools.getFormattedTimeForAlarmClock(minute);
 
-                String formattedMinute = (minute.equals("0") ? "00" : minute);
-
-                binding.tvTime.setText(hour + ":" + formattedMinute);
+                binding.tvTime.setText(formattedHour + ":" + formattedMinute);
             }
             if (timeInfoForAlarm.getDateTittle() != null) {
                 binding.alarmDate.setText(timeInfoForAlarm.getDateTittle());

@@ -10,6 +10,7 @@ import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 public class Tools {
 
@@ -23,15 +24,33 @@ public class Tools {
                 .build();
     }
 
-    public static long getTimeInMillis(int hour, int minute) {
+    public static long getTimeInMillis(long dateInMillis, int hour, int minute) {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        calendar.setTimeInMillis(dateInMillis);
+
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         return calendar.getTimeInMillis();
     }
 
     public static void showToast(Context context, String text) {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+    }
+
+    public static String getFormattedTimeForAlarmClock(String time) {
+        String formattedTime;
+        if (time.equals("0")) {
+            formattedTime = "00";
+        } else if (time.length() == 1) {
+            formattedTime = "0" + time;
+        } else {
+            formattedTime = time;
+        }
+        return formattedTime;
     }
 
     public static boolean getPermissionStatus(Context context, String permission) {

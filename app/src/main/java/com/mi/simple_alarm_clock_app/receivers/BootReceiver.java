@@ -17,22 +17,22 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
 
-            ScheduledAlarmDao databaseDao = App.getInstance().getScheduledAlarmClockDao();
-
-            new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-
-                    List<ScheduledAlarm> alarmClocks = databaseDao.getAllAlarmClocks();
-
-                    AlarmManager manager = new AlarmManager(context);
-
-                    for (ScheduledAlarm alarmClock : alarmClocks) {
-                        manager.setAlarmClock(alarmClock.timeOfDay);
-                    }
-                }
-            }.start();
+//            ScheduledAlarmDao databaseDao = App.getInstance().getScheduledAlarmClockDao();
+//
+//            new Thread() {
+//                @Override
+//                public void run() {
+//                    super.run();
+//
+//                    List<ScheduledAlarm> alarmClocks = databaseDao.getAllAlarmClocks();
+//
+//                    AlarmManager manager = new AlarmManager(context);
+//
+//                    for (ScheduledAlarm alarmClock : alarmClocks) {
+//                        manager.setAlarmClock(alarmClock.timeOfDay);
+//                    }
+//                }
+//            }.start();
         }
     }
 }

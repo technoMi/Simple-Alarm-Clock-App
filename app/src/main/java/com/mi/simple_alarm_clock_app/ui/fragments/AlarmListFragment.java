@@ -112,29 +112,29 @@ public class AlarmListFragment extends Fragment implements MenuProvider  {
         });
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private void createTimePicker() {
-        MaterialTimePicker timePicker = Tools.getTimePickerFragment();
-
-        timePicker.addOnPositiveButtonClickListener(tpView -> {
-            int hour = timePicker.getHour();
-            int minute = timePicker.getMinute();
-            AlarmManager manager = new AlarmManager(context);
-            manager.setAlarmClock(Tools.getTimeInMillis(hour, minute));
-
-            new Thread() {
-                @Override
-                public void run() {
-                    ScheduledAlarm alarmCLock = new ScheduledAlarm();
-                    alarmCLock.timeOfDay = Tools.getTimeInMillis(hour, minute);
-                    databaseDao.insertNewScheduledAlarmClock(alarmCLock);
-                    super.run();
-                }
-            }.start();
-        });
-
-        timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
-    }
+//    @SuppressLint("StaticFieldLeak")
+//    private void createTimePicker() {
+//        MaterialTimePicker timePicker = Tools.getTimePickerFragment();
+//
+//        timePicker.addOnPositiveButtonClickListener(tpView -> {
+//            int hour = timePicker.getHour();
+//            int minute = timePicker.getMinute();
+//            AlarmManager manager = new AlarmManager(context);
+//            manager.setAlarmClock(Tools.getTimeInMillis(hour, minute));
+//
+//            new Thread() {
+//                @Override
+//                public void run() {
+//                    ScheduledAlarm alarmCLock = new ScheduledAlarm();
+//                    alarmCLock.timeOfDay = Tools.getTimeInMillis(hour, minute);
+//                    databaseDao.insertNewScheduledAlarmClock(alarmCLock);
+//                    super.run();
+//                }
+//            }.start();
+//        });
+//
+//        timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
+//    }
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
