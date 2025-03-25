@@ -1,7 +1,6 @@
 package com.mi.simple_alarm_clock_app.ui.fragments;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,13 +26,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.timepicker.MaterialTimePicker;
 import com.mi.simple_alarm_clock_app.App;
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
-import com.mi.simple_alarm_clock_app.model.ScheduledAlarm;
 import com.mi.simple_alarm_clock_app.database.ScheduledAlarmDao;
 
 public class AlarmListFragment extends Fragment implements MenuProvider  {

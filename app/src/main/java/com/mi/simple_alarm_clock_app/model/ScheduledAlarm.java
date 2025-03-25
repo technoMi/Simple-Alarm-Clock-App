@@ -4,15 +4,22 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.ArrayList;
+
 @Entity(tableName = "scheduled_alarm_clock")
 public class ScheduledAlarm {
     @ColumnInfo(name = "id")
-    //@PrimaryKey(autoGenerate = true)
     @PrimaryKey
     public int id;
 
-    @ColumnInfo(name = "time_of_day")
-    public long timeOfDay;
+    @ColumnInfo(name = "name")
+    public String name;
+
+    @ColumnInfo(name = "days_of_week")
+    public ArrayList<String> daysOfWeek;
+
+    @ColumnInfo(name = "time_in_millis")
+    public long timeInMillis;
 
     @ColumnInfo(name = "enabled")
     public boolean isEnabled;

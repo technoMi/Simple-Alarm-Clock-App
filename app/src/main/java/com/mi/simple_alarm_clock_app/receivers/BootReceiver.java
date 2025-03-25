@@ -4,13 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.mi.simple_alarm_clock_app.App;
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
-import com.mi.simple_alarm_clock_app.database.ScheduledAlarmDao;
-import com.mi.simple_alarm_clock_app.model.ScheduledAlarm;
-
-import java.util.List;
-
 public class BootReceiver extends BroadcastReceiver {
 
     @Override
