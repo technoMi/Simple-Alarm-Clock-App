@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.mi.simple_alarm_clock_app.App;
+import com.mi.simple_alarm_clock_app.Constants;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.ScheduledAlarm;
@@ -65,14 +66,35 @@ public class AlarmClockManager {
 
     private void saveAlarmToDatabase(String name, int id, long time,
                                      ArrayList<String> daysOfWeek) {
-        ScheduledAlarm alarm = new ScheduledAlarm();
-        alarm.setId(id);
-        alarm.setTimeInMillis(time);
-        alarm.setDaysOfWeek(daysOfWeek);
-        alarm.setEnabledFlag(true);
-        alarm.setName((name != null) ? name : "");
 
-        DatabaseManager dbManager = new DatabaseManager();
-        dbManager.saveAlarmClock(alarm);
+        boolean mondayChecked = (daysOfWeek.contains(Constants.SHORT_MONDAY_TITTLE));
+        boolean tuesdayChecked = (daysOfWeek.contains(Constants.SHORT_TUESDAY_TITTLE));
+        boolean wednesdayChecked = (daysOfWeek.contains(Constants.SHORT_WEDNESDAY_TITTLE));
+        boolean thursdayChecked = (daysOfWeek.contains(Constants.SHORT_THURSDAY_TITTLE));
+        boolean fridayChecked = (daysOfWeek.contains(Constants.SHORT_FRIDAY_TITTLE));
+        boolean saturdayChecked = (daysOfWeek.contains(Constants.SHORT_SATURDAY_TITTLE));
+        boolean sundayChecked = (daysOfWeek.contains(Constants.SHORT_SUNDAY_TITTLE));
+
+        boolean enabled = true;
+
+        ScheduledAlarm alarm = new ScheduledAlarm(
+                id,
+                time,
+
+        );
+
+//        ScheduledAlarm alarm = new ScheduledAlarm(
+//                id,
+//                time,
+//
+//        );
+//        alarm.setId(id);
+//        alarm.setTimeInMillis(time);
+//        alarm.setDaysOfWeek(daysOfWeek);
+//        alarm.setEnabledFlag(true);
+//        alarm.setName((name != null) ? name : "");
+//
+//        DatabaseManager dbManager = new DatabaseManager();
+//        dbManager.saveAlarmClock(alarm);
     }
 }
