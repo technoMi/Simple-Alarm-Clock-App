@@ -21,7 +21,6 @@ import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.alarmclock.TimeInfoForAlarm;
-import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmEditBinding;
 
 import java.util.ArrayList;
@@ -103,7 +102,7 @@ public class AlarmEditFragment extends Fragment {
             ArrayList<String> daysOfWeek = getCheckedDaysOfWeek();
 
             AlarmClockManager manager = new AlarmClockManager(context);
-            manager.saveAlarmClock(name, dayTimeInMillis, hour, minute, daysOfWeek);
+            manager.setAlarmClockInSystemManager(name, dayTimeInMillis, hour, minute, daysOfWeek);
 
             navController.popBackStack();
         });

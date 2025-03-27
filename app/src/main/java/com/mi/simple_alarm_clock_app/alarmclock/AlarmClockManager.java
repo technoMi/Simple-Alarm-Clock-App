@@ -13,6 +13,7 @@ import com.mi.simple_alarm_clock_app.receivers.Actions;
 import com.mi.simple_alarm_clock_app.receivers.AlarmReceiver;
 import com.mi.simple_alarm_clock_app.ui.activities.MainActivity;
 
+import java.sql.Struct;
 import java.util.ArrayList;
 
 public class AlarmClockManager {
@@ -26,8 +27,8 @@ public class AlarmClockManager {
         alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
-    public void saveAlarmClock(String name, long dayTimeInMillis, int hour, int minute,
-                               ArrayList<String> daysOfWeek) {
+    public void setAlarmClockInSystemManager(String name, long dayTimeInMillis, int hour,
+                                             int minute, ArrayList<String> daysOfWeek) {
 
         int id = DatabaseManager.getNewItemID();
         long time = Tools.getTimeInMillis(dayTimeInMillis, hour, minute);
@@ -41,7 +42,6 @@ public class AlarmClockManager {
         AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(
                 time, alarmInfo
         );
-
 
         PendingIntent alarmPendingIntent = getAlarmPendingIntent(id, daysOfWeek);
         alarmManager.setAlarmClock(alarmClockInfo, alarmPendingIntent);
@@ -66,18 +66,13 @@ public class AlarmClockManager {
     private void saveAlarmToDatabase(String name, int id, long time,
                                      ArrayList<String> daysOfWeek) {
         ScheduledAlarm alarm = new ScheduledAlarm();
-        alarm.id = id;
-        alarm.timeInMillis = time;
-        alarm.daysOfWeek = daysOfWeek;
-        alarm.isEnabled = true;
-        alarm.name = (name != null) ? name : "";
+        alarm.setId(id);
+        alarm.setTimeInMillis(time);
+        alarm.setDaysOfWeek(daysOfWeek);
+        alarm.setEnabledFlag(true);
+        alarm.setName((name != null) ? name : "");
 
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                App.getInstance().getScheduledAlarmClockDao().insertNewScheduledAlarmClock(alarm);
-            }
-        }.start();
+        DatabaseManager dbManager = new DatabaseManager();
+        dbManager.saveAlarmClock(alarm);
     }
 }

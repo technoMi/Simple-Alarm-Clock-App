@@ -1,6 +1,7 @@
 package com.mi.simple_alarm_clock_app.database;
 
 import com.mi.simple_alarm_clock_app.App;
+import com.mi.simple_alarm_clock_app.model.ScheduledAlarm;
 
 import java.util.Random;
 
@@ -17,5 +18,9 @@ public class DatabaseManager {
         newId = new Random().nextInt();
 
         return newId;
+    }
+
+    public void saveAlarmClock(ScheduledAlarm newItem) {
+
     }
 }
