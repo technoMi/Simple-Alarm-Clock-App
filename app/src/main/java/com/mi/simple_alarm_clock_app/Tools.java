@@ -25,16 +25,20 @@ public class Tools {
     }
 
     public static long getTimeInMillis(long dateInMillis, int hour, int minute) {
-        Calendar calendar = Calendar.getInstance();
-        //calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        calendar.setTimeInMillis(dateInMillis);
+        if (dateInMillis != 0 && hour != 0 && minute != 0) {
+            Calendar calendar = Calendar.getInstance();
+            //calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+            calendar.setTimeInMillis(dateInMillis);
 
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
+            calendar.set(Calendar.HOUR_OF_DAY, hour);
+            calendar.set(Calendar.MINUTE, minute);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
 
-        return calendar.getTimeInMillis();
+            return calendar.getTimeInMillis();
+        } else {
+            return 0;
+        }
     }
 
     public static void showToast(Context context, String text) {

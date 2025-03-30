@@ -1,7 +1,7 @@
 package com.mi.simple_alarm_clock_app.database;
 
 import com.mi.simple_alarm_clock_app.App;
-import com.mi.simple_alarm_clock_app.model.ScheduledAlarm;
+import com.mi.simple_alarm_clock_app.model.Alarm;
 
 import java.util.Random;
 
@@ -20,7 +20,7 @@ public class DatabaseManager {
         return newId;
     }
 
-    public void saveAlarmClock(ScheduledAlarm newItem) {
+    public void saveAlarmClock(Alarm newItem) {
         new Thread() {
             @Override
             public void run() {

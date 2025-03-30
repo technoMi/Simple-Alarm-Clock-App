@@ -3,4 +3,5 @@
     <string name="permission_denied">Разрешение на уведомления не предоставлено</string>
     <string name="request_permission">Пожалуйста, разрешите приложению отправлять уведомления</string>
     <string name="invalid_form">Минимально требуется указать время, а также дату или дни недели</string>
+    <string name="certain_time_tittle">По определённым дням</string>
 </resources>

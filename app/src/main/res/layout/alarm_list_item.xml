@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="5dp"
+        android:background="@drawable/alarm_list_item_bg">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="20dp"
+                android:text="Название"
+                android:textColor="@color/white"
+                android:textSize="24sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginBottom="20dp"
+                android:text="23:59"
+                android:textColor="@color/white"
+                android:textSize="24sp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginRight="30dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ПН ВТ"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            android:layout_marginEnd="15dp"/>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:trackDecorationTint="@android:color/transparent"
+            app:trackTint="@color/white"
+            app:thumbTint="?attr/colorPrimary" />
+
+    </LinearLayout>
+
+</FrameLayout>

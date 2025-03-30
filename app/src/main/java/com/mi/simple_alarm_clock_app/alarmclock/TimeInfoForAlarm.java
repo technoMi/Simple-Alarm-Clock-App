@@ -1,9 +1,9 @@
 package com.mi.simple_alarm_clock_app.alarmclock;
 
 public class TimeInfoForAlarm {
-    private int hour = -1;
-    private int minute = -1;
-    private long selectedDayInMillis = -1;
+    private int hour = 0;
+    private int minute = 0;
+    private long selectedDayInMillis = 0;
     private String dateTittle;
 
     public int getHour() {

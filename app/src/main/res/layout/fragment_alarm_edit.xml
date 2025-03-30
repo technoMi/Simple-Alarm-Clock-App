@@ -12,7 +12,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +27,7 @@
                 android:textSize="82sp" />
 
             <TextView
-                android:id="@+id/alarm_date"
+                android:id="@+id/tvAlarmDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

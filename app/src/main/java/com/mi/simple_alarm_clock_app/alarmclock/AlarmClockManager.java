@@ -5,8 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import com.mi.simple_alarm_clock_app.Tools;
-import com.mi.simple_alarm_clock_app.model.ScheduledAlarm;
+import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.receivers.Actions;
 import com.mi.simple_alarm_clock_app.receivers.AlarmReceiver;
 import com.mi.simple_alarm_clock_app.ui.activities.MainActivity;
@@ -22,11 +21,11 @@ public class AlarmClockManager {
         alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
-    public void setAlarmClockInSystemManager(ScheduledAlarm alarmInfo) {
+    public void setAlarmClockInSystemManager(Alarm alarmInfo) {
         setPendingAlarm(alarmInfo);
     }
 
-    private void setPendingAlarm(ScheduledAlarm alarmInfo) {
+    private void setPendingAlarm(Alarm alarmInfo) {
         PendingIntent alarmAppInfo = getAlarmAppInfoIntent();
         AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(
                 alarmInfo.getTimeInMillis(), alarmAppInfo
@@ -42,7 +41,7 @@ public class AlarmClockManager {
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
-    private PendingIntent getAlarmPendingIntent(ScheduledAlarm alarmInfo) {
+    private PendingIntent getAlarmPendingIntent(Alarm alarmInfo) {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
         int id = alarmInfo.getId();

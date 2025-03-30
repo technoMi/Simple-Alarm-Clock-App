@@ -4,12 +4,10 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.util.ArrayList;
+@Entity(tableName = "alarm")
+public class Alarm {
 
-@Entity(tableName = "scheduled_alarm_clock")
-public class ScheduledAlarm {
-
-    public ScheduledAlarm(
+    public Alarm(
             int id,
             String name,
             long timeInMillis,

@@ -5,21 +5,21 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.mi.simple_alarm_clock_app.model.ScheduledAlarm;
+import com.mi.simple_alarm_clock_app.model.Alarm;
 
 import java.util.List;
 
 @Dao
 public interface ScheduledAlarmDao {
-    @Query("SELECT * FROM scheduled_alarm_clock")
-    List<ScheduledAlarm> getAllAlarmClocks();
+    @Query("SELECT * FROM Alarm")
+    List<Alarm> getAllAlarmClocks();
 
-    @Insert(entity = ScheduledAlarm.class)
-    void insertNewScheduledAlarmClock(ScheduledAlarm alarmClock);
+    @Insert(entity = Alarm.class)
+    void insertNewScheduledAlarmClock(Alarm alarmClock);
 
-    @Delete(entity = ScheduledAlarm.class)
-    void deleteScheduledAlarmClock(ScheduledAlarm alarmClock);
+    @Delete(entity = Alarm.class)
+    void deleteScheduledAlarmClock(Alarm alarmClock);
 
-    @Query("SELECT EXISTS(SELECT 1 FROM scheduled_alarm_clock WHERE id == :requestedId)")
+    @Query("SELECT EXISTS(SELECT 1 FROM Alarm WHERE id == :requestedId)")
     boolean doesItemExistById(int requestedId);
 }
