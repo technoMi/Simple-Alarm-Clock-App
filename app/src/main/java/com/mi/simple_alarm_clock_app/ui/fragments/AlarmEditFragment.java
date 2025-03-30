@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +22,15 @@ import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.alarmclock.TimeInfoForAlarm;
+import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmEditBinding;
+import com.mi.simple_alarm_clock_app.model.ScheduledAlarm;
 
 import java.util.ArrayList;
 
 public class AlarmEditFragment extends Fragment {
+
+    private final String TAG = "AlarmEditFragment";
 
     private FragmentAlarmEditBinding binding;
 
@@ -94,34 +99,59 @@ public class AlarmEditFragment extends Fragment {
         });
 
         binding.btnSave.setOnClickListener(v -> {
-            long dayTimeInMillis = timeInfoForAlarm.getSelectedDayInMillis();
-            int hour = timeInfoForAlarm.getHour();
-            int minute = timeInfoForAlarm.getMinute();
-            String name = String.valueOf(binding.etAlarmName.getText());
+            try {
+                long dateTimeInMillis = timeInfoForAlarm.getSelectedDayInMillis();
+                if (dateTimeInMillis == -1) {
+                    throw new NullPointerException();
+                }
 
-            ArrayList<String> daysOfWeek = getCheckedDaysOfWeek();
+                int hour = timeInfoForAlarm.getHour();
+                int minute = timeInfoForAlarm.getMinute();
 
-            AlarmClockManager manager = new AlarmClockManager(context);
-            manager.setAlarmClockInSystemManager(name, dayTimeInMillis, hour, minute, daysOfWeek);
+                String name = String.valueOf(binding.etAlarmName.getText());
 
-            navController.popBackStack();
+                boolean mondayChecked = binding.cbMonday.isChecked();
+                boolean tuesdayChecked = binding.cbTuesday.isChecked();
+                boolean wednesdayChecked = binding.cbWednesday.isChecked();
+                boolean thursdayChecked = binding.cbThursday.isChecked();
+                boolean fridayChecked = binding.cbFriday.isChecked();
+                boolean saturdayChecked = binding.cbSaturday.isChecked();
+                boolean sundayChecked = binding.cbSunday.isChecked();
+
+                boolean enabled = true;
+
+
+                long time = Tools.getTimeInMillis(dateTimeInMillis, hour, minute);
+                int id = DatabaseManager.getNewItemID();
+
+                ScheduledAlarm alarm = new ScheduledAlarm(
+                        id,
+                        name,
+                        time,
+                        enabled,
+                        mondayChecked,
+                        tuesdayChecked,
+                        wednesdayChecked,
+                        thursdayChecked,
+                        fridayChecked,
+                        saturdayChecked,
+                        sundayChecked
+                );
+
+                AlarmClockManager alarmManager = new AlarmClockManager(context);
+                alarmManager.setAlarmClockInSystemManager(alarm);
+
+                DatabaseManager dbManager = new DatabaseManager();
+                dbManager.saveAlarmClock(alarm);
+
+                navController.popBackStack();
+            } catch (Exception e) {
+                Log.e(TAG, String.valueOf(e.getCause()));
+                Tools.showToast(context, getString(R.string.invalid_form));
+            }
         });
 
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    private ArrayList<String> getCheckedDaysOfWeek() {
-        ArrayList<String> checkedDaysOfWeek = new ArrayList<>();
-
-        if (binding.cbMonday.isChecked()) checkedDaysOfWeek.add(Constants.SHORT_MONDAY_TITTLE);
-        if (binding.cbTuesday.isChecked()) checkedDaysOfWeek.add(Constants.SHORT_TUESDAY_TITTLE);
-        if (binding.cbWednesday.isChecked()) checkedDaysOfWeek.add(Constants.SHORT_WEDNESDAY_TITTLE);
-        if (binding.cbThursday.isChecked()) checkedDaysOfWeek.add(Constants.SHORT_THURSDAY_TITTLE);
-        if (binding.cbFriday.isChecked()) checkedDaysOfWeek.add(Constants.SHORT_FRIDAY_TITTLE);
-        if (binding.cbSaturday.isChecked()) checkedDaysOfWeek.add(Constants.SHORT_SATURDAY_TITTLE);
-        if (binding.cbSunday.isChecked()) checkedDaysOfWeek.add(Constants.SHORT_SUNDAY_TITTLE);
-
-        return checkedDaysOfWeek;
     }
 
     @SuppressLint("SetTextI18n")

@@ -21,6 +21,13 @@ public class DatabaseManager {
     }
 
     public void saveAlarmClock(ScheduledAlarm newItem) {
-
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                ScheduledAlarmDao alarmDao = App.getInstance().getScheduledAlarmClockDao();
+                alarmDao.insertNewScheduledAlarmClock(newItem);
+            }
+        }.start();
     }
 }

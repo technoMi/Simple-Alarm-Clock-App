@@ -26,7 +26,7 @@ public class Tools {
 
     public static long getTimeInMillis(long dateInMillis, int hour, int minute) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        //calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         calendar.setTimeInMillis(dateInMillis);
 
         calendar.set(Calendar.HOUR_OF_DAY, hour);
