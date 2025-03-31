@@ -16,6 +16,7 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -31,6 +32,10 @@ import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
 import com.mi.simple_alarm_clock_app.database.ScheduledAlarmDao;
+import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.ui.fragments.List.ListAdapter;
+
+import java.util.ArrayList;
 
 public class AlarmListFragment extends Fragment implements MenuProvider  {
 
@@ -131,6 +136,19 @@ public class AlarmListFragment extends Fragment implements MenuProvider  {
 //
 //        timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
 //    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ArrayList<Alarm> alarms = (ArrayList<Alarm>) App.getInstance().getScheduledAlarmClockDao().getAllAlarmClocks();
+
+        ListAdapter adapter = new ListAdapter(context, alarms);
+
+        binding.rvAlarmList.setLayoutManager(new LinearLayoutManager(context));
+        binding.rvAlarmList.setAdapter(adapter);
+    }
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {

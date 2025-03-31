@@ -33,7 +33,8 @@ public class App extends Application  {
                     getApplicationContext(),
                     AppDatabase.class,
                     "database.db"
-            ).build();
+                    // TODO убрать разрешение на запросы в главном потоке
+            ).allowMainThreadQueries().build();
         }
     }
 }
