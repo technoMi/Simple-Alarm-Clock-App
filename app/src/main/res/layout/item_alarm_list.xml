@@ -1,68 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="120dp"
+    android:layout_margin="5dp"
+    android:background="@drawable/alarm_list_item_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="5dp"
-        android:background="@drawable/alarm_list_item_bg">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvAlarmName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="Назsfsdfsdfsdsdfsdfssdfsdfsdfsdsdfsdsdfsdfвание"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textColor="@color/white"
+                    android:textSize="19sp" />
+
+                <TextView
+                    android:id="@+id/tvAlarmTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="23:59"
+                    android:textColor="@color/white"
+                    android:textSize="22sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.9"
+            android:gravity="center_vertical|end">
 
             <TextView
-                android:id="@+id/tvAlarmName"
+                android:id="@+id/tvDaysOfWeek"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="20dp"
-                android:text="Название"
+                android:layout_weight="1"
+                android:layout_marginEnd="15dp"
+                android:gravity="end"
+                android:text="ПН ВТ СР ЧТ ПТ СБ"
                 android:textColor="@color/white"
-                android:textSize="24sp"/>
+                android:textSize="11sp" />
 
-            <TextView
-                android:id="@+id/tvAlarmTime"
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/enableSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginBottom="20dp"
-                android:text="23:59"
-                android:textColor="@color/white"
-                android:textSize="24sp"/>
+                android:layout_marginEnd="20dp"
+                app:thumbTint="?attr/colorPrimary"
+                app:trackDecorationTint="@android:color/transparent"
+                app:trackTint="@color/white" />
 
         </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginRight="30dp">
-
-        <TextView
-            android:id="@+id/tvDaysOfWeek"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ПН ВТ"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            android:layout_marginEnd="15dp"/>
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/enableSwitch"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:trackDecorationTint="@android:color/transparent"
-            app:trackTint="@color/white"
-            app:thumbTint="?attr/colorPrimary" />
-
-    </LinearLayout>
-
 </FrameLayout>
