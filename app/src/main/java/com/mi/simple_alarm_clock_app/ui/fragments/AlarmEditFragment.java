@@ -118,8 +118,8 @@ public class AlarmEditFragment extends Fragment {
                 hour = timeInfoForAlarm.getHour();
                 minute = timeInfoForAlarm.getMinute();
             } catch (NullPointerException e) {
-                hour = 0;
-                minute = 0;
+                hour = -1;
+                minute = -1;
             }
 
             String name = String.valueOf(binding.etAlarmName.getText());

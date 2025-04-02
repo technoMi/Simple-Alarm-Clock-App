@@ -10,6 +10,7 @@ import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 public class Tools {
@@ -25,7 +26,7 @@ public class Tools {
     }
 
     public static long getTimeInMillis(long dateInMillis, int hour, int minute) {
-        if (dateInMillis != 0 && hour != 0 && minute != 0) {
+        if (dateInMillis != 0 && hour != -1 && minute != -1) {
             Calendar calendar = Calendar.getInstance();
             //calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
             calendar.setTimeInMillis(dateInMillis);
@@ -39,6 +40,21 @@ public class Tools {
         } else {
             return 0;
         }
+    }
+
+    public static String getStringOfHourAndMinuteFromMillis(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        String formattedHour = (hour < 10) ? ("0" + hour) : String.valueOf(hour);
+        String formattedMinute = (minute < 10) ? ("0" + minute) : String.valueOf(minute);
+
+        String hourAndMinute = formattedHour + ":" + formattedMinute;
+
+        return hourAndMinute;
     }
 
     public static void showToast(Context context, String text) {

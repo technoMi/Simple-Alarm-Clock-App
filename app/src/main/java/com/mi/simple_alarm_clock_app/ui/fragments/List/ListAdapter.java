@@ -11,9 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mi.simple_alarm_clock_app.R;
+import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
@@ -39,7 +41,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Alarm alarm = alarms.get(position);
-        holder.alarmName.setText(alarm.getName());
+
+
+        holder.alarmName.setText(getAlarmNameTittle(alarm.getName()));
+        holder.alarmTime.setText(Tools.getStringOfHourAndMinuteFromMillis(alarm.getTimeInMillis()));
         holder.enableSwitch.setChecked(alarm.isEnabled());
     }
 
@@ -62,5 +67,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             daysOfWeek = itemView.findViewById(R.id.tvDaysOfWeek);
             enableSwitch = itemView.findViewById(R.id.enableSwitch);
         }
+    }
+
+    private String getAlarmNameTittle(String name) {
+        return (name.equals("") ? context.getString(R.string.alarm_no_name) : name);
     }
 }
