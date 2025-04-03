@@ -84,6 +84,7 @@ public class AlarmEditFragment extends Fragment {
             timePicker.addOnPositiveButtonClickListener(pV -> {
                 scheduledAlarm.setHour(timePicker.getHour());
                 scheduledAlarm.setMinute(timePicker.getMinute());
+
                 updateAlarmInfoOnTheScreen();
             });
         });
@@ -192,29 +193,12 @@ public class AlarmEditFragment extends Fragment {
                     binding.cbTuesday.setChecked(alarm.isTuesday());
                     binding.cbWednesday.setChecked(alarm.isWednesday());
                     binding.cbThursday.setChecked(alarm.isThursday());
+                    binding.cbFriday.setChecked(alarm.isFriday());
                     binding.cbSaturday.setChecked(alarm.isSaturday());
                     binding.cbSunday.setChecked(alarm.isSunday());
                 });
             }
         }.start();
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void updateAlarmInfoOnTheScreen() {
-//        if (scheduledAlarm != null) {
-//            if (timeInfoForAlarm.getHour() != -1 && timeInfoForAlarm.getMinute() != -1) {
-//                String hour = String.valueOf(timeInfoForAlarm.getHour());
-//                String formattedHour = Tools.getFormattedTimeForAlarmClock(hour);
-//
-//                String minute = String.valueOf(timeInfoForAlarm.getMinute());
-//                String formattedMinute = Tools.getFormattedTimeForAlarmClock(minute);
-//
-//                binding.tvTime.setText(formattedHour + ":" + formattedMinute);
-//            }
-//            if (timeInfoForAlarm.getDateTittle() != null) {
-//                binding.tvAlarmDate.setText(timeInfoForAlarm.getDateTittle());
-//            }
-//        }
     }
 
     private void clearDaysOfWeekCheckBoxes() {
