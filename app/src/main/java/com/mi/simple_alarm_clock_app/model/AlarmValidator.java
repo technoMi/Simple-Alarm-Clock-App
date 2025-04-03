@@ -7,7 +7,7 @@ public class AlarmValidator {
 
         int numberOfSecondsInDay = 86400;
 
-        if (a.getDayTimeInMillis() > 0) {
+        if (a.getDateTimeInMillis() > 0) {
             return true;
         } else return (a.isMonday() || a.isTuesday() || a.isWednesday() || a.isThursday()
                 || a.isFriday() || a.isSaturday() || a.isSunday());

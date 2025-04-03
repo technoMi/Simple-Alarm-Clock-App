@@ -31,8 +31,8 @@ public class AlarmClockManager {
 
         int hour = alarmInfo.getHour();
         int minute = alarmInfo.getMinute();
-        long dayTimeInMillies = alarmInfo.getDayTimeInMillis();
-        long time = Tools.getTimeInMillis(dayTimeInMillies, hour, minute);
+        long dateTimeInMillis = alarmInfo.getDateTimeInMillis();
+        long time = Tools.getTimeInMillis(dateTimeInMillis, hour, minute);
 
         AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(
                 time, alarmAppInfo

@@ -51,7 +51,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Alarm alarm = alarms.get(position);
         holder.alarmName.setText(getAlarmNameTittle(alarm.getName()));
-        holder.alarmTime.setText(Tools.getStringOfHourAndMinuteFromMillis(alarm.getTimeInMillis()));
+        holder.alarmTime.setText(Tools.getStringOfHourAndMinuteFromMillis(alarm.getDateTimeInMillis()));
         holder.enableSwitch.setChecked(alarm.isEnabled());
         holder.daysOfWeek.setText(getDaysOfWeekTittle(alarm));
 
@@ -68,7 +68,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
             Bundle alarmBundle = new Bundle();
             alarmBundle.putInt("id", alarm.getId());
-            
+
             Navigation.findNavController(activity, R.id.fragmentContainerView).navigate(
                     R.id.action_firstFragment_to_alarmEditFragment,
                     alarmBundle

@@ -21,12 +21,12 @@ public class Alarm {
             boolean isFriday,
             boolean isSaturday,
             boolean isSunday
-            ) {
+    ) {
         this.id = id;
         this.name = name;
         this.hour = hour;
         this.minute = minute;
-        this.timeInMillis = dateTimeInMillis;
+        this.dateTimeInMillis = dateTimeInMillis;
         this.isEnabled = isEnabled;
         this.isMonday = isMonday;
         this.isTuesday = isTuesday;
@@ -36,7 +36,7 @@ public class Alarm {
         this.isSaturday = isSaturday;
         this.isSunday = isSunday;
     }
-    
+
     public Alarm() {
         // empty
     }
@@ -99,7 +99,7 @@ public class Alarm {
         return minute;
     }
 
-    public long getDayTimeInMillis() {
+    public long getDateTimeInMillis() {
         return dateTimeInMillis;
     }
 
@@ -153,7 +153,7 @@ public class Alarm {
         this.minute = minute;
     }
 
-    public void setDayTimeInMillis(long timeInMillis) {
+    public void setDateTimeInMillis(long timeInMillis) {
         this.dateTimeInMillis = timeInMillis;
     }
 

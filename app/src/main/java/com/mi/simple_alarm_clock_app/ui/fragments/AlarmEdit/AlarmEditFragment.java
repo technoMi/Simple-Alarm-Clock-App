@@ -45,7 +45,7 @@ public class AlarmEditFragment extends Fragment {
         @Override
         public void onClick(View view) {
             binding.tvAlarmDate.setText(getString(R.string.certain_time_tittle));
-            scheduledAlarm.setDayTimeInMillis(0);
+            scheduledAlarm.setDateTimeInMillis(0);
         }
     };
 
@@ -94,7 +94,7 @@ public class AlarmEditFragment extends Fragment {
             datePicker.show(requireActivity().getSupportFragmentManager(), "date_picker");
 
             datePicker.addOnPositiveButtonClickListener(selection -> {
-                scheduledAlarm.setDayTimeInMillis(selection);
+                scheduledAlarm.setDateTimeInMillis(selection);
                 clearDaysOfWeekCheckBoxes();
                 updateAlarmInfoOnTheScreen();
             });
@@ -108,7 +108,7 @@ public class AlarmEditFragment extends Fragment {
         binding.btnSave.setOnClickListener(v -> {
             long dateTimeInMillis;
             try {
-                dateTimeInMillis = scheduledAlarm.getDayTimeInMillis();
+                dateTimeInMillis = scheduledAlarm.getDateTimeInMillis();
             } catch (NullPointerException e) {
                 dateTimeInMillis = 0;
             }
@@ -141,7 +141,7 @@ public class AlarmEditFragment extends Fragment {
 
             scheduledAlarm.setHour(hour);
             scheduledAlarm.setMinute(minute);
-            scheduledAlarm.setDayTimeInMillis(dateTimeInMillis);
+            scheduledAlarm.setDateTimeInMillis(dateTimeInMillis);
 
             scheduledAlarm.setMonday(mondayChecked);
             scheduledAlarm.setTuesday(tuesdayChecked);
@@ -186,7 +186,7 @@ public class AlarmEditFragment extends Fragment {
 
                 new Handler(Looper.getMainLooper()).post(() -> {
 
-                    binding.tvTime.setText(Tools.getStringOfHourAndMinuteFromMillis(alarm.getTimeInMillis()));
+                    binding.tvTime.setText(Tools.getStringOfHourAndMinuteFromMillis(alarm.getDateTimeInMillis()));
                     binding.etAlarmName.setText(alarm.getName());
                     binding.cbMonday.setChecked(alarm.isMonday());
                     binding.cbTuesday.setChecked(alarm.isTuesday());
@@ -201,20 +201,20 @@ public class AlarmEditFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     private void updateAlarmInfoOnTheScreen() {
-        if (scheduledAlarm != null) {
-            if (timeInfoForAlarm.getHour() != -1 && timeInfoForAlarm.getMinute() != -1) {
-                String hour = String.valueOf(timeInfoForAlarm.getHour());
-                String formattedHour = Tools.getFormattedTimeForAlarmClock(hour);
-
-                String minute = String.valueOf(timeInfoForAlarm.getMinute());
-                String formattedMinute = Tools.getFormattedTimeForAlarmClock(minute);
-
-                binding.tvTime.setText(formattedHour + ":" + formattedMinute);
-            }
-            if (timeInfoForAlarm.getDateTittle() != null) {
-                binding.tvAlarmDate.setText(timeInfoForAlarm.getDateTittle());
-            }
-        }
+//        if (scheduledAlarm != null) {
+//            if (timeInfoForAlarm.getHour() != -1 && timeInfoForAlarm.getMinute() != -1) {
+//                String hour = String.valueOf(timeInfoForAlarm.getHour());
+//                String formattedHour = Tools.getFormattedTimeForAlarmClock(hour);
+//
+//                String minute = String.valueOf(timeInfoForAlarm.getMinute());
+//                String formattedMinute = Tools.getFormattedTimeForAlarmClock(minute);
+//
+//                binding.tvTime.setText(formattedHour + ":" + formattedMinute);
+//            }
+//            if (timeInfoForAlarm.getDateTittle() != null) {
+//                binding.tvAlarmDate.setText(timeInfoForAlarm.getDateTittle());
+//            }
+//        }
     }
 
     private void clearDaysOfWeekCheckBoxes() {
