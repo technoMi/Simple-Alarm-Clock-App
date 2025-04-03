@@ -33,11 +33,12 @@ import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
 import com.mi.simple_alarm_clock_app.database.ScheduledAlarmDao;
 import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.ui.fragments.List.AdapterItemListener;
 import com.mi.simple_alarm_clock_app.ui.fragments.List.ListAdapter;
 
 import java.util.ArrayList;
 
-public class AlarmListFragment extends Fragment implements MenuProvider  {
+public class AlarmListFragment extends Fragment implements MenuProvider, AdapterItemListener {
 
     private FragmentAlarmListBinding binding;
 
@@ -113,30 +114,10 @@ public class AlarmListFragment extends Fragment implements MenuProvider  {
         });
     }
 
-//    @SuppressLint("StaticFieldLeak")
-//    private void createTimePicker() {
-//        MaterialTimePicker timePicker = Tools.getTimePickerFragment();
-//
-//        timePicker.addOnPositiveButtonClickListener(tpView -> {
-//            int hour = timePicker.getHour();
-//            int minute = timePicker.getMinute();
-//            AlarmManager manager = new AlarmManager(context);
-//            manager.setAlarmClock(Tools.getTimeInMillis(hour, minute));
-//
-//            new Thread() {
-//                @Override
-//                public void run() {
-//                    ScheduledAlarm alarmCLock = new ScheduledAlarm();
-//                    alarmCLock.timeOfDay = Tools.getTimeInMillis(hour, minute);
-//                    databaseDao.insertNewScheduledAlarmClock(alarmCLock);
-//                    super.run();
-//                }
-//            }.start();
-//        });
-//
-//        timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
-//    }
+    @Override
+    public void onItemClick(int position) {
 
+    }
 
     @Override
     public void onResume() {
@@ -144,7 +125,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider  {
 
         ArrayList<Alarm> alarms = (ArrayList<Alarm>) App.getInstance().getScheduledAlarmClockDao().getAllAlarmClocks();
 
-        ListAdapter adapter = new ListAdapter(context, alarms);
+        ListAdapter adapter = new ListAdapter(requireActivity(), context, alarms);
 
         binding.rvAlarmList.setLayoutManager(new LinearLayoutManager(context));
         binding.rvAlarmList.setAdapter(adapter);

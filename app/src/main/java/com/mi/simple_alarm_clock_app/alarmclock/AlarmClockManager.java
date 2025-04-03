@@ -51,4 +51,11 @@ public class AlarmClockManager {
 
         return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE);
     }
+
+    public void canselAlarmClockInSystemManager(Alarm alarmInfo) {
+
+        PendingIntent alarmPendingIntent = getAlarmPendingIntent(alarmInfo);
+
+        alarmManager.cancel(alarmPendingIntent);
+    }
 }

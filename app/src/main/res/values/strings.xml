@@ -4,4 +4,15 @@
     <string name="request_permission">Пожалуйста, разрешите приложению отправлять уведомления</string>
     <string name="invalid_form">Минимально требуется указать время, а также дату или дни недели</string>
     <string name="certain_time_tittle">По определённым дням</string>
+    <string name="alarm_no_name">Без названия</string>
+
+    <string name="monday_short_tittle">ПН</string>
+    <string name="tuesday_short_tittle">ВТ</string>
+    <string name="wednesday_short_tittle">СР</string>
+    <string name="thursday_short_tittle">ЧТ</string>
+    <string name="friday_short_tittle">ПТ</string>
+    <string name="saturday_short_tittle">СБ</string>
+    <string name="sunday_short_tittle">ВС</string>
+
+    <string name="everyday_mode_tittle">Ежедневно</string>
 </resources>

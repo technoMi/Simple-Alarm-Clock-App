@@ -1,19 +1,25 @@
 package com.mi.simple_alarm_clock_app.ui.fragments.List;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.receivers.Actions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,11 +27,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private List<Alarm> alarms;
 
+    private Activity activity;
+
     private final Context context;
 
     private LayoutInflater inflater;
 
-    public ListAdapter(Context context, List<Alarm> alarms) {
+    public ListAdapter(Activity activity, Context context, List<Alarm> alarms) {
+        this.activity = activity;
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.alarms = alarms;
@@ -41,11 +50,30 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Alarm alarm = alarms.get(position);
-
-
         holder.alarmName.setText(getAlarmNameTittle(alarm.getName()));
         holder.alarmTime.setText(Tools.getStringOfHourAndMinuteFromMillis(alarm.getTimeInMillis()));
         holder.enableSwitch.setChecked(alarm.isEnabled());
+        holder.daysOfWeek.setText(getDaysOfWeekTittle(alarm));
+
+        holder.enableSwitch.setOnClickListener(v -> {
+            AlarmClockManager manager = new AlarmClockManager(context);
+            if (holder.enableSwitch.isChecked()) {
+                manager.setAlarmClockInSystemManager(alarm);
+            } else {
+                manager.canselAlarmClockInSystemManager(alarm);
+            }
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+
+            Bundle alarmBundle = new Bundle();
+            alarmBundle.putInt("id", alarm.getId());
+            
+            Navigation.findNavController(activity, R.id.fragmentContainerView).navigate(
+                    R.id.action_firstFragment_to_alarmEditFragment,
+                    alarmBundle
+            );
+        });
     }
 
     @Override
@@ -54,7 +82,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         TextView alarmName;
         TextView alarmTime;
         TextView daysOfWeek;
@@ -71,5 +98,27 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private String getAlarmNameTittle(String name) {
         return (name.equals("") ? context.getString(R.string.alarm_no_name) : name);
+    }
+
+    private String getDaysOfWeekTittle(Alarm a) {
+
+        StringBuilder sb = new StringBuilder();
+
+        boolean allChecked = a.isMonday() && a.isTuesday() && a.isWednesday() && a.isThursday()
+                && a.isFriday() && a.isSaturday() && a.isSunday();
+
+        if (allChecked) {
+            return context.getString(R.string.everyday_mode_tittle);
+        }
+
+        if (a.isMonday()) sb.append(context.getString(R.string.monday_short_tittle)).append(" ");
+        if (a.isSaturday()) sb.append(context.getString(R.string.tuesday_short_tittle)).append(" ");;
+        if (a.isWednesday()) sb.append(context.getString(R.string.wednesday_short_tittle)).append(" ");;
+        if (a.isThursday()) sb.append(context.getString(R.string.thursday_short_tittle)).append(" ");;
+        if (a.isFriday()) sb.append(context.getString(R.string.friday_short_tittle)).append(" ");;
+        if (a.isSaturday()) sb.append(context.getString(R.string.saturday_short_tittle)).append(" ");;
+        if (a.isSunday()) sb.append(context.getString(R.string.sunday_short_tittle));
+
+        return sb.toString();
     }
 }

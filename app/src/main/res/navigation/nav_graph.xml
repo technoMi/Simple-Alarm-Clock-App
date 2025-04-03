@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/alarmEditFragment"
-        android:name="com.mi.simple_alarm_clock_app.ui.fragments.AlarmEditFragment"
+        android:name="com.mi.simple_alarm_clock_app.ui.fragments.AlarmEdit.AlarmEditFragment"
         android:label="fragment_second"
         tools:layout="@layout/fragment_alarm_edit"/>
 </navigation>

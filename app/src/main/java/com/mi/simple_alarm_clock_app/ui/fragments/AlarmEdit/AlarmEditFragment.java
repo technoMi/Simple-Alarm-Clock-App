@@ -1,4 +1,4 @@
-package com.mi.simple_alarm_clock_app.ui.fragments;
+package com.mi.simple_alarm_clock_app.ui.fragments.AlarmEdit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,13 +10,15 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
+import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
@@ -64,6 +66,11 @@ public class AlarmEditFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        Bundle alarmBundle = getArguments();
+        if (alarmBundle != null) {
+            setInViewsInformationFromBundle(alarmBundle);
+        }
 
         binding.btnSetTime.setOnClickListener(stV -> {
             MaterialTimePicker timePicker = Tools.getTimePickerFragment();
@@ -173,6 +180,22 @@ public class AlarmEditFragment extends Fragment {
         binding.cbSunday.setOnClickListener(daysOfWeekCheckBoxesOnClickListener);
 
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    private void setInViewsInformationFromBundle(Bundle alarmBundle) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                int id = alarmBundle.getInt("id");
+                Alarm alarm = App.getInstance().getScheduledAlarmClockDao().getAllAlarmClocks().get(id);
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+
+                });
+            }
+        }.start();
     }
 
     @SuppressLint("SetTextI18n")
