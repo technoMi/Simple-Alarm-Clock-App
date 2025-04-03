@@ -10,7 +10,9 @@ public class Alarm {
     public Alarm(
             int id,
             String name,
-            long timeInMillis,
+            int hour,
+            int minute,
+            long dateTimeInMillis,
             boolean isEnabled,
             boolean isMonday,
             boolean isTuesday,
@@ -22,7 +24,9 @@ public class Alarm {
             ) {
         this.id = id;
         this.name = name;
-        this.timeInMillis = timeInMillis;
+        this.hour = hour;
+        this.minute = minute;
+        this.timeInMillis = dateTimeInMillis;
         this.isEnabled = isEnabled;
         this.isMonday = isMonday;
         this.isTuesday = isTuesday;
@@ -32,40 +36,52 @@ public class Alarm {
         this.isSaturday = isSaturday;
         this.isSunday = isSunday;
     }
+    
+    public Alarm() {
+        // empty
+    }
 
     @ColumnInfo
     @PrimaryKey
-    private final int id;
+    private int id;
 
     @ColumnInfo
-    private final String name;
+    private String name;
 
     @ColumnInfo
-    private final long timeInMillis;
+    private int hour;
 
     @ColumnInfo
-    private final boolean isEnabled;
+    private int minute;
 
     @ColumnInfo
-    private final boolean isMonday;
+    private long dateTimeInMillis;
 
     @ColumnInfo
-    private final boolean isTuesday;
+    private boolean isEnabled;
 
     @ColumnInfo
-    private final boolean isWednesday;
+    private boolean isMonday;
 
     @ColumnInfo
-    private final boolean isThursday;
+    private boolean isTuesday;
 
     @ColumnInfo
-    private final boolean isFriday;
+    private boolean isWednesday;
 
     @ColumnInfo
-    private final boolean isSaturday;
+    private boolean isThursday;
 
     @ColumnInfo
-    private final boolean isSunday;
+    private boolean isFriday;
+
+    @ColumnInfo
+    private boolean isSaturday;
+
+    @ColumnInfo
+    private boolean isSunday;
+
+    // Getters
 
     public int getId() {
         return id;
@@ -75,8 +91,16 @@ public class Alarm {
         return name;
     }
 
-    public long getTimeInMillis() {
-        return timeInMillis;
+    public int getHour() {
+        return hour;
+    }
+
+    public int getMinute() {
+        return minute;
+    }
+
+    public long getDayTimeInMillis() {
+        return dateTimeInMillis;
     }
 
     public boolean isEnabled() {
@@ -109,5 +133,59 @@ public class Alarm {
 
     public boolean isSunday() {
         return isSunday;
+    }
+
+    // Setters
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setHour(int hour) {
+        this.hour = hour;
+    }
+
+    public void setMinute(int minute) {
+        this.minute = minute;
+    }
+
+    public void setDayTimeInMillis(long timeInMillis) {
+        this.dateTimeInMillis = timeInMillis;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    public void setMonday(boolean monday) {
+        isMonday = monday;
+    }
+
+    public void setTuesday(boolean tuesday) {
+        isTuesday = tuesday;
+    }
+
+    public void setWednesday(boolean wednesday) {
+        isWednesday = wednesday;
+    }
+
+    public void setThursday(boolean thursday) {
+        isThursday = thursday;
+    }
+
+    public void setFriday(boolean friday) {
+        isFriday = friday;
+    }
+
+    public void setSaturday(boolean saturday) {
+        isSaturday = saturday;
+    }
+
+    public void setSunday(boolean sunday) {
+        isSunday = sunday;
     }
 }

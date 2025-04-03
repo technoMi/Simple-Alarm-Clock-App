@@ -20,6 +20,9 @@ public interface ScheduledAlarmDao {
     @Delete(entity = Alarm.class)
     void deleteScheduledAlarmClock(Alarm alarmClock);
 
-    @Query("SELECT EXISTS(SELECT 1 FROM Alarm WHERE id == :requestedId)")
-    boolean doesItemExistById(int requestedId);
+    @Query("SELECT * FROM Alarm WHERE id == :id")
+    Alarm getItemById(int id);
+
+    @Query("SELECT EXISTS(SELECT 1 FROM Alarm WHERE id == :id)")
+    boolean doesItemExistById(int id);
 }

@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.receivers.Actions;
 import com.mi.simple_alarm_clock_app.receivers.AlarmReceiver;
@@ -27,8 +28,14 @@ public class AlarmClockManager {
 
     private void setPendingAlarm(Alarm alarmInfo) {
         PendingIntent alarmAppInfo = getAlarmAppInfoIntent();
+
+        int hour = alarmInfo.getHour();
+        int minute = alarmInfo.getMinute();
+        long dayTimeInMillies = alarmInfo.getDayTimeInMillis();
+        long time = Tools.getTimeInMillis(dayTimeInMillies, hour, minute);
+
         AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(
-                alarmInfo.getTimeInMillis(), alarmAppInfo
+                time, alarmAppInfo
         );
 
         PendingIntent alarmPendingIntent = getAlarmPendingIntent(alarmInfo);
