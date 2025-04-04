@@ -50,8 +50,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Alarm alarm = alarms.get(position);
+
         holder.alarmName.setText(getAlarmNameTittle(alarm.getName()));
-        holder.alarmTime.setText(Tools.getStringOfHourAndMinuteFromMillis(alarm.getDateTimeInMillis()));
+
+        int hour = alarm.getHour();
+        int minute = alarm.getMinute();
+        holder.alarmTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
+
         holder.enableSwitch.setChecked(alarm.isEnabled());
         holder.daysOfWeek.setText(getDaysOfWeekTittle(alarm));
 

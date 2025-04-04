@@ -4,9 +4,6 @@ import java.util.ArrayList;
 
 public class AlarmValidator {
     public static boolean isValidate(Alarm a) {
-
-        int numberOfSecondsInDay = 86400;
-
         if (a.getDateTimeInMillis() > 0) {
             return true;
         } else return (a.isMonday() || a.isTuesday() || a.isWednesday() || a.isThursday()

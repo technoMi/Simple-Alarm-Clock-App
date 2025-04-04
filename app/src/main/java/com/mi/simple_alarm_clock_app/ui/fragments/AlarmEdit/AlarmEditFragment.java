@@ -1,6 +1,5 @@
 package com.mi.simple_alarm_clock_app.ui.fragments.AlarmEdit;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -22,9 +21,7 @@ import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
-import com.mi.simple_alarm_clock_app.alarmclock.TimeInfoForAlarm;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
-import com.mi.simple_alarm_clock_app.database.ScheduledAlarmDao;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmEditBinding;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.AlarmValidator;
@@ -74,32 +71,15 @@ public class AlarmEditFragment extends Fragment {
         Bundle alarmBundle = getArguments();
         if (alarmBundle != null) {
             setInViewsInformationFromBundle(alarmBundle);
+            initScheduledAlarmFromBundle(alarmBundle);
         }
 
         binding.btnSetTime.setOnClickListener(stV -> {
-            MaterialTimePicker timePicker = Tools.getTimePickerFragment();
-
-            timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
-
-            timePicker.addOnPositiveButtonClickListener(pV -> {
-                scheduledAlarm.setHour(timePicker.getHour());
-                scheduledAlarm.setMinute(timePicker.getMinute());
-
-                updateAlarmInfoOnTheScreen();
-            });
+            createTimePicker();
         });
 
         binding.btnSetDate.setOnClickListener(sdV -> {
-            MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker().build();
-
-            datePicker.show(requireActivity().getSupportFragmentManager(), "date_picker");
-
-            datePicker.addOnPositiveButtonClickListener(selection -> {
-                scheduledAlarm.setDateTimeInMillis(selection);
-                clearDaysOfWeekCheckBoxes();
-                updateAlarmInfoOnTheScreen();
-            });
-
+            createDatePicker();
         });
 
         binding.btnCansel.setOnClickListener(v -> {
@@ -107,62 +87,7 @@ public class AlarmEditFragment extends Fragment {
         });
 
         binding.btnSave.setOnClickListener(v -> {
-            long dateTimeInMillis;
-            try {
-                dateTimeInMillis = scheduledAlarm.getDateTimeInMillis();
-            } catch (NullPointerException e) {
-                dateTimeInMillis = 0;
-            }
-
-            int hour;
-            int minute;
-            try {
-                hour = scheduledAlarm.getHour();
-                minute = scheduledAlarm.getMinute();
-            } catch (NullPointerException e) {
-                hour = -1;
-                minute = -1;
-            }
-
-            String name = String.valueOf(binding.etAlarmName.getText());
-
-            boolean mondayChecked = binding.cbMonday.isChecked();
-            boolean tuesdayChecked = binding.cbTuesday.isChecked();
-            boolean wednesdayChecked = binding.cbWednesday.isChecked();
-            boolean thursdayChecked = binding.cbThursday.isChecked();
-            boolean fridayChecked = binding.cbFriday.isChecked();
-            boolean saturdayChecked = binding.cbSaturday.isChecked();
-            boolean sundayChecked = binding.cbSunday.isChecked();
-
-            int id = DatabaseManager.getNewItemID();
-
-            scheduledAlarm.setId(id);
-            scheduledAlarm.setName(name);
-            scheduledAlarm.setEnabled(true);
-
-            scheduledAlarm.setHour(hour);
-            scheduledAlarm.setMinute(minute);
-            scheduledAlarm.setDateTimeInMillis(dateTimeInMillis);
-
-            scheduledAlarm.setMonday(mondayChecked);
-            scheduledAlarm.setTuesday(tuesdayChecked);
-            scheduledAlarm.setWednesday(wednesdayChecked);
-            scheduledAlarm.setThursday(thursdayChecked);
-            scheduledAlarm.setFriday(fridayChecked);
-            scheduledAlarm.setSaturday(saturdayChecked);
-            scheduledAlarm.setSunday(sundayChecked);
-
-            if (AlarmValidator.isValidate(scheduledAlarm)) {
-                AlarmClockManager alarmManager = new AlarmClockManager(context);
-                alarmManager.setAlarmClockInSystemManager(scheduledAlarm);
-
-                DatabaseManager dbManager = new DatabaseManager();
-                dbManager.saveAlarmClock(scheduledAlarm);
-
-                navController.popBackStack();
-            } else {
-                Tools.showToast(context, getString(R.string.invalid_form));
-            }
+            saveAlarm();
         });
 
         binding.cbMonday.setOnClickListener(daysOfWeekCheckBoxesOnClickListener);
@@ -183,12 +108,32 @@ public class AlarmEditFragment extends Fragment {
                 super.run();
 
                 int id = alarmBundle.getInt("id");
-                Alarm alarm = App.getInstance().getScheduledAlarmClockDao().getItemById(id);
+                DatabaseManager manager = new DatabaseManager();
+                Alarm alarm = manager.getAlarmClockById(id);
 
                 new Handler(Looper.getMainLooper()).post(() -> {
 
-                    binding.tvTime.setText(Tools.getStringOfHourAndMinuteFromMillis(alarm.getDateTimeInMillis()));
+                    scheduledAlarm.setName(alarm.getName());
+
+                    int hour = alarm.getHour();
+                    int minute = alarm.getMinute();
+
+                    scheduledAlarm.setHour(hour);
+                    scheduledAlarm.setMinute(minute);
+                    scheduledAlarm.setDateTimeInMillis(alarm.getDateTimeInMillis());
+
+                    scheduledAlarm.setMonday(alarm.isMonday());
+                    scheduledAlarm.setTuesday(alarm.isTuesday());
+                    scheduledAlarm.setWednesday(alarm.isWednesday());
+                    scheduledAlarm.setThursday(alarm.isThursday());
+                    scheduledAlarm.setFriday(alarm.isFriday());
+                    scheduledAlarm.setSaturday(alarm.isSaturday());
+                    scheduledAlarm.setSunday(alarm.isSunday());
+
+                    binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
+
                     binding.etAlarmName.setText(alarm.getName());
+
                     binding.cbMonday.setChecked(alarm.isMonday());
                     binding.cbTuesday.setChecked(alarm.isTuesday());
                     binding.cbWednesday.setChecked(alarm.isWednesday());
@@ -199,6 +144,137 @@ public class AlarmEditFragment extends Fragment {
                 });
             }
         }.start();
+    }
+
+    private void initScheduledAlarmFromBundle(Bundle alarmBundle) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                int id = alarmBundle.getInt("id");
+                Alarm alarm = App.getInstance().getScheduledAlarmClockDao().getItemById(id);
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+
+                    scheduledAlarm.setId(id);
+
+                    scheduledAlarm.setName(alarm.getName());
+
+                    scheduledAlarm.setHour(alarm.getHour());
+                    scheduledAlarm.setMinute(alarm.getMinute());
+                    scheduledAlarm.setDateTimeInMillis(alarm.getDateTimeInMillis());
+
+                    scheduledAlarm.setMonday(alarm.isMonday());
+                    scheduledAlarm.setTuesday(alarm.isTuesday());
+                    scheduledAlarm.setWednesday(alarm.isWednesday());
+                    scheduledAlarm.setThursday(alarm.isThursday());
+                    scheduledAlarm.setFriday(alarm.isFriday());
+                    scheduledAlarm.setSaturday(alarm.isSaturday());
+                    scheduledAlarm.setSunday(alarm.isSunday());
+                });
+            }
+        }.start();
+    }
+
+    private void createTimePicker() {
+        MaterialTimePicker timePicker = Tools.getTimePickerFragment();
+
+        timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
+
+        timePicker.addOnPositiveButtonClickListener(pV -> {
+            int hour = timePicker.getHour();
+            int minute = timePicker.getMinute();
+
+            scheduledAlarm.setHour(hour);
+            scheduledAlarm.setMinute(minute);
+
+            binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
+        });
+    }
+
+    private void createDatePicker() {
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker().build();
+
+        datePicker.show(requireActivity().getSupportFragmentManager(), "date_picker");
+
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            scheduledAlarm.setDateTimeInMillis(selection);
+
+            binding.tvAlarmDate.setText(datePicker.getHeaderText());
+
+            clearDaysOfWeekCheckBoxes();
+        });
+    }
+
+    private void saveAlarm() {
+        long dateTimeInMillis;
+
+        dateTimeInMillis = scheduledAlarm.getDateTimeInMillis();
+        if (dateTimeInMillis == 0) {
+            dateTimeInMillis = Tools.getTodayDateTimeInMillis();
+        }
+
+        int hour;
+        int minute;
+        try {
+            hour = scheduledAlarm.getHour();
+            minute = scheduledAlarm.getMinute();
+        } catch (NullPointerException e) {
+            hour = -1;
+            minute = -1;
+        }
+
+        String name = String.valueOf(binding.etAlarmName.getText());
+
+        boolean mondayChecked = binding.cbMonday.isChecked();
+        boolean tuesdayChecked = binding.cbTuesday.isChecked();
+        boolean wednesdayChecked = binding.cbWednesday.isChecked();
+        boolean thursdayChecked = binding.cbThursday.isChecked();
+        boolean fridayChecked = binding.cbFriday.isChecked();
+        boolean saturdayChecked = binding.cbSaturday.isChecked();
+        boolean sundayChecked = binding.cbSunday.isChecked();
+
+        if (getArguments() == null) {
+            int id = DatabaseManager.getNewItemID();
+            scheduledAlarm.setId(id);
+        }
+
+        scheduledAlarm.setName(name);
+        scheduledAlarm.setEnabled(true);
+
+        scheduledAlarm.setHour(hour);
+        scheduledAlarm.setMinute(minute);
+        scheduledAlarm.setDateTimeInMillis(dateTimeInMillis);
+
+        scheduledAlarm.setMonday(mondayChecked);
+        scheduledAlarm.setTuesday(tuesdayChecked);
+        scheduledAlarm.setWednesday(wednesdayChecked);
+        scheduledAlarm.setThursday(thursdayChecked);
+        scheduledAlarm.setFriday(fridayChecked);
+        scheduledAlarm.setSaturday(saturdayChecked);
+        scheduledAlarm.setSunday(sundayChecked);
+
+        if (AlarmValidator.isValidate(scheduledAlarm)) {
+            AlarmClockManager alarmManager = new AlarmClockManager(context);
+            DatabaseManager dbManager = new DatabaseManager();
+
+            if (getArguments() != null) {
+                alarmManager.canselAlarmClockInSystemManager(scheduledAlarm);
+            }
+
+            alarmManager.setAlarmClockInSystemManager(scheduledAlarm);
+
+            if (getArguments() != null) {
+                dbManager.updateAlarmClock(scheduledAlarm);
+            } else {
+                dbManager.saveAlarmClock(scheduledAlarm);
+            }
+
+            navController.popBackStack();
+        } else {
+            Tools.showToast(context, getString(R.string.invalid_form));
+        }
     }
 
     private void clearDaysOfWeekCheckBoxes() {

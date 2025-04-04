@@ -6,10 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.mi.simple_alarm_clock_app.Tools;
+import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.receivers.Actions;
 import com.mi.simple_alarm_clock_app.receivers.AlarmReceiver;
 import com.mi.simple_alarm_clock_app.ui.activities.MainActivity;
+
+import java.util.Calendar;
 
 public class AlarmClockManager {
 
@@ -64,5 +67,25 @@ public class AlarmClockManager {
         PendingIntent alarmPendingIntent = getAlarmPendingIntent(alarmInfo);
 
         alarmManager.cancel(alarmPendingIntent);
+    }
+
+    public void recalculateTimeForAlarmClock(Alarm alarm) {
+
+        DatabaseManager dbManager = new DatabaseManager();
+        AlarmClockManager acManager = new AlarmClockManager(context);
+
+        acManager.canselAlarmClockInSystemManager(alarm);
+
+        // todo Как будто можно элегантнее сделать, а не просто на следующий день переносить
+        long alarmDateTimeInMillis = alarm.getDateTimeInMillis();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(alarmDateTimeInMillis);
+        calendar.add(Calendar.DAY_OF_WEEK, 1);
+
+        alarm.setDateTimeInMillis(calendar.getTimeInMillis());
+
+        acManager.setAlarmClockInSystemManager(alarm);
+        dbManager.updateAlarmClock(alarm);
     }
 }

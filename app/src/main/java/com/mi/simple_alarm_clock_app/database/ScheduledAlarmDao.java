@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.mi.simple_alarm_clock_app.model.Alarm;
 
@@ -25,4 +26,7 @@ public interface ScheduledAlarmDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM Alarm WHERE id == :id)")
     boolean doesItemExistById(int id);
+
+    @Update(entity = Alarm.class)
+    void updateScheduledAlarmClock(Alarm alarmClock);
 }

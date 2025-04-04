@@ -11,6 +11,7 @@ import com.google.android.material.timepicker.TimeFormat;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class Tools {
@@ -42,26 +43,48 @@ public class Tools {
         }
     }
 
-    public static String getStringOfHourAndMinuteFromMillis(long time) {
+    public static long getTodayDateTimeInMillis() {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(time);
 
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH);
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
 
-        String formattedHour = (hour < 10) ? ("0" + hour) : String.valueOf(hour);
-        String formattedMinute = (minute < 10) ? ("0" + minute) : String.valueOf(minute);
+        calendar.set(Calendar.YEAR, currentYear);
+        calendar.set(Calendar.MONTH, currentMonth);
+        calendar.set(Calendar.DAY_OF_MONTH, currentDay);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-        String hourAndMinute = formattedHour + ":" + formattedMinute;
-
-        return hourAndMinute;
+        return calendar.getTimeInMillis();
     }
+
+//    public static String getHourAndMinuteTittleFromMillis(long time) {
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(time);
+//
+//        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+//        int minute = calendar.get(Calendar.MINUTE);
+//
+//        String formattedHour = (hour < 10) ? ("0" + hour) : String.valueOf(hour);
+//        String formattedMinute = (minute < 10) ? ("0" + minute) : String.valueOf(minute);
+//
+//        return formattedHour + ":" + formattedMinute;
+//    }
 
     public static void showToast(Context context, String text) {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
 
-    public static String getFormattedTimeForAlarmClock(String time) {
+    public static String getFormattedTittleFromHourAndMinute(int hour, int minute) {
+        String formattedHour = getFormattedTimeForAlarmClock(String.valueOf(hour));
+        String formattedMinute = getFormattedTimeForAlarmClock(String.valueOf(minute));
+        return formattedHour + ":" + formattedMinute;
+    }
+
+    private static String getFormattedTimeForAlarmClock(String time) {
         String formattedTime;
         if (time.equals("0")) {
             formattedTime = "00";
