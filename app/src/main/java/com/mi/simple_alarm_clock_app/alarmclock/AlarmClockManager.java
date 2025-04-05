@@ -72,20 +72,31 @@ public class AlarmClockManager {
     public void recalculateTimeForAlarmClock(Alarm alarm) {
 
         DatabaseManager dbManager = new DatabaseManager();
-        AlarmClockManager acManager = new AlarmClockManager(context);
 
-        acManager.canselAlarmClockInSystemManager(alarm);
+        canselAlarmClockInSystemManager(alarm);
 
-        // todo Как будто можно элегантнее сделать, а не просто на следующий день переносить
         long alarmDateTimeInMillis = alarm.getDateTimeInMillis();
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(alarmDateTimeInMillis);
-        calendar.add(Calendar.DAY_OF_WEEK, 1);
+
+        int nextDayOfWeek = 0;
+        do {
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
+            int i = calendar.get(Calendar.DAY_OF_WEEK);
+
+            if (alarm.isSunday() && i == Calendar.SUNDAY) nextDayOfWeek = 1;
+            if (alarm.isMonday() && i == Calendar.MONDAY) nextDayOfWeek = 2;
+            if (alarm.isSaturday() && i == Calendar.SATURDAY) nextDayOfWeek = 3;
+            if (alarm.isWednesday() && i == Calendar.WEDNESDAY) nextDayOfWeek = 4;
+            if (alarm.isThursday() && i == Calendar.THURSDAY) nextDayOfWeek = 5;
+            if (alarm.isFriday() && i == Calendar.FRIDAY) nextDayOfWeek = 6;
+            if (alarm.isSaturday() && i == Calendar.SATURDAY) nextDayOfWeek = 7;
+        } while (calendar.get(Calendar.DAY_OF_WEEK) != nextDayOfWeek);
 
         alarm.setDateTimeInMillis(calendar.getTimeInMillis());
 
-        acManager.setAlarmClockInSystemManager(alarm);
+        setAlarmClockInSystemManager(alarm);
         dbManager.updateAlarmClock(alarm);
     }
 }

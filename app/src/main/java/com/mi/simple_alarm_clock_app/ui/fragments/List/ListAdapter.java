@@ -117,7 +117,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         }
 
         if (a.isMonday()) sb.append(context.getString(R.string.monday_short_tittle)).append(" ");
-        if (a.isSaturday()) sb.append(context.getString(R.string.tuesday_short_tittle)).append(" ");;
+        if (a.isTuesday()) sb.append(context.getString(R.string.tuesday_short_tittle)).append(" ");;
         if (a.isWednesday()) sb.append(context.getString(R.string.wednesday_short_tittle)).append(" ");;
         if (a.isThursday()) sb.append(context.getString(R.string.thursday_short_tittle)).append(" ");;
         if (a.isFriday()) sb.append(context.getString(R.string.friday_short_tittle)).append(" ");;
