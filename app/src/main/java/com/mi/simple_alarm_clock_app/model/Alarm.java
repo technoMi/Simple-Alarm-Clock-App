@@ -14,6 +14,7 @@ public class Alarm {
             int minute,
             long dateTimeInMillis,
             boolean isEnabled,
+            boolean isRepeating,
             boolean isMonday,
             boolean isTuesday,
             boolean isWednesday,
@@ -28,6 +29,7 @@ public class Alarm {
         this.minute = minute;
         this.dateTimeInMillis = dateTimeInMillis;
         this.isEnabled = isEnabled;
+        this.isRepeating = isRepeating;
         this.isMonday = isMonday;
         this.isTuesday = isTuesday;
         this.isWednesday = isWednesday;
@@ -59,6 +61,9 @@ public class Alarm {
 
     @ColumnInfo
     private boolean isEnabled;
+
+    @ColumnInfo
+    private boolean isRepeating;
 
     @ColumnInfo
     private boolean isMonday;
@@ -105,6 +110,10 @@ public class Alarm {
 
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    public boolean isRepeating() {
+        return isRepeating;
     }
 
     public boolean isMonday() {
@@ -159,6 +168,10 @@ public class Alarm {
 
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
+    }
+
+    public void setRepeating(boolean enabled) {
+        isRepeating = enabled;
     }
 
     public void setMonday(boolean monday) {
