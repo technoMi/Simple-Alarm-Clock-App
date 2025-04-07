@@ -25,6 +25,8 @@ import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmEditBinding;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.AlarmValidator;
+import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
+import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 
 public class AlarmEditFragment extends Fragment {
 
@@ -43,7 +45,6 @@ public class AlarmEditFragment extends Fragment {
         public void onClick(View view) {
             binding.tvAlarmDate.setText(getString(R.string.certain_time_tittle));
             scheduledAlarm.setDateTimeInMillis(0);
-
         }
     };
 
@@ -71,8 +72,8 @@ public class AlarmEditFragment extends Fragment {
 
         Bundle alarmBundle = getArguments();
         if (alarmBundle != null) {
-            initScheduledAlarmFromBundle(alarmBundle);
             setInViewsInformationFromBundle(alarmBundle);
+            initScheduledAlarmFromBundle(alarmBundle);
         }
 
         binding.btnSetTime.setOnClickListener(stV -> {
@@ -108,22 +109,39 @@ public class AlarmEditFragment extends Fragment {
             public void run() {
                 super.run();
 
+                int id = alarmBundle.getInt("id");
+                Alarm alarm = new DatabaseManager().(id);
+
                 new Handler(Looper.getMainLooper()).post(() -> {
 
-                    int hour = scheduledAlarm.getHour();
-                    int minute = scheduledAlarm.getMinute();
+                    scheduledAlarm.setName(alarm.getName());
+
+                    int hour = alarm.getHour();
+                    int minute = alarm.getMinute();
+
+                    scheduledAlarm.setHour(hour);
+                    scheduledAlarm.setMinute(minute);
+                    scheduledAlarm.setDateTimeInMillis(alarm.getDateTimeInMillis());
+
+                    scheduledAlarm.setMonday(alarm.isMonday());
+                    scheduledAlarm.setTuesday(alarm.isTuesday());
+                    scheduledAlarm.setWednesday(alarm.isWednesday());
+                    scheduledAlarm.setThursday(alarm.isThursday());
+                    scheduledAlarm.setFriday(alarm.isFriday());
+                    scheduledAlarm.setSaturday(alarm.isSaturday());
+                    scheduledAlarm.setSunday(alarm.isSunday());
 
                     binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
 
-                    binding.etAlarmName.setText(scheduledAlarm.getName());
+                    binding.etAlarmName.setText(alarm.getName());
 
-                    binding.cbMonday.setChecked(scheduledAlarm.isMonday());
-                    binding.cbTuesday.setChecked(scheduledAlarm.isTuesday());
-                    binding.cbWednesday.setChecked(scheduledAlarm.isWednesday());
-                    binding.cbThursday.setChecked(scheduledAlarm.isThursday());
-                    binding.cbFriday.setChecked(scheduledAlarm.isFriday());
-                    binding.cbSaturday.setChecked(scheduledAlarm.isSaturday());
-                    binding.cbSunday.setChecked(scheduledAlarm.isSunday());
+                    binding.cbMonday.setChecked(alarm.isMonday());
+                    binding.cbTuesday.setChecked(alarm.isTuesday());
+                    binding.cbWednesday.setChecked(alarm.isWednesday());
+                    binding.cbThursday.setChecked(alarm.isThursday());
+                    binding.cbFriday.setChecked(alarm.isFriday());
+                    binding.cbSaturday.setChecked(alarm.isSaturday());
+                    binding.cbSunday.setChecked(alarm.isSunday());
                 });
             }
         }.start();
@@ -136,9 +154,34 @@ public class AlarmEditFragment extends Fragment {
                 super.run();
 
                 int id = alarmBundle.getInt("id");
-                Alarm alarm = new DatabaseManager().getAlarmClockById(id);
+                String type = alarmBundle.getString("type");
 
-                scheduledAlarm = alarm;
+                final Alarm alarm;
+
+                if (type.equals(SingleAlarm.class.getSimpleName())) {
+                    alarm = new DatabaseManager().getSingleAlarmById(id);
+                } else {
+                    alarm = new DatabaseManager().getRepeatingAlarmById(id);
+                }
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+
+                    scheduledAlarm.setId(id);
+
+                    scheduledAlarm.setName(alarm.getName());
+
+                    scheduledAlarm.setHour(alarm.getHour());
+                    scheduledAlarm.setMinute(alarm.getMinute());
+                    scheduledAlarm.setDateTimeInMillis(alarm.getDateTimeInMillis());
+
+                    scheduledAlarm.setMonday(alarm.isMonday());
+                    scheduledAlarm.setTuesday(alarm.isTuesday());
+                    scheduledAlarm.setWednesday(alarm.isWednesday());
+                    scheduledAlarm.setThursday(alarm.isThursday());
+                    scheduledAlarm.setFriday(alarm.isFriday());
+                    scheduledAlarm.setSaturday(alarm.isSaturday());
+                    scheduledAlarm.setSunday(alarm.isSunday());
+                });
             }
         }.start();
     }

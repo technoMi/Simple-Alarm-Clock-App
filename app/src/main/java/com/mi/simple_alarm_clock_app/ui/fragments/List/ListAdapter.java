@@ -17,6 +17,8 @@ import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
+import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import com.mi.simple_alarm_clock_app.receivers.Actions;
 
 import java.util.ArrayList;
@@ -49,16 +51,26 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
         Alarm alarm = alarms.get(position);
+
+        if (alarm instanceof SingleAlarm) {
+            // do nothing
+        }
+        if (alarm instanceof RepeatingAlarm) {
+            holder.daysOfWeek.setText(getDaysOfWeekTittle((RepeatingAlarm) alarm));
+        }
 
         holder.alarmName.setText(getAlarmNameTittle(alarm.getName()));
 
-        int hour = alarm.getHour();
-        int minute = alarm.getMinute();
-        holder.alarmTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
+        int hour = Tools.getHourFromMillis(alarm.getTimeInMillis());
+        int minute = Tools.getMinuteFromMillis(alarm.getTimeInMillis());
+
+        String alarmTimeTittle = Tools.getFormattedTittleFromHourAndMinute(hour, minute);
+
+        holder.alarmTime.setText(alarmTimeTittle);
 
         holder.enableSwitch.setChecked(alarm.isEnabled());
-        holder.daysOfWeek.setText(getDaysOfWeekTittle(alarm));
 
         holder.enableSwitch.setOnClickListener(v -> {
             AlarmClockManager manager = new AlarmClockManager(context);
@@ -73,6 +85,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
             Bundle alarmBundle = new Bundle();
             alarmBundle.putInt("id", alarm.getId());
+            alarmBundle.putString("type", alarm.getClass().getSimpleName());
 
             Navigation.findNavController(activity, R.id.fragmentContainerView).navigate(
                     R.id.action_firstFragment_to_alarmEditFragment,
@@ -105,7 +118,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         return (name.equals("") ? context.getString(R.string.alarm_no_name) : name);
     }
 
-    private String getDaysOfWeekTittle(Alarm a) {
+    private String getDaysOfWeekTittle(RepeatingAlarm a) {
 
         StringBuilder sb = new StringBuilder();
 

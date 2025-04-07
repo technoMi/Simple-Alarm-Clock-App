@@ -20,60 +20,53 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             Alarm alarm = getAlarmClockFromDbById(alarmId);
 
-            boolean allow = getLaunchPermission(alarm);
+            Intent alarmActivityIntent = new Intent(context, AlarmActivity.class);
+            alarmActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(alarmActivityIntent);
 
-            if (allow) {
-                Intent alarmActivityIntent = new Intent(context, AlarmActivity.class);
-                alarmActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(alarmActivityIntent);
-
-                determineAlarmCLockRelevance(alarm, context);
-            }
+            determineAlarmCLockRelevance(alarm, context);
         }
     }
 
-    private boolean getLaunchPermission(Alarm a) {
-
-        boolean notSingle = (a.isMonday() || a.isTuesday() || a.isWednesday() || a.isThursday() ||
-                a.isFriday() || a.isSaturday() || a.isSunday());
-
-        if (notSingle) {
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(a.getDateTimeInMillis());
-            int dayOfWeekNumber = calendar.get(Calendar.DAY_OF_WEEK);
-
-            if (dayOfWeekNumber == 1 && a.isSunday()) return true;
-            if (dayOfWeekNumber == 2 && a.isMonday()) return true;
-            if (dayOfWeekNumber == 3 && a.isTuesday()) return true;
-            if (dayOfWeekNumber == 4 && a.isWednesday()) return true;
-            if (dayOfWeekNumber == 5 && a.isThursday()) return true;
-            if (dayOfWeekNumber == 6 && a.isFriday()) return true;
-            if (dayOfWeekNumber == 7 && a.isSaturday()) return true;
-
-        } else {
-            // For single alarm
-            return true;
-        }
-        return false;
-    }
+//    private boolean getLaunchPermission(Alarm a) {
+//
+//        boolean notSingle = (a.isMonday() || a.isTuesday() || a.isWednesday() || a.isThursday() ||
+//                a.isFriday() || a.isSaturday() || a.isSunday());
+//
+//        if (notSingle) {
+//
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTimeInMillis(a.getDateTimeInMillis());
+//            int dayOfWeekNumber = calendar.get(Calendar.DAY_OF_WEEK);
+//
+//            if (dayOfWeekNumber == 1 && a.isSunday()) return true;
+//            if (dayOfWeekNumber == 2 && a.isMonday()) return true;
+//            if (dayOfWeekNumber == 3 && a.isTuesday()) return true;
+//            if (dayOfWeekNumber == 4 && a.isWednesday()) return true;
+//            if (dayOfWeekNumber == 5 && a.isThursday()) return true;
+//            if (dayOfWeekNumber == 6 && a.isFriday()) return true;
+//            if (dayOfWeekNumber == 7 && a.isSaturday()) return true;
+//
+//        } else {
+//            // For single alarm
+//            return true;
+//        }
+//        return false;
+//    }
 
     private Alarm getAlarmClockFromDbById(int id) {
         DatabaseManager dbManager = new DatabaseManager();
         return dbManager.getAlarmClockById(id);
     }
 
-    private void determineAlarmCLockRelevance(Alarm a, Context context) {
+    private void determineAlarmCLockRelevance(Alarm alarm, Context context) {
+        AlarmClockManager acManager = new AlarmClockManager(context);
+        DatabaseManager dbManager = new DatabaseManager();
 
-        boolean notSingle = (a.isMonday() || a.isTuesday() || a.isWednesday() || a.isThursday() ||
-                a.isFriday() || a.isSaturday() || a.isSunday());
-
-        if (notSingle) {
-            AlarmClockManager acManager = new AlarmClockManager(context);
-            acManager.recalculateTimeForAlarmClock(a);
+        if (alarm.isRepeating()) {
+            acManager.recalculateTimeForAlarmClock(alarm);
         } else {
-            DatabaseManager dbManager = new DatabaseManager();
-            dbManager.deleteAlarmClock(a);
+            dbManager.deleteAlarmClock(alarm);
         }
     }
 }
