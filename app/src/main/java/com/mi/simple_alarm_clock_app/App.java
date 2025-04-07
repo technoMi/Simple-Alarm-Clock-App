@@ -5,7 +5,8 @@ import android.app.Application;
 import androidx.room.Room;
 
 import com.mi.simple_alarm_clock_app.database.AppDatabase;
-import com.mi.simple_alarm_clock_app.database.ScheduledAlarmDao;
+import com.mi.simple_alarm_clock_app.database.RepeatingAlarmDao;
+import com.mi.simple_alarm_clock_app.database.SingleAlarmDao;
 
 public class App extends Application  {
 
@@ -18,8 +19,12 @@ public class App extends Application  {
         return instance;
     }
 
-    public ScheduledAlarmDao getScheduledAlarmClockDao() {
-        return database.getScheduledAlarmClockDao();
+    public SingleAlarmDao getSingleAlarmDao() {
+        return database.getSingleAlarmDao();
+    }
+
+    public RepeatingAlarmDao getRepeatingAlarmDao() {
+        return database.getRepeatingAlarmDao();
     }
 
     @Override

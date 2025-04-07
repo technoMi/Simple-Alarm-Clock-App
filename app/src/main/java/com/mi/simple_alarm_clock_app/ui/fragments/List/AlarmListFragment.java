@@ -30,15 +30,14 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
+import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
-import com.mi.simple_alarm_clock_app.database.ScheduledAlarmDao;
 import com.mi.simple_alarm_clock_app.model.Alarm;
-import com.mi.simple_alarm_clock_app.ui.fragments.List.AdapterItemListener;
 import com.mi.simple_alarm_clock_app.ui.fragments.List.ListAdapter;
 
 import java.util.ArrayList;
 
-public class AlarmListFragment extends Fragment implements MenuProvider, AdapterItemListener {
+public class AlarmListFragment extends Fragment implements MenuProvider {
 
     private FragmentAlarmListBinding binding;
 
@@ -48,15 +47,11 @@ public class AlarmListFragment extends Fragment implements MenuProvider, Adapter
 
     private ActivityResultLauncher<String> requestPermissionResult;
 
-    private ScheduledAlarmDao databaseDao;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         context = requireContext();
-
-        databaseDao = App.getInstance().getScheduledAlarmClockDao();
 
         requestPermissionResult = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -115,15 +110,10 @@ public class AlarmListFragment extends Fragment implements MenuProvider, Adapter
     }
 
     @Override
-    public void onItemClick(int position) {
-
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
-        ArrayList<Alarm> alarms = (ArrayList<Alarm>) App.getInstance().getScheduledAlarmClockDao().getAllAlarmClocks();
+        ArrayList<Alarm> alarms = new DatabaseManager().getAllAlarms();
 
         ListAdapter adapter = new ListAdapter(requireActivity(), context, alarms);
 

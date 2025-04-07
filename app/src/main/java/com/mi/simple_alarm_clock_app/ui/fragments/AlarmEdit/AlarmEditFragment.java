@@ -43,6 +43,7 @@ public class AlarmEditFragment extends Fragment {
         public void onClick(View view) {
             binding.tvAlarmDate.setText(getString(R.string.certain_time_tittle));
             scheduledAlarm.setDateTimeInMillis(0);
+
         }
     };
 
@@ -70,8 +71,8 @@ public class AlarmEditFragment extends Fragment {
 
         Bundle alarmBundle = getArguments();
         if (alarmBundle != null) {
-            setInViewsInformationFromBundle(alarmBundle);
             initScheduledAlarmFromBundle(alarmBundle);
+            setInViewsInformationFromBundle(alarmBundle);
         }
 
         binding.btnSetTime.setOnClickListener(stV -> {
@@ -107,40 +108,22 @@ public class AlarmEditFragment extends Fragment {
             public void run() {
                 super.run();
 
-                int id = alarmBundle.getInt("id");
-                DatabaseManager manager = new DatabaseManager();
-                Alarm alarm = manager.getAlarmClockById(id);
-
                 new Handler(Looper.getMainLooper()).post(() -> {
 
-                    scheduledAlarm.setName(alarm.getName());
-
-                    int hour = alarm.getHour();
-                    int minute = alarm.getMinute();
-
-                    scheduledAlarm.setHour(hour);
-                    scheduledAlarm.setMinute(minute);
-                    scheduledAlarm.setDateTimeInMillis(alarm.getDateTimeInMillis());
-
-                    scheduledAlarm.setMonday(alarm.isMonday());
-                    scheduledAlarm.setTuesday(alarm.isTuesday());
-                    scheduledAlarm.setWednesday(alarm.isWednesday());
-                    scheduledAlarm.setThursday(alarm.isThursday());
-                    scheduledAlarm.setFriday(alarm.isFriday());
-                    scheduledAlarm.setSaturday(alarm.isSaturday());
-                    scheduledAlarm.setSunday(alarm.isSunday());
+                    int hour = scheduledAlarm.getHour();
+                    int minute = scheduledAlarm.getMinute();
 
                     binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
 
-                    binding.etAlarmName.setText(alarm.getName());
+                    binding.etAlarmName.setText(scheduledAlarm.getName());
 
-                    binding.cbMonday.setChecked(alarm.isMonday());
-                    binding.cbTuesday.setChecked(alarm.isTuesday());
-                    binding.cbWednesday.setChecked(alarm.isWednesday());
-                    binding.cbThursday.setChecked(alarm.isThursday());
-                    binding.cbFriday.setChecked(alarm.isFriday());
-                    binding.cbSaturday.setChecked(alarm.isSaturday());
-                    binding.cbSunday.setChecked(alarm.isSunday());
+                    binding.cbMonday.setChecked(scheduledAlarm.isMonday());
+                    binding.cbTuesday.setChecked(scheduledAlarm.isTuesday());
+                    binding.cbWednesday.setChecked(scheduledAlarm.isWednesday());
+                    binding.cbThursday.setChecked(scheduledAlarm.isThursday());
+                    binding.cbFriday.setChecked(scheduledAlarm.isFriday());
+                    binding.cbSaturday.setChecked(scheduledAlarm.isSaturday());
+                    binding.cbSunday.setChecked(scheduledAlarm.isSunday());
                 });
             }
         }.start();
@@ -153,26 +136,9 @@ public class AlarmEditFragment extends Fragment {
                 super.run();
 
                 int id = alarmBundle.getInt("id");
-                Alarm alarm = App.getInstance().getScheduledAlarmClockDao().getItemById(id);
+                Alarm alarm = new DatabaseManager().getAlarmClockById(id);
 
-                new Handler(Looper.getMainLooper()).post(() -> {
-
-                    scheduledAlarm.setId(id);
-
-                    scheduledAlarm.setName(alarm.getName());
-
-                    scheduledAlarm.setHour(alarm.getHour());
-                    scheduledAlarm.setMinute(alarm.getMinute());
-                    scheduledAlarm.setDateTimeInMillis(alarm.getDateTimeInMillis());
-
-                    scheduledAlarm.setMonday(alarm.isMonday());
-                    scheduledAlarm.setTuesday(alarm.isTuesday());
-                    scheduledAlarm.setWednesday(alarm.isWednesday());
-                    scheduledAlarm.setThursday(alarm.isThursday());
-                    scheduledAlarm.setFriday(alarm.isFriday());
-                    scheduledAlarm.setSaturday(alarm.isSaturday());
-                    scheduledAlarm.setSunday(alarm.isSunday());
-                });
+                scheduledAlarm = alarm;
             }
         }.start();
     }
