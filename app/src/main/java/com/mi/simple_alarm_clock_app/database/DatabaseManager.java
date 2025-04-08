@@ -4,6 +4,7 @@ import androidx.room.Entity;
 
 import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.model.AlarmTypes;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 
@@ -99,12 +100,12 @@ public class DatabaseManager {
     }
 
 
-    public static int getNewAlarmEntityItemID(Entity entity) {
+    public static int getNewAlarmEntityItemID(AlarmTypes type) {
 
-        if (entity instanceof SingleAlarm) {
+        if (type.equals(AlarmTypes.SINGLE)) {
             return getNewSingleAlarmItemID();
         }
-        if (entity instanceof RepeatingAlarm) {
+        if (type.equals(AlarmTypes.REPEATING)) {
             return getNewRepeatingAlarmItemID();
         }
 

@@ -6,6 +6,32 @@ import androidx.room.Entity;
 @Entity(tableName = "repeating_alarms")
 public class RepeatingAlarm extends Alarm {
 
+    public RepeatingAlarm(
+            int id,
+            String name,
+            long timeInMillis,
+            boolean isEnabled,
+            boolean isMonday,
+            boolean isTuesday,
+            boolean isWednesday,
+            boolean isThursday,
+            boolean isFriday,
+            boolean isSaturday,
+            boolean isSunday) {
+        super(id, name, timeInMillis, isEnabled);
+        this.isMonday = isMonday;
+        this.isTuesday = isTuesday;
+        this.isWednesday = isWednesday;
+        this.isThursday = isThursday;
+        this.isFriday = isFriday;
+        this.isSaturday = isSaturday;
+        this.isSunday = isSunday;
+    }
+
+    public RepeatingAlarm() {
+        // empty
+    }
+
     @ColumnInfo
     private boolean isMonday;
 

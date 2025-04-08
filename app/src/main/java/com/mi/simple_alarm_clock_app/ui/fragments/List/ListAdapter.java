@@ -17,6 +17,7 @@ import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.model.AlarmTypes;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import com.mi.simple_alarm_clock_app.receivers.Actions;
@@ -85,7 +86,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
             Bundle alarmBundle = new Bundle();
             alarmBundle.putInt("id", alarm.getId());
-            alarmBundle.putString("type", alarm.getClass().getSimpleName());
+
+            AlarmTypes alarmType = (alarm instanceof SingleAlarm) ? AlarmTypes.SINGLE : AlarmTypes.REPEATING;
+
+            alarmBundle.putString("type", alarmType.toString());
 
             Navigation.findNavController(activity, R.id.fragmentContainerView).navigate(
                     R.id.action_firstFragment_to_alarmEditFragment,
