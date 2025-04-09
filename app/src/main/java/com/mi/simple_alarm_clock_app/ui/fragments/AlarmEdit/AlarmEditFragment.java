@@ -52,7 +52,7 @@ public class AlarmEditFragment extends Fragment {
         @Override
         public void onClick(View view) {
             binding.tvAlarmDate.setText(getString(R.string.certain_time_tittle));
-            scheduledAlarm.setDateTimeInMillis(0);
+            typeOfScheduledAlarm = AlarmTypes.REPEATING;
         }
     };
 
@@ -174,9 +174,6 @@ public class AlarmEditFragment extends Fragment {
             int hour = timePicker.getHour();
             int minute = timePicker.getMinute();
 
-            scheduledAlarm.setHour(hour);
-            scheduledAlarm.setMinute(minute);
-
             binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
         });
     }
@@ -187,7 +184,7 @@ public class AlarmEditFragment extends Fragment {
         datePicker.show(requireActivity().getSupportFragmentManager(), "date_picker");
 
         datePicker.addOnPositiveButtonClickListener(selection -> {
-            scheduledAlarm.setDateTimeInMillis(selection);
+            typeOfScheduledAlarm = AlarmTypes.SINGLE;
 
             binding.tvAlarmDate.setText(datePicker.getHeaderText());
 
@@ -196,88 +193,86 @@ public class AlarmEditFragment extends Fragment {
     }
 
     private void saveAlarm() {
-        long dateTimeInMillis;
+        boolean someDaysOfWeekSelected = (
+                binding.cbMonday.isChecked() || binding.cbTuesday.isChecked() ||
+                        binding.cbWednesday.isChecked() || binding.cbThursday.isChecked() ||
+                        binding.cbFriday.isChecked() || binding.cbSaturday.isChecked() ||
+                        binding.cbSunday.isChecked()
+        );
 
+        boolean dateSelected;
         try {
-            dateTimeInMillis = datePicker.getSelection();
+            dateSelected = datePicker.getSelection() != 0;
         } catch (NullPointerException e) {
-            dateTimeInMillis = TimeUtils.getTodayDateTimeInMillis();
+            dateSelected = false;
         }
 
-        //todo проверить, не возвращает ли 0 по умолчанию, чтобы убрать try-catch
-        int hour;
-        int minute;
-        try {
-            hour = timePicker.getHour();
-            minute = timePicker.getMinute();
-        } catch (NullPointerException e) {
-            hour = -1;
-            minute = -1;
-        }
+        boolean isAlarmValidate = (someDaysOfWeekSelected || dateSelected);
 
-        String name = String.valueOf(binding.etAlarmName.getText());
+        if (isAlarmValidate) {
 
+            int id;
+            if (getArguments() == null) {
+                id = DatabaseManager.getNewAlarmEntityItemID(typeOfScheduledAlarm);
+            } else {
+                id = getArguments().getInt("id");
+            }
 
-        if (typeOfScheduledAlarm.equals(AlarmTypes.SINGLE)) {
+            String name = String.valueOf(binding.etAlarmName.getText());
 
+            long dateTimeInMillis;
+            //todo проверить, не возвращает ли 0 по умолчанию, чтобы убрать try-catch
+            int hour;
+            int minute;
+            try {
+                hour = timePicker.getHour();
+                minute = timePicker.getMinute();
+            } catch (NullPointerException e) {
+                hour = -1;
+                minute = -1;
+            }
 
-            SingleAlarm singleAlarm = new SingleAlarm(
-                    id,
-                    name,
-                    dateTimeInMillis,
-                    true
-            );
-        }
+            long alarmTime;
+            boolean isEnabled = true;
 
-        if (typeOfScheduledAlarm.equals(AlarmTypes.REPEATING)) {
+            if (typeOfScheduledAlarm.equals(AlarmTypes.SINGLE)) {
+                dateTimeInMillis = datePicker.getSelection();
+                alarmTime = TimeUtils.getAlarmTimeInMillis(dateTimeInMillis, hour, minute);
 
-            boolean mondayChecked = binding.cbMonday.isChecked();
-            boolean tuesdayChecked = binding.cbTuesday.isChecked();
-            boolean wednesdayChecked = binding.cbWednesday.isChecked();
-            boolean thursdayChecked = binding.cbThursday.isChecked();
-            boolean fridayChecked = binding.cbFriday.isChecked();
-            boolean saturdayChecked = binding.cbSaturday.isChecked();
-            boolean sundayChecked = binding.cbSunday.isChecked();
+                SingleAlarm singleAlarm = new SingleAlarm(
+                        id,
+                        name,
+                        alarmTime,
+                        true
+                );
+            }
+            if (typeOfScheduledAlarm.equals(AlarmTypes.REPEATING)) {
+                dateTimeInMillis = TimeUtils.getTodayDateTimeInMillis();
+                alarmTime = TimeUtils.getAlarmTimeInMillis(dateTimeInMillis, hour, minute);
 
-            RepeatingAlarm repeatingAlarm = new RepeatingAlarm(
-                    id,
-                    name,
-                    dateTimeInMillis,
-                    true,
-                    mondayChecked,
-                    tuesdayChecked,
-                    wednesdayChecked,
-                    thursdayChecked,
-                    fridayChecked,
-                    saturdayChecked,
-                    sundayChecked
-            );
+                boolean mondayChecked = binding.cbMonday.isChecked();
+                boolean tuesdayChecked = binding.cbTuesday.isChecked();
+                boolean wednesdayChecked = binding.cbWednesday.isChecked();
+                boolean thursdayChecked = binding.cbThursday.isChecked();
+                boolean fridayChecked = binding.cbFriday.isChecked();
+                boolean saturdayChecked = binding.cbSaturday.isChecked();
+                boolean sundayChecked = binding.cbSunday.isChecked();
 
+                RepeatingAlarm repeatingAlarm = new RepeatingAlarm(
+                        id,
+                        name,
+                        alarmTime,
+                        true,
+                        mondayChecked,
+                        tuesdayChecked,
+                        wednesdayChecked,
+                        thursdayChecked,
+                        fridayChecked,
+                        saturdayChecked,
+                        sundayChecked
+                );
+            }
 
-        }
-
-
-        if (getArguments() == null) {
-            int id = DatabaseManager.getNewAlarmEntityItemID(typeOfScheduledAlarm);
-            scheduledAlarm.setId(id);
-        }
-
-        scheduledAlarm.setName(name);
-        scheduledAlarm.setEnabled(true);
-
-        scheduledAlarm.setHour(hour);
-        scheduledAlarm.setMinute(minute);
-        scheduledAlarm.setDateTimeInMillis(dateTimeInMillis);
-
-        scheduledAlarm.setMonday(mondayChecked);
-        scheduledAlarm.setTuesday(tuesdayChecked);
-        scheduledAlarm.setWednesday(wednesdayChecked);
-        scheduledAlarm.setThursday(thursdayChecked);
-        scheduledAlarm.setFriday(fridayChecked);
-        scheduledAlarm.setSaturday(saturdayChecked);
-        scheduledAlarm.setSunday(sundayChecked);
-
-        if (AlarmValidator.isValidate(scheduledAlarm)) {
             AlarmClockManager alarmManager = new AlarmClockManager(context);
             DatabaseManager dbManager = new DatabaseManager();
 
