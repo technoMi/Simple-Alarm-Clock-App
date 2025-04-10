@@ -4,6 +4,7 @@ import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 public class TimeUtils {
     public static long getAlarmTimeInMillis(long dateInMillis, int hour, int minute) {
@@ -61,5 +62,23 @@ public class TimeUtils {
         calendar.set(Calendar.MILLISECOND, 0);
 
         return calendar.getTimeInMillis();
+    }
+
+    public static int getHourFromMillis(long time) {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTimeZone(TimeZone.getDefault());
+
+        calendar.setTimeInMillis(time);
+
+        return calendar.get(Calendar.HOUR_OF_DAY);
+    }
+
+    public static int getMinuteFromMillis(long time) {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTimeInMillis(time);
+
+        return calendar.get(Calendar.MINUTE);
     }
 }

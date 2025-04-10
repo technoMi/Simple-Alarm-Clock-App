@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -130,8 +131,8 @@ public class AlarmEditFragment extends Fragment {
                     new Handler(Looper.getMainLooper()).post(() -> {
                         SingleAlarm alarm = new DatabaseManager().getSingleAlarmById(id);
 
-                        int hour = Tools.getHourFromMillis(alarm.getTimeInMillis());
-                        int minute = Tools.getMinuteFromMillis(alarm.getTimeInMillis());
+                        int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
+                        int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
 
                         binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
 
@@ -143,8 +144,8 @@ public class AlarmEditFragment extends Fragment {
                     new Handler(Looper.getMainLooper()).post(() -> {
                         RepeatingAlarm alarm = new DatabaseManager().getRepeatingAlarmById(id);
 
-                        int hour = Tools.getHourFromMillis(alarm.getTimeInMillis());
-                        int minute = Tools.getMinuteFromMillis(alarm.getTimeInMillis());
+                        int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
+                        int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
 
                         binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
 
@@ -165,8 +166,6 @@ public class AlarmEditFragment extends Fragment {
 
 
     private void createTimePicker() {
-        MaterialTimePicker timePicker = Tools.getTimePickerFragment();
-
         timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
 
         timePicker.addOnPositiveButtonClickListener(pV -> {
@@ -178,8 +177,6 @@ public class AlarmEditFragment extends Fragment {
     }
 
     private void createDatePicker() {
-        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker().build();
-
         datePicker.show(requireActivity().getSupportFragmentManager(), "date_picker");
 
         datePicker.addOnPositiveButtonClickListener(selection -> {

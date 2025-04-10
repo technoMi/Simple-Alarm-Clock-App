@@ -16,6 +16,8 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
+import com.mi.simple_alarm_clock_app.alarmclock.TimeUtils;
+import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.AlarmTypes;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
@@ -64,8 +66,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         holder.alarmName.setText(getAlarmNameTittle(alarm.getName()));
 
-        int hour = Tools.getHourFromMillis(alarm.getTimeInMillis());
-        int minute = Tools.getMinuteFromMillis(alarm.getTimeInMillis());
+        int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
+        int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
 
         String alarmTimeTittle = Tools.getFormattedTittleFromHourAndMinute(hour, minute);
 
@@ -74,12 +76,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         holder.enableSwitch.setChecked(alarm.isEnabled());
 
         holder.enableSwitch.setOnClickListener(v -> {
-            AlarmClockManager manager = new AlarmClockManager(context);
+            alarm.setEnabled(!alarm.isEnabled());
             if (holder.enableSwitch.isChecked()) {
-                manager.setAlarmClockInSystemManager(alarm);
+                new AlarmClockManager(context).setAlarmClockInSystemManager(alarm);
             } else {
-                manager.canselAlarmClockInSystemManager(alarm);
+                new AlarmClockManager(context).canselAlarmClockInSystemManager(alarm);
             }
+
+            new DatabaseManager().updateAlarm(alarm);
         });
 
         holder.itemView.setOnClickListener(v -> {

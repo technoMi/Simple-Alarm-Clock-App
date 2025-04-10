@@ -61,22 +61,6 @@ public class Tools {
         return formattedTime;
     }
 
-    public static int getHourFromMillis(long time) {
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTimeInMillis(time);
-
-        return calendar.get(Calendar.HOUR);
-    }
-
-    public static int getMinuteFromMillis(long time) {
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTimeInMillis(time);
-
-        return calendar.get(Calendar.MINUTE);
-    }
-
     public static boolean getPermissionStatus(Context context, String permission) {
         int status = ContextCompat.checkSelfPermission(context, permission);
         return (status == PackageManager.PERMISSION_GRANTED);
