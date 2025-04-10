@@ -16,7 +16,7 @@ import java.util.List;
 public interface SingleAlarmDao {
 
     @Query("SELECT * FROM single_alarms ORDER BY name DESC")
-    List<Alarm> getAllSingleAlarmClocks();
+    List<SingleAlarm> getAllSingleAlarmClocks();
 
     @Insert(entity = SingleAlarm.class)
     void insertNewScheduledSingleAlarmClock(Alarm alarmClock);

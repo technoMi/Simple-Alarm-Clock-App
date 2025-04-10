@@ -26,7 +26,6 @@ import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmEditBinding;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.AlarmTypes;
-import com.mi.simple_alarm_clock_app.model.AlarmValidator;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 
@@ -243,8 +242,25 @@ public class AlarmEditFragment extends Fragment {
                         id,
                         name,
                         alarmTime,
-                        true
+                        isEnabled
                 );
+
+                // todo избежать повторения кода
+                AlarmClockManager alarmManager = new AlarmClockManager(context);
+                DatabaseManager dbManager = new DatabaseManager();
+
+                if (getArguments() != null) {
+                    alarmManager.canselAlarmClockInSystemManager(singleAlarm);
+                }
+
+                alarmManager.setAlarmClockInSystemManager(singleAlarm);
+
+                if (getArguments() != null) {
+                    dbManager.updateAlarm(singleAlarm);
+                } else {
+                    dbManager.saveAlarm(singleAlarm);
+                }
+
             }
             if (typeOfScheduledAlarm.equals(AlarmTypes.REPEATING)) {
                 dateTimeInMillis = TimeUtils.getTodayDateTimeInMillis();
@@ -262,7 +278,7 @@ public class AlarmEditFragment extends Fragment {
                         id,
                         name,
                         alarmTime,
-                        true,
+                        isEnabled,
                         mondayChecked,
                         tuesdayChecked,
                         wednesdayChecked,
@@ -271,21 +287,22 @@ public class AlarmEditFragment extends Fragment {
                         saturdayChecked,
                         sundayChecked
                 );
-            }
 
-            AlarmClockManager alarmManager = new AlarmClockManager(context);
-            DatabaseManager dbManager = new DatabaseManager();
+                // todo избежать повторения кода
+                AlarmClockManager alarmManager = new AlarmClockManager(context);
+                DatabaseManager dbManager = new DatabaseManager();
 
-            if (getArguments() != null) {
-                alarmManager.canselAlarmClockInSystemManager(scheduledAlarm);
-            }
+                if (getArguments() != null) {
+                    alarmManager.canselAlarmClockInSystemManager(repeatingAlarm);
+                }
 
-            alarmManager.setAlarmClockInSystemManager(scheduledAlarm);
+                alarmManager.setAlarmClockInSystemManager(repeatingAlarm);
 
-            if (getArguments() != null) {
-                dbManager.updateAlarmClock(scheduledAlarm);
-            } else {
-                dbManager.saveAlarmClock(scheduledAlarm);
+                if (getArguments() != null) {
+                    dbManager.updateAlarm(repeatingAlarm);
+                } else {
+                    dbManager.saveAlarm(repeatingAlarm);
+                }
             }
 
             navController.popBackStack();

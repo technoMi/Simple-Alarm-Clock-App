@@ -7,9 +7,10 @@ import android.content.Intent;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.model.AlarmTypes;
+import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
+import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import com.mi.simple_alarm_clock_app.ui.activities.AlarmActivity;
-
-import java.util.Calendar;
 
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
@@ -17,14 +18,15 @@ public class AlarmReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(Actions.ALARM_ACTION)) {
 
             int alarmId = intent.getIntExtra("id", -1);
+            String alarmType = intent.getStringExtra("type");
 
-            Alarm alarm = getAlarmClockFromDbById(alarmId);
+            Alarm alarm = getAlarmFromDbById(alarmId, alarmType);
 
             Intent alarmActivityIntent = new Intent(context, AlarmActivity.class);
             alarmActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(alarmActivityIntent);
 
-            determineAlarmCLockRelevance(alarm, context);
+            determineAlarmRelevance(alarm, context);
         }
     }
 
@@ -54,19 +56,23 @@ public class AlarmReceiver extends BroadcastReceiver {
 //        return false;
 //    }
 
-    private Alarm getAlarmClockFromDbById(int id) {
+    private Alarm getAlarmFromDbById(int id, String alarmType) {
         DatabaseManager dbManager = new DatabaseManager();
-        return dbManager.getAlarmClockById(id);
+        if (alarmType.equals(AlarmTypes.SINGLE.toString())) {
+            return dbManager.getSingleAlarmById(id);
+        } else {
+            return dbManager.getRepeatingAlarmById(id);
+        }
     }
 
-    private void determineAlarmCLockRelevance(Alarm alarm, Context context) {
+    private void determineAlarmRelevance(Alarm alarm, Context context) {
         AlarmClockManager acManager = new AlarmClockManager(context);
         DatabaseManager dbManager = new DatabaseManager();
 
-        if (alarm.isRepeating()) {
-            acManager.recalculateTimeForAlarmClock(alarm);
+        if (alarm instanceof SingleAlarm) {
+            dbManager.deleteAlarm(alarm);
         } else {
-            dbManager.deleteAlarmClock(alarm);
+            acManager.recalculateTimeForAlarmClock(alarm);
         }
     }
 }

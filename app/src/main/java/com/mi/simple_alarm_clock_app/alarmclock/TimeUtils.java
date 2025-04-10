@@ -1,6 +1,7 @@
 package com.mi.simple_alarm_clock_app.alarmclock;
 
 import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 
 import java.util.Calendar;
 
@@ -22,7 +23,7 @@ public class TimeUtils {
         }
     }
 
-    public static long getNextRepeatingAlarmDateTime(Alarm alarm) {
+    public static long getNextRepeatingAlarmDateTime(RepeatingAlarm alarm) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(getTodayDateTimeInMillis());

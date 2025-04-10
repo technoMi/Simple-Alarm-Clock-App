@@ -8,6 +8,7 @@ import android.content.Intent;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.model.AlarmTypes;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import com.mi.simple_alarm_clock_app.receivers.Actions;
@@ -34,15 +35,13 @@ public class AlarmClockManager {
     private void setPendingAlarm(Alarm alarm) {
         PendingIntent alarmAppInfo = getAlarmAppInfoIntent();
 
-        int hour = Tools.getHourFromMillis(alarm.getTimeInMillis());
-        int minute = Tools.getMinuteFromMillis(alarm.getTimeInMillis());
         long alarmTime = 0;
 
         if (alarm instanceof SingleAlarm) {
             alarmTime = alarm.getTimeInMillis();
         }
         if (alarm instanceof RepeatingAlarm) {
-            alarmTime = TimeUtils.getNextRepeatingAlarmDateTime(alarm);
+            alarmTime = TimeUtils.getNextRepeatingAlarmDateTime((RepeatingAlarm) alarm);
         }
 
         AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(
@@ -63,8 +62,11 @@ public class AlarmClockManager {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
         int id = alarmInfo.getId();
+        String alarmType = (alarmInfo instanceof SingleAlarm)
+                ? AlarmTypes.SINGLE.toString() : AlarmTypes.REPEATING.toString();
 
         intent.putExtra("id", alarmInfo.getId());
+        intent.putExtra("type", alarmType);
         intent.setAction(Actions.ALARM_ACTION);
 
         return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE);

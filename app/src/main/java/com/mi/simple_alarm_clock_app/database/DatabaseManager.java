@@ -7,6 +7,7 @@ import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.AlarmTypes;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
+import com.mi.simple_alarm_clock_app.receivers.AlarmReceiver;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,18 +17,17 @@ public class DatabaseManager {
     public ArrayList<Alarm> getAllAlarms() {
         // todo добавить асинхронность
         SingleAlarmDao singleAlarmDao = App.getInstance().getSingleAlarmDao();
-        RepeatingAlarmDao repeatingAlarm = App.getInstance().getRepeatingAlarmDao();
+        RepeatingAlarmDao repeatingAlarmDao = App.getInstance().getRepeatingAlarmDao();
 
         ArrayList<Alarm> allAlarmsList = new ArrayList<>();
-        ArrayList<Alarm> singleAlarmList = (ArrayList<Alarm>) singleAlarmDao.getAllSingleAlarmClocks();
-        ArrayList<Alarm> repeatingAlarmList = (ArrayList<Alarm>) repeatingAlarm.getAllRepeatingAlarmClocks();
+        ArrayList<SingleAlarm> singleAlarmList = (ArrayList<SingleAlarm>) singleAlarmDao.getAllSingleAlarmClocks();
+        ArrayList<RepeatingAlarm> repeatingAlarmList = (ArrayList<RepeatingAlarm>) repeatingAlarmDao.getAllRepeatingAlarmClocks();
 
         allAlarmsList.addAll(singleAlarmList);
         allAlarmsList.addAll(repeatingAlarmList);
 
         return allAlarmsList;
     }
-
 
     public SingleAlarm getSingleAlarmById(int id) {
         // todo добавить асинхронность
@@ -41,8 +41,16 @@ public class DatabaseManager {
         return alarmDao.getItemById(id);
     }
 
+    public void saveAlarm(Alarm alarm) {
+        if (alarm instanceof SingleAlarm) {
+            saveSingleAlarm((SingleAlarm) alarm);
+        }
+        if (alarm instanceof RepeatingAlarm) {
+            saveRepeatingAlarm((RepeatingAlarm) alarm);
+        }
+    }
 
-    public void saveSingleAlarmClock(SingleAlarm newItem) {
+    private void saveSingleAlarm(SingleAlarm newItem) {
         new Thread() {
             @Override
             public void run() {
@@ -53,7 +61,7 @@ public class DatabaseManager {
         }.start();
     }
 
-    public void saveRepeatingAlarmClock(RepeatingAlarm newItem) {
+    private void saveRepeatingAlarm(RepeatingAlarm newItem) {
         new Thread() {
             @Override
             public void run() {
@@ -64,8 +72,16 @@ public class DatabaseManager {
         }.start();
     }
 
+    public void updateAlarm(Alarm alarm) {
+        if (alarm instanceof SingleAlarm) {
+            updateSingleAlarmClock((SingleAlarm) alarm);
+        }
+        if (alarm instanceof RepeatingAlarm) {
+            updateRepeatingAlarmClock((RepeatingAlarm) alarm);
+        }
+    }
 
-    public void updateSingleAlarmClock(SingleAlarm item) {
+    private void updateSingleAlarmClock(SingleAlarm item) {
         new Thread() {
             @Override
             public void run() {
@@ -76,7 +92,7 @@ public class DatabaseManager {
         }.start();
     }
 
-    public void updateRepeatingAlarmClock(RepeatingAlarm item) {
+    private void updateRepeatingAlarmClock(RepeatingAlarm item) {
         new Thread() {
             @Override
             public void run() {
@@ -87,14 +103,33 @@ public class DatabaseManager {
         }.start();
     }
 
+    public void deleteAlarm(Alarm alarm) {
+        if (alarm instanceof SingleAlarm) {
+            deleteSingleAlarm((SingleAlarm) alarm);
+        }
+        if (alarm instanceof RepeatingAlarm) {
+            deleteRepeatingAlarm((RepeatingAlarm) alarm);
+        }
+    }
 
-    public void deleteSingleAlarmClock(SingleAlarm item) {
+    private void deleteSingleAlarm(SingleAlarm item) {
         new Thread() {
             @Override
             public void run() {
                 super.run();
                 SingleAlarmDao alarmDao = App.getInstance().getSingleAlarmDao();
                 alarmDao.deleteScheduledSingleAlarmClock(item);
+            }
+        }.start();
+    }
+
+    private void deleteRepeatingAlarm(RepeatingAlarm item) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                RepeatingAlarmDao alarmDao = App.getInstance().getRepeatingAlarmDao();
+                alarmDao.deleteScheduledRepeatingAlarmClock(item);
             }
         }.start();
     }
@@ -119,7 +154,7 @@ public class DatabaseManager {
         // todo добавить асинхронность
         do {
             newId = new Random().nextInt();
-        } while(alarmDao.doesItemExistById(newId));
+        } while (alarmDao.doesItemExistById(newId));
 
         return newId;
     }
@@ -131,7 +166,7 @@ public class DatabaseManager {
         // todo добавить асинхронность
         do {
             newId = new Random().nextInt();
-        } while(alarmDao.doesItemExistById(newId));
+        } while (alarmDao.doesItemExistById(newId));
 
         return newId;
     }
