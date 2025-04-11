@@ -29,6 +29,7 @@ import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.AlarmTypes;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
+import com.mi.simple_alarm_clock_app.model.TimeConfigForAlarm;
 
 import java.util.Objects;
 
@@ -48,6 +49,8 @@ public class AlarmEditFragment extends Fragment {
 
     private AlarmTypes typeOfScheduledAlarm;
 
+    private Long transmittedAlarmTimeInMillis;
+
     View.OnClickListener daysOfWeekCheckBoxesOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -55,14 +58,6 @@ public class AlarmEditFragment extends Fragment {
             typeOfScheduledAlarm = AlarmTypes.REPEATING;
         }
     };
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        timePicker = Tools.getTimePickerFragment();
-        datePicker = MaterialDatePicker.Builder.datePicker().build();
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -80,9 +75,12 @@ public class AlarmEditFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        timePicker = Tools.getTimePickerFragment();
+        datePicker = MaterialDatePicker.Builder.datePicker().build();
+
         Bundle alarmBundle = getArguments();
         if (alarmBundle != null) {
-            setInViewsInformationFromBundle(alarmBundle);
+            initInformationFromBundle(alarmBundle);
         }
 
         binding.btnSetTime.setOnClickListener(stV -> {
@@ -112,7 +110,8 @@ public class AlarmEditFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void setInViewsInformationFromBundle(Bundle alarmBundle) {
+    private void initInformationFromBundle(Bundle alarmBundle) {
+
         new Thread() {
             @Override
             public void run() {
@@ -126,10 +125,11 @@ public class AlarmEditFragment extends Fragment {
                         )
                 ) ? AlarmTypes.SINGLE : AlarmTypes.REPEATING;
 
-
                 if (typeOfScheduledAlarm.equals(AlarmTypes.SINGLE)) {
                     new Handler(Looper.getMainLooper()).post(() -> {
                         SingleAlarm alarm = new DatabaseManager().getSingleAlarmById(id);
+
+                        transmittedAlarmTimeInMillis = alarm.getTimeInMillis();
 
                         int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
                         int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
@@ -143,6 +143,8 @@ public class AlarmEditFragment extends Fragment {
                 if (typeOfScheduledAlarm.equals(AlarmTypes.REPEATING)) {
                     new Handler(Looper.getMainLooper()).post(() -> {
                         RepeatingAlarm alarm = new DatabaseManager().getRepeatingAlarmById(id);
+
+                        transmittedAlarmTimeInMillis = alarm.getTimeInMillis();
 
                         int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
                         int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
@@ -218,15 +220,8 @@ public class AlarmEditFragment extends Fragment {
 
             long dateTimeInMillis;
             //todo проверить, не возвращает ли 0 по умолчанию, чтобы убрать try-catch
-            int hour;
-            int minute;
-            try {
-                hour = timePicker.getHour();
-                minute = timePicker.getMinute();
-            } catch (NullPointerException e) {
-                hour = -1;
-                minute = -1;
-            }
+            int hour = timePicker.getHour();
+            int minute  = timePicker.getMinute();
 
             long alarmTime;
             boolean isEnabled = true;

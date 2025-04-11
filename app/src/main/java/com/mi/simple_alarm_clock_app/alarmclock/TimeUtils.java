@@ -3,6 +3,7 @@ package com.mi.simple_alarm_clock_app.alarmclock;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -42,6 +43,14 @@ public class TimeUtils {
             if (alarm.isFriday() && i == Calendar.FRIDAY) nextDayOfWeek = 6;
             if (alarm.isSaturday() && i == Calendar.SATURDAY) nextDayOfWeek = 7;
         } while (calendar.get(Calendar.DAY_OF_WEEK) != nextDayOfWeek);
+
+        int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
+        int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
+
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
         return calendar.getTimeInMillis();
     }

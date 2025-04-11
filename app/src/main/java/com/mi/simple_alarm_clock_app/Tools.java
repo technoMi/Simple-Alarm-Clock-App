@@ -26,19 +26,6 @@ public class Tools {
                 .build();
     }
 
-//    public static String getHourAndMinuteTittleFromMillis(long time) {
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTimeInMillis(time);
-//
-//        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-//        int minute = calendar.get(Calendar.MINUTE);
-//
-//        String formattedHour = (hour < 10) ? ("0" + hour) : String.valueOf(hour);
-//        String formattedMinute = (minute < 10) ? ("0" + minute) : String.valueOf(minute);
-//
-//        return formattedHour + ":" + formattedMinute;
-//    }
-
     public static void showToast(Context context, String text) {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
