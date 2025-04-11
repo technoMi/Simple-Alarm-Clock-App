@@ -69,7 +69,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
         int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
 
-        String alarmTimeTittle = Tools.getFormattedTittleFromHourAndMinute(hour, minute);
+        String alarmTimeTittle = Tools.getFormattedTimeTittle(hour, minute);
 
         holder.alarmTime.setText(alarmTimeTittle);
 

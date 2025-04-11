@@ -30,13 +30,24 @@ public class Tools {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
 
-    public static String getFormattedTittleFromHourAndMinute(int hour, int minute) {
-        String formattedHour = getFormattedTimeForAlarmClock(String.valueOf(hour));
-        String formattedMinute = getFormattedTimeForAlarmClock(String.valueOf(minute));
+    public static String getDateTittle(long dateTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(dateTime);
+
+        String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        String month = String.valueOf(calendar.get(Calendar.MONTH));
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+
+        return day + "." + month + "." + year;
+    }
+
+    public static String getFormattedTimeTittle(int hour, int minute) {
+        String formattedHour = getFormattedPartOfTimeForAlarm(String.valueOf(hour));
+        String formattedMinute = getFormattedPartOfTimeForAlarm(String.valueOf(minute));
         return formattedHour + ":" + formattedMinute;
     }
 
-    private static String getFormattedTimeForAlarmClock(String time) {
+    private static String getFormattedPartOfTimeForAlarm(String time) {
         String formattedTime;
         if (time.equals("0")) {
             formattedTime = "00";

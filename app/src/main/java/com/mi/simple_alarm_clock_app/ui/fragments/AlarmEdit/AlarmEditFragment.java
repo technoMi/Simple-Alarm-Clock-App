@@ -14,11 +14,9 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
-import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
@@ -29,7 +27,6 @@ import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.AlarmTypes;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
-import com.mi.simple_alarm_clock_app.model.TimeConfigForAlarm;
 
 import java.util.Objects;
 
@@ -49,7 +46,7 @@ public class AlarmEditFragment extends Fragment {
 
     private AlarmTypes typeOfScheduledAlarm;
 
-    private Long transmittedAlarmTimeInMillis;
+    private Alarm transmittedAlarm;
 
     View.OnClickListener daysOfWeekCheckBoxesOnClickListener = new View.OnClickListener() {
         @Override
@@ -112,6 +109,8 @@ public class AlarmEditFragment extends Fragment {
 
     private void initInformationFromBundle(Bundle alarmBundle) {
 
+        transmittedAlarm = new Alarm();
+
         new Thread() {
             @Override
             public void run() {
@@ -129,12 +128,13 @@ public class AlarmEditFragment extends Fragment {
                     new Handler(Looper.getMainLooper()).post(() -> {
                         SingleAlarm alarm = new DatabaseManager().getSingleAlarmById(id);
 
-                        transmittedAlarmTimeInMillis = alarm.getTimeInMillis();
-
                         int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
                         int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
 
-                        binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
+                        transmittedAlarm.setTimeInMillis(alarm.getTimeInMillis());
+
+                        binding.tvTime.setText(Tools.getFormattedTimeTittle(hour, minute));
+                        binding.tvAlarmDate.setText(Tools.getDateTittle(alarm.getTimeInMillis()));
 
                         binding.etAlarmName.setText(alarm.getName());
                     });
@@ -144,12 +144,13 @@ public class AlarmEditFragment extends Fragment {
                     new Handler(Looper.getMainLooper()).post(() -> {
                         RepeatingAlarm alarm = new DatabaseManager().getRepeatingAlarmById(id);
 
-                        transmittedAlarmTimeInMillis = alarm.getTimeInMillis();
-
                         int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
                         int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
 
-                        binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
+                        transmittedAlarm.setTimeInMillis(alarm.getTimeInMillis());
+
+                        binding.tvTime.setText(Tools.getFormattedTimeTittle(hour, minute));
+                        binding.tvAlarmDate.setText(R.string.certain_time_tittle);
 
                         binding.etAlarmName.setText(alarm.getName());
 
@@ -174,7 +175,7 @@ public class AlarmEditFragment extends Fragment {
             int hour = timePicker.getHour();
             int minute = timePicker.getMinute();
 
-            binding.tvTime.setText(Tools.getFormattedTittleFromHourAndMinute(hour, minute));
+            binding.tvTime.setText(Tools.getFormattedTimeTittle(hour, minute));
         });
     }
 
@@ -184,7 +185,7 @@ public class AlarmEditFragment extends Fragment {
         datePicker.addOnPositiveButtonClickListener(selection -> {
             typeOfScheduledAlarm = AlarmTypes.SINGLE;
 
-            binding.tvAlarmDate.setText(datePicker.getHeaderText());
+            binding.tvAlarmDate.setText(Tools.getDateTittle(datePicker.getSelection()));
 
             clearDaysOfWeekCheckBoxes();
         });
@@ -205,7 +206,9 @@ public class AlarmEditFragment extends Fragment {
             dateSelected = false;
         }
 
-        boolean isAlarmValidate = (someDaysOfWeekSelected || dateSelected);
+        boolean alarmTransmitted = (transmittedAlarm != null);
+
+        boolean isAlarmValidate = (someDaysOfWeekSelected || dateSelected || alarmTransmitted);
 
         if (isAlarmValidate) {
 
@@ -219,9 +222,16 @@ public class AlarmEditFragment extends Fragment {
             String name = String.valueOf(binding.etAlarmName.getText());
 
             long dateTimeInMillis;
-            //todo проверить, не возвращает ли 0 по умолчанию, чтобы убрать try-catch
-            int hour = timePicker.getHour();
-            int minute  = timePicker.getMinute();
+
+            int hour;
+            int minute;
+            if (alarmTransmitted) {
+                hour = TimeUtils.getHourFromMillis(transmittedAlarm.getTimeInMillis());
+                minute = TimeUtils.getMinuteFromMillis(transmittedAlarm.getTimeInMillis());
+            } else {
+                hour = timePicker.getHour();
+                minute  = timePicker.getMinute();
+            }
 
             long alarmTime;
             boolean isEnabled = true;
