@@ -115,7 +115,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
 
         ArrayList<Alarm> alarms = new DatabaseManager().getAllAlarms();
 
-        ListAdapter adapter = new ListAdapter(requireActivity(), context, alarms);
+        ListAdapter adapter = new ListAdapter(context, alarms);
 
         binding.rvAlarmList.setLayoutManager(new LinearLayoutManager(context));
         binding.rvAlarmList.setAdapter(adapter);

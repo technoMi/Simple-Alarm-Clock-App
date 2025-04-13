@@ -31,15 +31,13 @@ import java.util.Objects;
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private List<Alarm> alarms;
-
-    private Activity activity;
+;
 
     private final Context context;
 
     private LayoutInflater inflater;
 
-    public ListAdapter(Activity activity, Context context, List<Alarm> alarms) {
-        this.activity = activity;
+    public ListAdapter(Context context, List<Alarm> alarms) {
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.alarms = alarms;
@@ -84,21 +82,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             }
 
             new DatabaseManager().updateAlarm(alarm);
-        });
-
-        holder.itemView.setOnClickListener(v -> {
-
-            Bundle alarmBundle = new Bundle();
-            alarmBundle.putInt("id", alarm.getId());
-
-            AlarmTypes alarmType = (alarm instanceof SingleAlarm) ? AlarmTypes.SINGLE : AlarmTypes.REPEATING;
-
-            alarmBundle.putString("type", alarmType.toString());
-
-            Navigation.findNavController(activity, R.id.fragmentContainerView).navigate(
-                    R.id.action_firstFragment_to_alarmEditFragment,
-                    alarmBundle
-            );
         });
     }
 

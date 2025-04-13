@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
@@ -18,6 +19,8 @@ import com.mi.simple_alarm_clock_app.ui.activities.MainActivity;
 import java.util.Calendar;
 
 public class AlarmClockManager {
+
+    private final String TAG = "Debug.AlarmClockManager";
 
     private final Context context;
 
@@ -49,6 +52,7 @@ public class AlarmClockManager {
         );
 
         PendingIntent alarmPendingIntent = getAlarmPendingIntent(alarm);
+
         alarmManager.setAlarmClock(alarmClockInfo, alarmPendingIntent);
     }
 
@@ -69,6 +73,8 @@ public class AlarmClockManager {
         intent.putExtra("type", alarmType);
         intent.setAction(Actions.ALARM_ACTION);
 
+        Log.d(TAG, TAG + " New alarm pending Intent. ID: " + id);
+
         return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
@@ -80,6 +86,15 @@ public class AlarmClockManager {
     }
 
     public void recalculateTimeForAlarmClock(Alarm alarm) {
+
+        Log.d(TAG, TAG + " Recalculate time for alarm. ID: " + alarm.getId());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(alarm.getTimeInMillis());
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        alarm.setTimeInMillis(calendar.getTimeInMillis());
+
         setAlarmClockInSystemManager(alarm);
     }
 }

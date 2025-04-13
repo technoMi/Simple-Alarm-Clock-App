@@ -3,13 +3,16 @@ package com.mi.simple_alarm_clock_app.model;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
+import com.mi.simple_alarm_clock_app.alarmclock.TimeUtils;
+
 @Entity(tableName = "repeating_alarms")
 public class RepeatingAlarm extends Alarm {
 
     public RepeatingAlarm(
             int id,
             String name,
-            long timeInMillis,
+            int hour,
+            int minute,
             boolean isEnabled,
             boolean isMonday,
             boolean isTuesday,
@@ -18,7 +21,16 @@ public class RepeatingAlarm extends Alarm {
             boolean isFriday,
             boolean isSaturday,
             boolean isSunday) {
-        super(id, name, timeInMillis, isEnabled);
+
+        super(
+                id,
+                name,
+                TimeUtils.getAlarmTimeInMillis(
+                    TimeUtils.getTodayDateTimeInMillis(),
+                    hour,
+                    minute
+                ),
+                isEnabled);
         this.isMonday = isMonday;
         this.isTuesday = isTuesday;
         this.isWednesday = isWednesday;

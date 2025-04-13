@@ -46,8 +46,6 @@ public class AlarmEditFragment extends Fragment {
 
     private AlarmTypes typeOfScheduledAlarm;
 
-    private Alarm transmittedAlarm;
-
     View.OnClickListener daysOfWeekCheckBoxesOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -75,11 +73,6 @@ public class AlarmEditFragment extends Fragment {
         timePicker = Tools.getTimePickerFragment();
         datePicker = MaterialDatePicker.Builder.datePicker().build();
 
-        Bundle alarmBundle = getArguments();
-        if (alarmBundle != null) {
-            initInformationFromBundle(alarmBundle);
-        }
-
         binding.btnSetTime.setOnClickListener(stV -> {
             createTimePicker();
         });
@@ -106,67 +99,6 @@ public class AlarmEditFragment extends Fragment {
 
         super.onViewCreated(view, savedInstanceState);
     }
-
-    private void initInformationFromBundle(Bundle alarmBundle) {
-
-        transmittedAlarm = new Alarm();
-
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-
-                int id = alarmBundle.getInt("id");
-                typeOfScheduledAlarm = (
-                        Objects.equals(
-                                alarmBundle.getString("type", ""),
-                                AlarmTypes.SINGLE.toString()
-                        )
-                ) ? AlarmTypes.SINGLE : AlarmTypes.REPEATING;
-
-                if (typeOfScheduledAlarm.equals(AlarmTypes.SINGLE)) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        SingleAlarm alarm = new DatabaseManager().getSingleAlarmById(id);
-
-                        int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
-                        int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
-
-                        transmittedAlarm.setTimeInMillis(alarm.getTimeInMillis());
-
-                        binding.tvTime.setText(Tools.getFormattedTimeTittle(hour, minute));
-                        binding.tvAlarmDate.setText(Tools.getDateTittle(alarm.getTimeInMillis()));
-
-                        binding.etAlarmName.setText(alarm.getName());
-                    });
-                }
-
-                if (typeOfScheduledAlarm.equals(AlarmTypes.REPEATING)) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        RepeatingAlarm alarm = new DatabaseManager().getRepeatingAlarmById(id);
-
-                        int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
-                        int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
-
-                        transmittedAlarm.setTimeInMillis(alarm.getTimeInMillis());
-
-                        binding.tvTime.setText(Tools.getFormattedTimeTittle(hour, minute));
-                        binding.tvAlarmDate.setText(R.string.certain_time_tittle);
-
-                        binding.etAlarmName.setText(alarm.getName());
-
-                        binding.cbMonday.setChecked(alarm.isMonday());
-                        binding.cbTuesday.setChecked(alarm.isTuesday());
-                        binding.cbWednesday.setChecked(alarm.isWednesday());
-                        binding.cbThursday.setChecked(alarm.isThursday());
-                        binding.cbFriday.setChecked(alarm.isFriday());
-                        binding.cbSaturday.setChecked(alarm.isSaturday());
-                        binding.cbSunday.setChecked(alarm.isSunday());
-                    });
-                }
-            }
-        }.start();
-    }
-
 
     private void createTimePicker() {
         timePicker.show(requireActivity().getSupportFragmentManager(), "time_picker");
@@ -206,38 +138,27 @@ public class AlarmEditFragment extends Fragment {
             dateSelected = false;
         }
 
-        boolean alarmTransmitted = (transmittedAlarm != null);
-
-        boolean isAlarmValidate = (someDaysOfWeekSelected || dateSelected || alarmTransmitted);
+        boolean isAlarmValidate = (someDaysOfWeekSelected || dateSelected);
 
         if (isAlarmValidate) {
 
-            int id;
-            if (getArguments() == null) {
-                id = DatabaseManager.getNewAlarmEntityItemID(typeOfScheduledAlarm);
-            } else {
-                id = getArguments().getInt("id");
-            }
+            int id = DatabaseManager.getNewAlarmEntityItemID(typeOfScheduledAlarm);
 
             String name = String.valueOf(binding.etAlarmName.getText());
 
             long dateTimeInMillis;
 
-            int hour;
-            int minute;
-            if (alarmTransmitted) {
-                hour = TimeUtils.getHourFromMillis(transmittedAlarm.getTimeInMillis());
-                minute = TimeUtils.getMinuteFromMillis(transmittedAlarm.getTimeInMillis());
-            } else {
-                hour = timePicker.getHour();
-                minute  = timePicker.getMinute();
-            }
+            int hour = timePicker.getHour();
+            int minute = timePicker.getMinute();
 
             long alarmTime;
             boolean isEnabled = true;
 
+
             if (typeOfScheduledAlarm.equals(AlarmTypes.SINGLE)) {
+
                 dateTimeInMillis = datePicker.getSelection();
+
                 alarmTime = TimeUtils.getAlarmTimeInMillis(dateTimeInMillis, hour, minute);
 
                 SingleAlarm singleAlarm = new SingleAlarm(
@@ -247,26 +168,11 @@ public class AlarmEditFragment extends Fragment {
                         isEnabled
                 );
 
-                // todo избежать повторения кода
-                AlarmClockManager alarmManager = new AlarmClockManager(context);
-                DatabaseManager dbManager = new DatabaseManager();
+                new AlarmClockManager(context).setAlarmClockInSystemManager(singleAlarm);
 
-                if (getArguments() != null) {
-                    alarmManager.canselAlarmClockInSystemManager(singleAlarm);
-                }
-
-                alarmManager.setAlarmClockInSystemManager(singleAlarm);
-
-                if (getArguments() != null) {
-                    dbManager.updateAlarm(singleAlarm);
-                } else {
-                    dbManager.saveAlarm(singleAlarm);
-                }
-
+                new DatabaseManager().saveAlarm(singleAlarm);
             }
             if (typeOfScheduledAlarm.equals(AlarmTypes.REPEATING)) {
-                dateTimeInMillis = TimeUtils.getTodayDateTimeInMillis();
-                alarmTime = TimeUtils.getAlarmTimeInMillis(dateTimeInMillis, hour, minute);
 
                 boolean mondayChecked = binding.cbMonday.isChecked();
                 boolean tuesdayChecked = binding.cbTuesday.isChecked();
@@ -279,7 +185,8 @@ public class AlarmEditFragment extends Fragment {
                 RepeatingAlarm repeatingAlarm = new RepeatingAlarm(
                         id,
                         name,
-                        alarmTime,
+                        hour,
+                        minute,
                         isEnabled,
                         mondayChecked,
                         tuesdayChecked,
@@ -290,21 +197,9 @@ public class AlarmEditFragment extends Fragment {
                         sundayChecked
                 );
 
-                // todo избежать повторения кода
-                AlarmClockManager alarmManager = new AlarmClockManager(context);
-                DatabaseManager dbManager = new DatabaseManager();
+                new AlarmClockManager(context).setAlarmClockInSystemManager(repeatingAlarm);
 
-                if (getArguments() != null) {
-                    alarmManager.canselAlarmClockInSystemManager(repeatingAlarm);
-                }
-
-                alarmManager.setAlarmClockInSystemManager(repeatingAlarm);
-
-                if (getArguments() != null) {
-                    dbManager.updateAlarm(repeatingAlarm);
-                } else {
-                    dbManager.saveAlarm(repeatingAlarm);
-                }
+                new DatabaseManager().saveAlarm(repeatingAlarm);
             }
 
             navController.popBackStack();
@@ -312,6 +207,8 @@ public class AlarmEditFragment extends Fragment {
             Tools.showToast(context, getString(R.string.invalid_form));
         }
     }
+
+
 
     private void clearDaysOfWeekCheckBoxes() {
         binding.cbMonday.setChecked(false);
