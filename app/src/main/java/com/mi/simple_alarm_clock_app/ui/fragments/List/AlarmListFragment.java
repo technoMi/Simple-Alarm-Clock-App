@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,6 +36,7 @@ import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.ui.fragments.List.ListAdapter;
+import com.mi.simple_alarm_clock_app.ui.fragments.List.ListViewModel;
 
 import java.util.ArrayList;
 
@@ -44,6 +47,8 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
     private NavController navController;
 
     private Context context;
+
+    private ListViewModel viewModel;
 
     private ActivityResultLauncher<String> requestPermissionResult;
 
@@ -84,6 +89,15 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
 
         requireActivity().addMenuProvider(this, getViewLifecycleOwner());
 
+        viewModel = new ViewModelProvider(this).get(ListViewModel.class);
+
+        viewModel.liveAlarms.observe(getViewLifecycleOwner(), alarms -> {
+            ListAdapter adapter = new ListAdapter(context, alarms);
+            binding.rvAlarmList.setAdapter(adapter);
+        });
+
+        binding.rvAlarmList.setLayoutManager(new LinearLayoutManager(context));
+
         binding.btnAdd.setOnClickListener(btnAddView -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 String notificationPermission = Manifest.permission.POST_NOTIFICATIONS;
@@ -112,13 +126,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
     @Override
     public void onResume() {
         super.onResume();
-
-        ArrayList<Alarm> alarms = new DatabaseManager().getAllAlarms();
-
-        ListAdapter adapter = new ListAdapter(context, alarms);
-
-        binding.rvAlarmList.setLayoutManager(new LinearLayoutManager(context));
-        binding.rvAlarmList.setAdapter(adapter);
+        viewModel.getAllAlarmsFromDatabase();
     }
 
     @Override

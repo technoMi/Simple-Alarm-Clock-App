@@ -48,6 +48,10 @@ dependencies {
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.annotation)
 
+    // Viewmodel & lifecycle
+    implementation(libs.livedata)
+    implementation(libs.view.model)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

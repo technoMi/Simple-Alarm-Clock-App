@@ -11,6 +11,8 @@ materialVersion = "1.13.0-alpha11"
 navigationFragment = "2.8.7"
 navigationUi = "2.8.7"
 room_version = "2.6.1"
+view_model = "2.8.7"
+livedate = "2.8.7"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -25,6 +27,8 @@ navigation-fragment = { group = "androidx.navigation", name = "navigation-fragme
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room_version" }
 room-annotation = {group = "androidx.room", name = "room-compiler", version.ref="room_version" }
+view-model = {group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref="view_model"}
+livedata = {group = "androidx.lifecycle", name = "lifecycle-livedata", version.ref="livedate"}
 
 
 [plugins]
