@@ -1,13 +1,10 @@
 package com.mi.simple_alarm_clock_app.database;
 
-import androidx.room.Entity;
-
 import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.model.Alarm;
-import com.mi.simple_alarm_clock_app.model.AlarmTypes;
+import com.mi.simple_alarm_clock_app.model.AlarmType;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
-import com.mi.simple_alarm_clock_app.receivers.AlarmReceiver;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -135,12 +132,12 @@ public class DatabaseManager {
     }
 
 
-    public static int getNewAlarmEntityItemID(AlarmTypes type) {
+    public static int getNewAlarmEntityItemID(AlarmType type) {
 
-        if (type.equals(AlarmTypes.SINGLE)) {
+        if (type.equals(AlarmType.SINGLE)) {
             return getNewSingleAlarmItemID();
         }
-        if (type.equals(AlarmTypes.REPEATING)) {
+        if (type.equals(AlarmType.REPEATING)) {
             return getNewRepeatingAlarmItemID();
         }
 

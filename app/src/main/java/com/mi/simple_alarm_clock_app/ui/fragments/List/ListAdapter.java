@@ -1,15 +1,12 @@
 package com.mi.simple_alarm_clock_app.ui.fragments.List;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -19,14 +16,10 @@ import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.alarmclock.TimeUtils;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
-import com.mi.simple_alarm_clock_app.model.AlarmTypes;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
-import com.mi.simple_alarm_clock_app.receivers.Actions;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
@@ -64,10 +57,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         holder.alarmName.setText(getAlarmNameTittle(alarm.getName()));
 
-        int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
-        int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
-
-        String alarmTimeTittle = Tools.getFormattedTimeTittle(hour, minute);
+        String alarmTimeTittle = Tools.getFormattedTimeTittleFromMillis(alarm.getTimeInMillis());
 
         holder.alarmTime.setText(alarmTimeTittle);
 

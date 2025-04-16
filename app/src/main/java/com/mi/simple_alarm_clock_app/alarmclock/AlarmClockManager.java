@@ -6,10 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.mi.simple_alarm_clock_app.Tools;
-import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
-import com.mi.simple_alarm_clock_app.model.AlarmTypes;
+import com.mi.simple_alarm_clock_app.model.AlarmType;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import com.mi.simple_alarm_clock_app.receivers.Actions;
@@ -67,7 +65,7 @@ public class AlarmClockManager {
 
         int id = alarmInfo.getId();
         String alarmType = (alarmInfo instanceof SingleAlarm)
-                ? AlarmTypes.SINGLE.toString() : AlarmTypes.REPEATING.toString();
+                ? AlarmType.SINGLE.toString() : AlarmType.REPEATING.toString();
 
         intent.putExtra("id", alarmInfo.getId());
         intent.putExtra("type", alarmType);

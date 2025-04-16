@@ -1,6 +1,6 @@
 package com.mi.simple_alarm_clock_app.model;
 
-public enum AlarmTypes {
+public enum AlarmType {
     SINGLE,
     REPEATING
 }

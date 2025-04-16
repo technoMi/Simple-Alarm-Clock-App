@@ -30,9 +30,9 @@ public class Tools {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
 
-    public static String getDateTittle(long dateTime) {
+    public static String getDateTittleFromMillis(long dateTimeInMillis) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(dateTime);
+        calendar.setTimeInMillis(dateTimeInMillis);
 
         String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
         String month = String.valueOf(calendar.get(Calendar.MONTH));
@@ -41,7 +41,14 @@ public class Tools {
         return day + "." + month + "." + year;
     }
 
-    public static String getFormattedTimeTittle(int hour, int minute) {
+    public static String getFormattedTimeTittleFromMillis(long timeInMillis) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeInMillis);
+
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
         String formattedHour = getFormattedPartOfTimeForAlarm(String.valueOf(hour));
         String formattedMinute = getFormattedPartOfTimeForAlarm(String.valueOf(minute));
         return formattedHour + ":" + formattedMinute;
