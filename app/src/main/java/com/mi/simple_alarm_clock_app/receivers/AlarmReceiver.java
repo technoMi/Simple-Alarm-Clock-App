@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.AlarmType;
@@ -45,7 +45,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     private void determineAlarmRelevance(Alarm alarm, Context context) {
-        AlarmClockManager acManager = new AlarmClockManager(context);
+        AlarmManager acManager = new AlarmManager(context);
         DatabaseManager dbManager = new DatabaseManager();
 
         if (alarm instanceof SingleAlarm) {

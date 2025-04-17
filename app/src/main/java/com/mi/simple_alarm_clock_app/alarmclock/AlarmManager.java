@@ -1,6 +1,5 @@
 package com.mi.simple_alarm_clock_app.alarmclock;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +15,7 @@ import com.mi.simple_alarm_clock_app.ui.activities.MainActivity;
 
 import java.util.Calendar;
 
-public class AlarmClockManager {
+public class AlarmManager {
 
     private final String TAG = "Debug.AlarmClockManager";
 
@@ -24,9 +23,9 @@ public class AlarmClockManager {
 
     private final android.app.AlarmManager alarmManager;
 
-    public AlarmClockManager(Context context) {
+    public AlarmManager(Context context) {
         this.context = context;
-        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (android.app.AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
     public void setAlarmClockInSystemManager(Alarm alarmInfo) {
@@ -45,7 +44,7 @@ public class AlarmClockManager {
             alarmTime = TimeUtils.getNextRepeatingAlarmDateTime((RepeatingAlarm) alarm);
         }
 
-        AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(
+        android.app.AlarmManager.AlarmClockInfo alarmClockInfo = new android.app.AlarmManager.AlarmClockInfo(
                 alarmTime, alarmAppInfo
         );
 

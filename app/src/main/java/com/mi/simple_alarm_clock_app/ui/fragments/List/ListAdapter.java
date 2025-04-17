@@ -12,8 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
-import com.mi.simple_alarm_clock_app.alarmclock.TimeUtils;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
@@ -66,9 +65,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         holder.enableSwitch.setOnClickListener(v -> {
             alarm.setEnabled(!alarm.isEnabled());
             if (holder.enableSwitch.isChecked()) {
-                new AlarmClockManager(context).setAlarmClockInSystemManager(alarm);
+                new AlarmManager(context).setAlarmClockInSystemManager(alarm);
             } else {
-                new AlarmClockManager(context).canselAlarmClockInSystemManager(alarm);
+                new AlarmManager(context).canselAlarmClockInSystemManager(alarm);
             }
 
             new DatabaseManager().updateAlarm(alarm);
