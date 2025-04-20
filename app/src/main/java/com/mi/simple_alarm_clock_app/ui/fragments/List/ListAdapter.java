@@ -1,12 +1,20 @@
 package com.mi.simple_alarm_clock_app.ui.fragments.List;
 
 import android.content.Context;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -17,22 +25,29 @@ import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
+import com.mi.simple_alarm_clock_app.ui.fragments.AlarmEdit.AlarmEditFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private List<Alarm> alarms;
-;
 
     private final Context context;
 
     private LayoutInflater inflater;
 
+    private boolean actionMode;
+
+    private ArrayList<Alarm> selectedItemsInActionMode;
+
     public ListAdapter(Context context, List<Alarm> alarms) {
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.alarms = alarms;
+
+        actionMode = false;
     }
 
     @NonNull
@@ -72,6 +87,30 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
             new DatabaseManager().updateAlarm(alarm);
         });
+
+        holder.itemContainer.setOnClickListener(v -> {
+            if (actionMode) {
+                if (selectedItemsInActionMode.contains(alarm)) {
+                    selectedItemsInActionMode.remove(alarm);
+                    setDrawable(holder.itemContainer, R.drawable.alarm_list_item_bg);
+                } else {
+                    selectedItemsInActionMode.add(alarm);
+                    setDrawable(holder.itemContainer, R.drawable.alarm_list_selected_item_bg);
+                }
+            }
+        });
+
+        holder.itemContainer.setOnLongClickListener(v -> {
+            if (!actionMode) {
+                actionMode = true;
+                selectedItemsInActionMode = new ArrayList<>();
+
+                setDrawable(holder.itemContainer, R.drawable.alarm_list_selected_item_bg);
+
+                setActionMode();
+            }
+            return false;
+        });
     }
 
     @Override
@@ -80,6 +119,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        View itemContainer;
         TextView alarmName;
         TextView alarmTime;
         TextView daysOfWeek;
@@ -87,6 +127,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemContainer = itemView.findViewById(R.id.itemContainer);
             alarmName = itemView.findViewById(R.id.tvAlarmName);
             alarmTime = itemView.findViewById(R.id.tvAlarmTime);
             daysOfWeek = itemView.findViewById(R.id.tvDaysOfWeek);
@@ -95,7 +136,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     private String getAlarmNameTittle(String name) {
-        return (name.equals("") ? context.getString(R.string.alarm_no_name) : name);
+        return (name.isEmpty() ? context.getString(R.string.alarm_no_name) : name);
     }
 
     private String getDaysOfWeekTittle(RepeatingAlarm a) {
@@ -118,5 +159,46 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         if (a.isSunday()) sb.append(context.getString(R.string.sunday_short_tittle));
 
         return sb.toString();
+    }
+
+    private void setDrawable(View view, int drawableId) {
+        view.setBackground(
+                AppCompatResources.getDrawable(
+                        context,
+                        drawableId
+                )
+        );
+    }
+
+    private void setActionMode() {
+        ActionMode.Callback callback = new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // initialize menu inflater
+                MenuInflater menuInflater= mode.getMenuInflater();
+                // inflate menu
+                menuInflater.inflate(R.menu.menu,menu);
+
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                actionMode = false;
+                selectedItemsInActionMode.clear();
+            }
+        };
+
+        ((AppCompatActivity) context).startActionMode(callback);
     }
 }
