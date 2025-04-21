@@ -11,12 +11,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/mtToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:title="@string/app_name"/>
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

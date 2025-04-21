@@ -11,10 +11,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -28,17 +26,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.appbar.MaterialToolbar;
-import com.mi.simple_alarm_clock_app.App;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
-import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
-import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.ui.fragments.List.ListAdapter;
 import com.mi.simple_alarm_clock_app.ui.fragments.List.ListViewModel;
-
-import java.util.ArrayList;
 
 public class AlarmListFragment extends Fragment implements MenuProvider {
 
@@ -84,8 +76,8 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MaterialToolbar toolbar = view.findViewById(R.id.mtToolbar);
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+//        MaterialToolbar toolbar = view.findViewById(R.id.mtToolbar);
+//        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
 
         requireActivity().addMenuProvider(this, getViewLifecycleOwner());
 
@@ -131,7 +123,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
 
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.menu, menu);
+        menuInflater.inflate(R.menu.fragment_list_menu, menu);
     }
 
     @Override

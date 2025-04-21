@@ -13,8 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -25,7 +23,6 @@ import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
-import com.mi.simple_alarm_clock_app.ui.fragments.AlarmEdit.AlarmEditFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,10 +171,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         ActionMode.Callback callback = new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                // initialize menu inflater
-                MenuInflater menuInflater= mode.getMenuInflater();
-                // inflate menu
-                menuInflater.inflate(R.menu.menu,menu);
+                MenuInflater menuInflater = mode.getMenuInflater();
+                menuInflater.inflate(R.menu.fragment_list_action_mode_menu,menu);
 
                 return true;
             }
@@ -189,6 +184,21 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                int itemId = menuItem.getItemId();
+
+                if (itemId == R.id.miDelete) {
+                    for (Alarm alarm : selectedItemsInActionMode) {
+                        new AlarmManager(context).canselAlarmClockInSystemManager(alarm);
+                        new DatabaseManager().deleteAlarm(alarm);
+                        selectedItemsInActionMode.remove(alarm);
+                    }
+                    notifyDataSetChanged();
+                    actionMode.finish();
+                }
+                if (itemId == R.id.miSelectAll) {
+
+                }
+
                 return true;
             }
 
