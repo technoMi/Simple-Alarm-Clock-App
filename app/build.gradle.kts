@@ -52,6 +52,10 @@ dependencies {
     implementation(libs.livedata)
     implementation(libs.view.model)
 
+    // RxJava
+    implementation(libs.rxjava)
+    implementation(libs.rxandroid)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

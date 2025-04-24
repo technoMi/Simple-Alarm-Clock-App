@@ -9,21 +9,42 @@ import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import java.util.ArrayList;
 import java.util.Random;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.internal.schedulers.SchedulerWhen;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class DatabaseManager {
 
     public ArrayList<Alarm> getAllAlarms() {
-        // todo добавить асинхронность
-        SingleAlarmDao singleAlarmDao = App.getInstance().getSingleAlarmDao();
-        RepeatingAlarmDao repeatingAlarmDao = App.getInstance().getRepeatingAlarmDao();
 
-        ArrayList<Alarm> allAlarmsList = new ArrayList<>();
-        ArrayList<SingleAlarm> singleAlarmList = (ArrayList<SingleAlarm>) singleAlarmDao.getAllSingleAlarmClocks();
-        ArrayList<RepeatingAlarm> repeatingAlarmList = (ArrayList<RepeatingAlarm>) repeatingAlarmDao.getAllRepeatingAlarmClocks();
+        ArrayList<Alarm> list = null;
 
-        allAlarmsList.addAll(singleAlarmList);
-        allAlarmsList.addAll(repeatingAlarmList);
+        Disposable dispose;
 
-        return allAlarmsList;
+        dispose = Observable.create(sub -> {
+                    SingleAlarmDao singleAlarmDao = App.getInstance().getSingleAlarmDao();
+                    RepeatingAlarmDao repeatingAlarmDao = App.getInstance().getRepeatingAlarmDao();
+
+                    ArrayList<Alarm> allAlarmsList = new ArrayList<>();
+                    ArrayList<SingleAlarm> singleAlarmList = (ArrayList<SingleAlarm>) singleAlarmDao.getAllSingleAlarmClocks();
+                    ArrayList<RepeatingAlarm> repeatingAlarmList = (ArrayList<RepeatingAlarm>) repeatingAlarmDao.getAllRepeatingAlarmClocks();
+
+                    allAlarmsList.addAll(singleAlarmList);
+                    allAlarmsList.addAll(repeatingAlarmList);
+
+                    sub.onNext(allAlarmsList);
+                })
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    nextList -> {
+                        list = nextList;
+                    }
+                );
+
+        return list;
     }
 
     public SingleAlarm getSingleAlarmById(int id) {
