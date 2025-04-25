@@ -9,42 +9,31 @@ import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import java.util.ArrayList;
 import java.util.Random;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.internal.schedulers.SchedulerWhen;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleEmitter;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
 
 public class DatabaseManager {
 
-    public ArrayList<Alarm> getAllAlarms() {
+    public Single<ArrayList<Alarm>> getAllAlarms() {
 
-        ArrayList<Alarm> list = null;
+        return Single.create(new SingleOnSubscribe<ArrayList<Alarm>>() {
+            @Override
+            public void subscribe(@NonNull SingleEmitter<ArrayList<Alarm>> emitter) throws Throwable {
+                SingleAlarmDao singleAlarmDao = App.getInstance().getSingleAlarmDao();
+                RepeatingAlarmDao repeatingAlarmDao = App.getInstance().getRepeatingAlarmDao();
 
-        Disposable dispose;
+                ArrayList<Alarm> allAlarmsList = new ArrayList<>();
+                ArrayList<SingleAlarm> singleAlarmList = (ArrayList<SingleAlarm>) singleAlarmDao.getAllSingleAlarmClocks();
+                ArrayList<RepeatingAlarm> repeatingAlarmList = (ArrayList<RepeatingAlarm>) repeatingAlarmDao.getAllRepeatingAlarmClocks();
 
-        dispose = Observable.create(sub -> {
-                    SingleAlarmDao singleAlarmDao = App.getInstance().getSingleAlarmDao();
-                    RepeatingAlarmDao repeatingAlarmDao = App.getInstance().getRepeatingAlarmDao();
+                allAlarmsList.addAll(singleAlarmList);
+                allAlarmsList.addAll(repeatingAlarmList);
 
-                    ArrayList<Alarm> allAlarmsList = new ArrayList<>();
-                    ArrayList<SingleAlarm> singleAlarmList = (ArrayList<SingleAlarm>) singleAlarmDao.getAllSingleAlarmClocks();
-                    ArrayList<RepeatingAlarm> repeatingAlarmList = (ArrayList<RepeatingAlarm>) repeatingAlarmDao.getAllRepeatingAlarmClocks();
-
-                    allAlarmsList.addAll(singleAlarmList);
-                    allAlarmsList.addAll(repeatingAlarmList);
-
-                    sub.onNext(allAlarmsList);
-                })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    nextList -> {
-                        list = nextList;
-                    }
-                );
-
-        return list;
+                emitter.onSuccess(allAlarmsList);
+            }
+        });
     }
 
     public SingleAlarm getSingleAlarmById(int id) {
