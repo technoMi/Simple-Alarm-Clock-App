@@ -1,5 +1,7 @@
 package com.mi.simple_alarm_clock_app.ui.fragments.AlarmEdit;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,10 +14,21 @@ import com.mi.simple_alarm_clock_app.model.AlarmType;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class EditFragmentViewModel extends ViewModel {
+
+    private final String TAG = "EditFragmentViewModel";
 
     private AlarmManager alarmManager;
     private DatabaseManager dbManager;
+
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     private AlarmType alarmType;
 
@@ -45,28 +58,28 @@ public class EditFragmentViewModel extends ViewModel {
     }
 
     public void setDaysOfWeek(
-        boolean isMonday,
-        boolean isTuesday,
-        boolean isWednesday,
-        boolean isThursday,
-        boolean isFriday,
-        boolean isSaturday,
-        boolean isSunday
+            boolean isMonday,
+            boolean isTuesday,
+            boolean isWednesday,
+            boolean isThursday,
+            boolean isFriday,
+            boolean isSaturday,
+            boolean isSunday
     ) {
-       this.isMonday = isMonday;
-       this.isTuesday = isTuesday;
-       this.isWednesday = isWednesday;
-       this.isThursday = isThursday;
-       this.isFriday = isFriday;
-       this.isSaturday = isSaturday;
-       this.isSunday = isSunday;
+        this.isMonday = isMonday;
+        this.isTuesday = isTuesday;
+        this.isWednesday = isWednesday;
+        this.isThursday = isThursday;
+        this.isFriday = isFriday;
+        this.isSaturday = isSaturday;
+        this.isSunday = isSunday;
 
-       // Set and case of processing when flags are cleared
-       if (isMonday || isTuesday || isWednesday || isThursday || isFriday || isSaturday || isSunday) {
-           setAlarmType(AlarmType.REPEATING);
-       } else {
-           setAlarmType(null);
-       }
+        // Set and case of processing when flags are cleared
+        if (isMonday || isTuesday || isWednesday || isThursday || isFriday || isSaturday || isSunday) {
+            setAlarmType(AlarmType.REPEATING);
+        } else {
+            setAlarmType(null);
+        }
     }
 
     public void setDateTimeInMillis(long dateTimeInMillis) {
@@ -143,6 +156,25 @@ public class EditFragmentViewModel extends ViewModel {
     }
 
     private void saveAlarmInDatabase(Alarm alarm) {
-        dbManager.saveAlarm(alarm);
+        Disposable dispose = Single.create(emitter -> {
+                    dbManager.saveAlarm(alarm);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        success -> {
+                            Log.i(TAG, "Successful saving to the database");
+                        }, throwable -> {
+                            Log.w(TAG, throwable.getCause());
+                        }
+                );
+
+        disposables.add(dispose);
+    }
+
+    @Override
+    protected void onCleared() {
+        disposables.clear();
+        super.onCleared();
     }
 }

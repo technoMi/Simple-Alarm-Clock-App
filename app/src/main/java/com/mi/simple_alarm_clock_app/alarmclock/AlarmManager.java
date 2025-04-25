@@ -63,11 +63,8 @@ public class AlarmManager {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
         int id = alarmInfo.getId();
-        String alarmType = (alarmInfo instanceof SingleAlarm)
-                ? AlarmType.SINGLE.toString() : AlarmType.REPEATING.toString();
 
         intent.putExtra("id", alarmInfo.getId());
-        intent.putExtra("type", alarmType);
         intent.setAction(Actions.ALARM_ACTION);
 
         Log.d(TAG, TAG + " New alarm pending Intent. ID: " + id);

@@ -13,6 +13,7 @@ import com.mi.simple_alarm_clock_app.model.Alarm;
 import java.util.ArrayList;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -21,7 +22,7 @@ public class ListViewModel extends ViewModel {
 
     private String TAG = "ListViewModel";
 
-    private CompositeDisposable disposables = new CompositeDisposable();
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     private final MutableLiveData<ArrayList<Alarm>> mutableAlarms = new MutableLiveData<>();
 
@@ -29,16 +30,15 @@ public class ListViewModel extends ViewModel {
 
     public void getAllAlarmsFromDatabase() {
         Disposable dispose = new DatabaseManager().getAllAlarms()
-                        .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(
-                                                list -> {
-                                                    mutableAlarms.setValue(list);
-                                                }, throwable -> {
-                                                    Log.w(TAG, throwable.toString());
-                                                }
-                                        );
-
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        alarms -> {
+                            mutableAlarms.setValue(alarms);
+                        }, throwable -> {
+                            Log.w(TAG, throwable.getCause());
+                        }
+                );
         disposables.add(dispose);
     }
 

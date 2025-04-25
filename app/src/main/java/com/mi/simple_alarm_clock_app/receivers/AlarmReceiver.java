@@ -12,35 +12,40 @@ import com.mi.simple_alarm_clock_app.model.AlarmType;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import com.mi.simple_alarm_clock_app.ui.activities.AlarmActivity;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class AlarmReceiver extends BroadcastReceiver {
 
-    private final String TAG = "Debug.AlarmReceiver";
+    private final String TAG = "AlarmReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Actions.ALARM_ACTION)) {
 
             int alarmId = intent.getIntExtra("id", -1);
-            String alarmType = intent.getStringExtra("type");
 
-            Alarm alarm = getAlarmFromDbById(alarmId, alarmType);
+            // todo что делать с dispose?
+            Disposable dispose = new DatabaseManager().getAlarmById(alarmId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            alarm -> {
+                                determineAlarmRelevance(alarm, context);
+                            }, throwable -> {
+                                Log.w(TAG, throwable.getCause());
+                            }
+                    );
 
             Intent alarmActivityIntent = new Intent(context, AlarmActivity.class);
             alarmActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(alarmActivityIntent);
 
-            Log.d(TAG, TAG + " onReceive. ID: " + alarmId);
-
-            determineAlarmRelevance(alarm, context);
-        }
-    }
-
-    private Alarm getAlarmFromDbById(int id, String alarmType) {
-        DatabaseManager dbManager = new DatabaseManager();
-        if (alarmType.equals(AlarmType.SINGLE.toString())) {
-            return dbManager.getSingleAlarmById(id);
-        } else {
-            return dbManager.getRepeatingAlarmById(id);
+            Log.i(TAG, TAG + " onReceive. ID: " + alarmId);
         }
     }
 
@@ -49,10 +54,35 @@ public class AlarmReceiver extends BroadcastReceiver {
         DatabaseManager dbManager = new DatabaseManager();
 
         if (alarm instanceof SingleAlarm) {
-            dbManager.deleteAlarm(alarm);
+            // todo что делать с dispose?
+            Disposable dispose = Single.create(emitter -> {
+                        dbManager.deleteAlarm(alarm);
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            success -> {
+                                Log.i(TAG, "Successful update of alarm in the database");
+                            }, throwable -> {
+                                Log.w(TAG, throwable.getCause());
+                            }
+                    );
         } else {
             acManager.recalculateTimeForAlarmClock(alarm);
-            dbManager.updateAlarm(alarm);
+
+            // todo что делать с dispose?
+            Disposable dispose = Single.create(emitter -> {
+                        dbManager.updateAlarm(alarm);
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            success -> {
+                                Log.i(TAG, "Successful update of alarm in the database");
+                            }, throwable -> {
+                                Log.w(TAG, throwable.getCause());
+                            }
+                    );
         }
     }
 }

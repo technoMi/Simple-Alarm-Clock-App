@@ -1,6 +1,7 @@
 package com.mi.simple_alarm_clock_app.ui.fragments.List;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,7 +28,14 @@ import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
+
+    private final String TAG = "ListAdapter";
 
     private List<Alarm> alarms;
 
@@ -82,7 +90,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 new AlarmManager(context).canselAlarmClockInSystemManager(alarm);
             }
 
-            new DatabaseManager().updateAlarm(alarm);
+            // todo что делать с dispose?
+            Disposable dispose = Single.create(emitter -> {
+                        new DatabaseManager().updateAlarm(alarm);
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            success -> {
+                                Log.i(TAG, "Successful update of alarm in the database");
+                            }, throwable -> {
+                                Log.w(TAG, throwable.getCause());
+                            }
+                    );
         });
 
         holder.itemContainer.setOnClickListener(v -> {
@@ -189,7 +209,21 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 if (itemId == R.id.miDelete) {
                     for (Alarm alarm : selectedItemsInActionMode) {
                         new AlarmManager(context).canselAlarmClockInSystemManager(alarm);
-                        new DatabaseManager().deleteAlarm(alarm);
+
+                        // todo что делать с dispose?
+                        Disposable dispose = Single.create(emitter -> {
+                                    new DatabaseManager().deleteAlarm(alarm);
+                                })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        success -> {
+                                            Log.i(TAG, "Successful deleting of alarm in the database");
+                                        }, throwable -> {
+                                            Log.w(TAG, throwable.getCause());
+                                        }
+                                );
+
                         selectedItemsInActionMode.remove(alarm);
                     }
                     notifyDataSetChanged();
