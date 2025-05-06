@@ -163,7 +163,7 @@ public class EditFragmentViewModel extends ViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        () -> Log.i(TAG, "Successful saving to the database"),
+                        () -> Log.i(TAG, "Successfully saving to the database"),
                         throwable -> Log.w(TAG, throwable.getCause())
                 );
 

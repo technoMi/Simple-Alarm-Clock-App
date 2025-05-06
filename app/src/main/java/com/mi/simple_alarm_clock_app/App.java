@@ -38,7 +38,7 @@ public class App extends Application  {
                     getApplicationContext(),
                     AppDatabase.class,
                     "database.db"
-            ).allowMainThreadQueries().build();
+            ).build();
         }
     }
 }

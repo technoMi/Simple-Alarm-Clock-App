@@ -42,23 +42,11 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
 
     private ListViewModel viewModel;
 
-    private ActivityResultLauncher<String> requestPermissionResult;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         context = requireContext();
-
-        requestPermissionResult = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {
-                    if (isGranted) {
-                        navigate(R.id.action_firstFragment_to_alarmEditFragment);
-                    } else {
-                        Tools.showToast(context, getString(R.string.permission_denied));
-                    }
-                });
     }
 
     @Override
@@ -91,27 +79,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
         binding.rvAlarmList.setLayoutManager(new LinearLayoutManager(context));
 
         binding.btnAdd.setOnClickListener(btnAddView -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                String notificationPermission = Manifest.permission.POST_NOTIFICATIONS;
-                boolean notificationGranted = Tools.getPermissionStatus(
-                        context, notificationPermission
-                );
-                if (notificationGranted) {
-                   navigate(R.id.action_firstFragment_to_alarmEditFragment);
-                } else {
-                    if (shouldShowRequestPermissionRationale(notificationPermission)) {
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-                        intent.setData(uri);
-                        context.startActivity(intent);
-                        Tools.showToast(context, getString(R.string.request_permission));
-                    } else {
-                        requestPermissionResult.launch(notificationPermission);
-                    }
-                }
-            } else {
-                navigate(R.id.action_firstFragment_to_alarmEditFragment);
-            }
+            navigate(R.id.action_firstFragment_to_alarmEditFragment);
         });
     }
 

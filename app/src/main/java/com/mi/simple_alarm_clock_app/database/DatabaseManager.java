@@ -23,21 +23,18 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class DatabaseManager {
 
     public Single<ArrayList<Alarm>> getAllAlarms() {
-        return Single.create(new SingleOnSubscribe<ArrayList<Alarm>>() {
-            @Override
-            public void subscribe(@NonNull SingleEmitter<ArrayList<Alarm>> emitter) throws Throwable {
-                SingleAlarmDao singleAlarmDao = App.getInstance().getSingleAlarmDao();
-                RepeatingAlarmDao repeatingAlarmDao = App.getInstance().getRepeatingAlarmDao();
+        return Single.create(emitter -> {
+            SingleAlarmDao singleAlarmDao = App.getInstance().getSingleAlarmDao();
+            RepeatingAlarmDao repeatingAlarmDao = App.getInstance().getRepeatingAlarmDao();
 
-                ArrayList<Alarm> allAlarmsList = new ArrayList<>();
-                ArrayList<SingleAlarm> singleAlarmList = (ArrayList<SingleAlarm>) singleAlarmDao.getAllSingleAlarmClocks();
-                ArrayList<RepeatingAlarm> repeatingAlarmList = (ArrayList<RepeatingAlarm>) repeatingAlarmDao.getAllRepeatingAlarmClocks();
+            ArrayList<Alarm> allAlarmsList = new ArrayList<>();
+            ArrayList<SingleAlarm> singleAlarmList = (ArrayList<SingleAlarm>) singleAlarmDao.getAllSingleAlarmClocks();
+            ArrayList<RepeatingAlarm> repeatingAlarmList = (ArrayList<RepeatingAlarm>) repeatingAlarmDao.getAllRepeatingAlarmClocks();
 
-                allAlarmsList.addAll(singleAlarmList);
-                allAlarmsList.addAll(repeatingAlarmList);
+            allAlarmsList.addAll(singleAlarmList);
+            allAlarmsList.addAll(repeatingAlarmList);
 
-                emitter.onSuccess(allAlarmsList);
-            }
+            emitter.onSuccess(allAlarmsList);
         });
     }
 
@@ -123,7 +120,7 @@ public class DatabaseManager {
     }
 
 
-    public static int getNewAlarmEntityItemID(AlarmType type) {
+    public int getNewAlarmEntityItemID(AlarmType type) {
 
         if (type.equals(AlarmType.SINGLE)) {
             return getNewSingleAlarmItemID();
@@ -135,26 +132,26 @@ public class DatabaseManager {
         return 0;
     }
 
-    private static int getNewSingleAlarmItemID() {
+    private int getNewSingleAlarmItemID() {
         SingleAlarmDao alarmDao = App.getInstance().getSingleAlarmDao();
         int newId;
 
-        // todo добавить асинхронность
-        do {
+//        // todo добавить асинхронность
+//        do {
             newId = new Random().nextInt();
-        } while (alarmDao.doesItemExistById(newId));
+//        } while (alarmDao.doesItemExistById(newId));
 
         return newId;
     }
 
-    private static int getNewRepeatingAlarmItemID() {
+    private int getNewRepeatingAlarmItemID() {
         RepeatingAlarmDao alarmDao = App.getInstance().getRepeatingAlarmDao();
         int newId;
 
         // todo добавить асинхронность
-        do {
+//        do {
             newId = new Random().nextInt();
-        } while (alarmDao.doesItemExistById(newId));
+//        } while (alarmDao.doesItemExistById(newId));
 
         return newId;
     }

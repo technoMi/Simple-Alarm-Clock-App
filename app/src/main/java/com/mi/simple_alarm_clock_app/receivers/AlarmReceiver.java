@@ -12,10 +12,14 @@ import com.mi.simple_alarm_clock_app.model.AlarmType;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import com.mi.simple_alarm_clock_app.ui.activities.AlarmActivity;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -23,13 +27,14 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     private final String TAG = "AlarmReceiver";
 
+    private CompositeDisposable compositeDisposable;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Actions.ALARM_ACTION)) {
 
             int alarmId = intent.getIntExtra("id", -1);
 
-            // todo что делать с dispose?
             Disposable dispose = new DatabaseManager().getAlarmById(alarmId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -40,6 +45,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                                 Log.w(TAG, throwable.getCause());
                             }
                     );
+
+            compositeDisposable = new CompositeDisposable();
+            compositeDisposable.add(dispose);
 
             Intent alarmActivityIntent = new Intent(context, AlarmActivity.class);
             alarmActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -53,39 +61,25 @@ public class AlarmReceiver extends BroadcastReceiver {
         AlarmManager acManager = new AlarmManager(context);
         DatabaseManager dbManager = new DatabaseManager();
 
-        if (alarm instanceof SingleAlarm) {
-            // todo что делать с dispose?
-            dbManager.deleteAlarm(alarm);
-            Disposable dispose = Single.create(emitter -> {
-                        dbManager.deleteAlarm(alarm);
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            success -> {
-                                Log.i(TAG, "Successful update of alarm in the database");
-                            }, throwable -> {
-                                Log.w(TAG, throwable.getCause());
+        compositeDisposable.add(
+                Completable.fromAction(() -> {
+                            if (alarm instanceof SingleAlarm) {
+                                dbManager.deleteAlarm(alarm);
+                            } else {
+                                acManager.recalculateTimeForAlarmClock(alarm);
+                                dbManager.updateAlarm(alarm);
                             }
-                    );
-        } else {
-            acManager.recalculateTimeForAlarmClock(alarm);
-
-            // todo что делать с dispose?
-            Disposable dispose = Single.create(emitter -> {
-                        dbManager.updateAlarm(alarm);
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            success -> {
-                                Log.i(TAG, "Successful update of alarm in the database");
-                            }, throwable -> {
-                                Log.w(TAG, throwable.getCause());
-                            }
-                    );
-        }
+                        })
+                        .doOnTerminate(() -> compositeDisposable.clear())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> {
+                                    Log.i(TAG, "Successful update of alarm in the database");
+                                }, throwable -> {
+                                    Log.w(TAG, throwable.getCause());
+                                }
+                        )
+        );
     }
-
-
 }
