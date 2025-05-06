@@ -55,6 +55,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         if (alarm instanceof SingleAlarm) {
             // todo что делать с dispose?
+            dbManager.deleteAlarm(alarm);
             Disposable dispose = Single.create(emitter -> {
                         dbManager.deleteAlarm(alarm);
                     })
@@ -85,4 +86,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                     );
         }
     }
+
+
 }

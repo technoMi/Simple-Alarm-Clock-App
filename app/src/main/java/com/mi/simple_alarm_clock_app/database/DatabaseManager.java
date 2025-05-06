@@ -43,15 +43,12 @@ public class DatabaseManager {
 
 
     public Single<Alarm> getAlarmById(int id) {
-        return Single.create(new SingleOnSubscribe<Alarm>() {
-            @Override
-            public void subscribe(@NonNull SingleEmitter<Alarm> emitter) throws Throwable {
-                Alarm alarm = getRepeatingAlarmById(id);
-                if (alarm == null) {
-                    alarm = getSingleAlarmById(id);
-                }
-                emitter.onSuccess(alarm);
+        return Single.create(emitter -> {
+            Alarm alarm = getRepeatingAlarmById(id);
+            if (alarm == null) {
+                alarm = getSingleAlarmById(id);
             }
+            emitter.onSuccess(alarm);
         });
     }
 

@@ -15,6 +15,7 @@ import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -156,17 +157,14 @@ public class EditFragmentViewModel extends ViewModel {
     }
 
     private void saveAlarmInDatabase(Alarm alarm) {
-        Disposable dispose = Single.create(emitter -> {
+        Disposable dispose = Completable.fromAction(() -> {
                     dbManager.saveAlarm(alarm);
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        success -> {
-                            Log.i(TAG, "Successful saving to the database");
-                        }, throwable -> {
-                            Log.w(TAG, throwable.getCause());
-                        }
+                        () -> Log.i(TAG, "Successful saving to the database"),
+                        throwable -> Log.w(TAG, throwable.getCause())
                 );
 
         disposables.add(dispose);
