@@ -19,12 +19,14 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
@@ -41,6 +43,8 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
     private Context context;
 
     private ListViewModel viewModel;
+
+    private ListAdapter listAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,8 +76,8 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
         viewModel = new ViewModelProvider(this).get(ListViewModel.class);
 
         viewModel.liveAlarms.observe(getViewLifecycleOwner(), alarms -> {
-            ListAdapter adapter = new ListAdapter(context, alarms);
-            binding.rvAlarmList.setAdapter(adapter);
+            listAdapter = new ListAdapter(context, alarms);
+            binding.rvAlarmList.setAdapter(listAdapter);
         });
 
         binding.rvAlarmList.setLayoutManager(new LinearLayoutManager(context));
@@ -105,5 +109,11 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
 
     private void navigate(int destination) {
         navController.navigate(destination);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        listAdapter.clearCompositeDisposable();
     }
 }

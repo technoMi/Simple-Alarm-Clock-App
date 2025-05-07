@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -46,12 +48,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private boolean actionMode;
 
+    private CompositeDisposable compositeDisposable;
+
     private ArrayList<Alarm> selectedItemsInActionMode;
 
     public ListAdapter(Context context, List<Alarm> alarms) {
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.alarms = alarms;
+
+        compositeDisposable = new CompositeDisposable();
 
         actionMode = false;
     }
@@ -68,9 +74,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         Alarm alarm = alarms.get(position);
 
-        if (alarm instanceof SingleAlarm) {
-            // do nothing
-        }
         if (alarm instanceof RepeatingAlarm) {
             holder.daysOfWeek.setText(getDaysOfWeekTittle((RepeatingAlarm) alarm));
         }
@@ -91,19 +94,20 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 new AlarmManager(context).canselAlarmClockInSystemManager(alarm);
             }
 
-            // todo что делать с dispose?
-            Disposable dispose = Single.create(emitter -> {
+            Disposable dispose = Completable.fromAction(() -> {
                         new DatabaseManager().updateAlarm(alarm);
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            success -> {
-                                Log.i(TAG, "Successful update of alarm in the database");
+                            () -> {
+                                Log.i(TAG, "Successfully update of alarm in the database");
                             }, throwable -> {
                                 Log.w(TAG, throwable.getCause());
                             }
                     );
+
+            compositeDisposable.add(dispose);
         });
 
         holder.itemContainer.setOnClickListener(v -> {
@@ -169,11 +173,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         }
 
         if (a.isMonday()) sb.append(context.getString(R.string.monday_short_tittle)).append(" ");
-        if (a.isTuesday()) sb.append(context.getString(R.string.tuesday_short_tittle)).append(" ");;
-        if (a.isWednesday()) sb.append(context.getString(R.string.wednesday_short_tittle)).append(" ");;
-        if (a.isThursday()) sb.append(context.getString(R.string.thursday_short_tittle)).append(" ");;
-        if (a.isFriday()) sb.append(context.getString(R.string.friday_short_tittle)).append(" ");;
-        if (a.isSaturday()) sb.append(context.getString(R.string.saturday_short_tittle)).append(" ");;
+        if (a.isTuesday()) sb.append(context.getString(R.string.tuesday_short_tittle)).append(" ");
+        ;
+        if (a.isWednesday())
+            sb.append(context.getString(R.string.wednesday_short_tittle)).append(" ");
+        ;
+        if (a.isThursday())
+            sb.append(context.getString(R.string.thursday_short_tittle)).append(" ");
+        ;
+        if (a.isFriday()) sb.append(context.getString(R.string.friday_short_tittle)).append(" ");
+        ;
+        if (a.isSaturday())
+            sb.append(context.getString(R.string.saturday_short_tittle)).append(" ");
+        ;
         if (a.isSunday()) sb.append(context.getString(R.string.sunday_short_tittle));
 
         return sb.toString();
@@ -193,7 +205,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 MenuInflater menuInflater = mode.getMenuInflater();
-                menuInflater.inflate(R.menu.fragment_list_action_mode_menu,menu);
+                menuInflater.inflate(R.menu.fragment_list_action_mode_menu, menu);
 
                 return true;
             }
@@ -211,19 +223,20 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                     for (Alarm alarm : selectedItemsInActionMode) {
                         new AlarmManager(context).canselAlarmClockInSystemManager(alarm);
 
-                        // todo что делать с dispose?
-                        Disposable dispose = Single.create(emitter -> {
+                        Disposable dispose = Completable.fromAction(() -> {
                                     new DatabaseManager().deleteAlarm(alarm);
                                 })
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
-                                        success -> {
-                                            Log.i(TAG, "Successful deleting of alarm in the database");
+                                        () -> {
+                                            Log.i(TAG, "Successfully deleting of alarm in the database");
                                         }, throwable -> {
                                             Log.w(TAG, throwable.getCause());
                                         }
                                 );
+
+                        compositeDisposable.add(dispose);
 
                         selectedItemsInActionMode.remove(alarm);
                     }
@@ -245,5 +258,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         };
 
         ((AppCompatActivity) context).startActionMode(callback);
+    }
+
+    public void clearCompositeDisposable() {
+        compositeDisposable.clear();
     }
 }

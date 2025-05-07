@@ -75,7 +75,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> {
-                                    Log.i(TAG, "Successful update of alarm in the database");
+                                    Log.i(TAG, "Successfully update of alarm in the database");
                                 }, throwable -> {
                                     Log.w(TAG, throwable.getCause());
                                 }
