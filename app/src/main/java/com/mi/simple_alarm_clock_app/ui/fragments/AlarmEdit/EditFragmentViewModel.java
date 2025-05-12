@@ -14,6 +14,8 @@ import com.mi.simple_alarm_clock_app.model.AlarmType;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 
+import java.util.TimeZone;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -87,9 +89,15 @@ public class EditFragmentViewModel extends ViewModel {
     }
 
     public void setTimeInMillis(int hour, int minute) {
+        TimeZone timeZone = TimeZone.getDefault();
+
         long time = ((long) hour * 60 * 60 * 1000) + ((long) minute * 60 * 1000);
-        mutableTimeInMillis.setValue(time);
+        long offsetMillis = timeZone.getOffset(System.currentTimeMillis());
+        long timeWithOffset = time - offsetMillis;
+
+        mutableTimeInMillis.setValue(timeWithOffset);
     }
+
 
     private void setAlarmType(AlarmType alarmType) {
         this.alarmType = alarmType;
