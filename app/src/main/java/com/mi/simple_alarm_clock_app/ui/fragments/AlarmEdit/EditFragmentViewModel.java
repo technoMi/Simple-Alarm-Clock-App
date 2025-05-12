@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.alarmclock.TimeUtils;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
@@ -16,8 +16,6 @@ import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -26,7 +24,7 @@ public class EditFragmentViewModel extends ViewModel {
 
     private final String TAG = "EditFragmentViewModel";
 
-    private AlarmManager alarmManager;
+    private AlarmClockManager alarmManager;
     private DatabaseManager dbManager;
 
     private final CompositeDisposable disposables = new CompositeDisposable();
@@ -53,7 +51,7 @@ public class EditFragmentViewModel extends ViewModel {
     private boolean isSaturday;
     private boolean isSunday;
 
-    public EditFragmentViewModel(AlarmManager alarmManager, DatabaseManager databaseManager) {
+    public EditFragmentViewModel(AlarmClockManager alarmManager, DatabaseManager databaseManager) {
         this.alarmManager = alarmManager;
         this.dbManager = databaseManager;
     }
@@ -153,7 +151,7 @@ public class EditFragmentViewModel extends ViewModel {
     }
 
     private void saveAlarmInSystemManager(Alarm alarm) {
-        alarmManager.setAlarmClockInSystemManager(alarm);
+        alarmManager.setAlarmInSystemManager(alarm);
     }
 
     private void saveAlarmInDatabase(Alarm alarm) {

@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
+import com.mi.simple_alarm_clock_app.alarmclock.TimeUtils;
 
 import java.util.Calendar;
 import java.util.Date;

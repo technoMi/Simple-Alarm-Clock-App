@@ -4,47 +4,36 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.app.AlarmManager;
 
 import com.mi.simple_alarm_clock_app.model.Alarm;
-import com.mi.simple_alarm_clock_app.model.AlarmType;
-import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
-import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import com.mi.simple_alarm_clock_app.receivers.Actions;
 import com.mi.simple_alarm_clock_app.receivers.AlarmReceiver;
 import com.mi.simple_alarm_clock_app.ui.activities.MainActivity;
 
-import java.util.Calendar;
-
-public class AlarmManager {
+public class AlarmClockManager {
 
     private final String TAG = "Debug.AlarmClockManager";
 
     private final Context context;
 
-    private final android.app.AlarmManager alarmManager;
+    private final AlarmManager alarmManager;
 
-    public AlarmManager(Context context) {
+    public AlarmClockManager(Context context) {
         this.context = context;
-        alarmManager = (android.app.AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
-    public void setAlarmClockInSystemManager(Alarm alarmInfo) {
-        setPendingAlarm(alarmInfo);
+    public void setAlarmInSystemManager(Alarm alarm) {
+        setPendingAlarm(alarm);
     }
 
     private void setPendingAlarm(Alarm alarm) {
         PendingIntent alarmAppInfo = getAlarmAppInfoIntent();
 
-        long alarmTime = 0;
+        long alarmTime = alarm.getTimeInMillis();
 
-        if (alarm instanceof SingleAlarm) {
-            alarmTime = alarm.getTimeInMillis();
-        }
-        if (alarm instanceof RepeatingAlarm) {
-            alarmTime = TimeUtils.getNextRepeatingAlarmDateTime((RepeatingAlarm) alarm);
-        }
-
-        android.app.AlarmManager.AlarmClockInfo alarmClockInfo = new android.app.AlarmManager.AlarmClockInfo(
+        AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(
                 alarmTime, alarmAppInfo
         );
 
@@ -72,23 +61,15 @@ public class AlarmManager {
         return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
-    public void canselAlarmClockInSystemManager(Alarm alarmInfo) {
-
+    public void canselAlarmInSystemManager(Alarm alarmInfo) {
         PendingIntent alarmPendingIntent = getAlarmPendingIntent(alarmInfo);
-
         alarmManager.cancel(alarmPendingIntent);
     }
 
-    public void recalculateTimeForAlarmClock(Alarm alarm) {
-
-        Log.d(TAG, TAG + " Recalculate time for alarm. ID: " + alarm.getId());
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(alarm.getTimeInMillis());
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-
-        alarm.setTimeInMillis(calendar.getTimeInMillis());
-
-        setAlarmClockInSystemManager(alarm);
+    public void resetAlarm(Alarm alarm) {
+        if (alarm.isEnabled()) {
+            Log.d(TAG, TAG + " Recalculate time for alarm. ID: " + alarm.getId());
+            setAlarmInSystemManager(alarm);
+        }
     }
 }

@@ -5,20 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
-import com.mi.simple_alarm_clock_app.model.AlarmType;
-import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import com.mi.simple_alarm_clock_app.ui.activities.AlarmActivity;
-
-import java.util.concurrent.Callable;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -58,17 +51,14 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     private void determineAlarmRelevance(Alarm alarm, Context context) {
-        AlarmManager acManager = new AlarmManager(context);
+        AlarmClockManager acManager = new AlarmClockManager(context);
         DatabaseManager dbManager = new DatabaseManager();
 
         compositeDisposable.add(
                 Completable.fromAction(() -> {
-                            if (alarm instanceof SingleAlarm) {
-                                dbManager.deleteAlarm(alarm);
-                            } else {
-                                acManager.recalculateTimeForAlarmClock(alarm);
-                                dbManager.updateAlarm(alarm);
-                            }
+                            alarm.calculateNextTriggerTime();
+                            acManager.resetAlarm(alarm);
+                            dbManager.updateAlarm(alarm);
                         })
                         .doOnTerminate(() -> compositeDisposable.clear())
                         .subscribeOn(Schedulers.io())

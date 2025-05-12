@@ -25,37 +25,6 @@ public class TimeUtils {
         }
     }
 
-    public static long getNextRepeatingAlarmDateTime(RepeatingAlarm alarm) {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(alarm.getTimeInMillis());
-
-        int nextDayOfWeek = 0;
-        while (calendar.get(Calendar.DAY_OF_WEEK) != nextDayOfWeek) {
-            int i = calendar.get(Calendar.DAY_OF_WEEK);
-
-            if (alarm.isSunday() && i == Calendar.SUNDAY) nextDayOfWeek = 1;
-            else if (alarm.isMonday() && i == Calendar.MONDAY) nextDayOfWeek = 2;
-            else if (alarm.isTuesday() && i == Calendar.TUESDAY) nextDayOfWeek = 3;
-            else if (alarm.isWednesday() && i == Calendar.WEDNESDAY) nextDayOfWeek = 4;
-            else if (alarm.isThursday() && i == Calendar.THURSDAY) nextDayOfWeek = 5;
-            else if (alarm.isFriday() && i == Calendar.FRIDAY) nextDayOfWeek = 6;
-            else if (alarm.isSaturday() && i == Calendar.SATURDAY) nextDayOfWeek = 7;
-
-            if (nextDayOfWeek == 0) calendar.add(Calendar.DAY_OF_WEEK, 1);
-        }
-
-        int hour = TimeUtils.getHourFromMillis(alarm.getTimeInMillis());
-        int minute = TimeUtils.getMinuteFromMillis(alarm.getTimeInMillis());
-
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        return calendar.getTimeInMillis();
-    }
-
     public static long getTodayDateTimeInMillis() {
         Calendar calendar = Calendar.getInstance();
 

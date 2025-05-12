@@ -5,6 +5,8 @@ import androidx.room.Entity;
 
 import com.mi.simple_alarm_clock_app.alarmclock.TimeUtils;
 
+import java.util.Calendar;
+
 @Entity(tableName = "repeating_alarms")
 public class RepeatingAlarm extends Alarm {
 
@@ -120,5 +122,35 @@ public class RepeatingAlarm extends Alarm {
 
     public void setSunday(boolean sunday) {
         isSunday = sunday;
+    }
+
+    @Override
+    public void calculateNextTriggerTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(getTimeInMillis());
+
+        int i = 0;
+        do {
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
+            i = calendar.get(Calendar.DAY_OF_WEEK);
+        } while (!(
+                (isMonday() && i == Calendar.MONDAY) ||
+                (isTuesday() && i == Calendar.TUESDAY) ||
+                (isWednesday() && i == Calendar.WEDNESDAY) ||
+                (isThursday() && i == Calendar.THURSDAY) ||
+                (isFriday() && i == Calendar.FRIDAY) ||
+                (isSaturday() && i == Calendar.SATURDAY) ||
+                (isSunday() && i == Calendar.SUNDAY)
+        ));
+
+        int hour = TimeUtils.getHourFromMillis(getTimeInMillis());
+        int minute = TimeUtils.getMinuteFromMillis(getTimeInMillis());
+
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        setTimeInMillis(calendar.getTimeInMillis());
     }
 }

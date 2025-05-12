@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,18 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
-import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -89,9 +86,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         holder.enableSwitch.setOnClickListener(v -> {
             alarm.setEnabled(!alarm.isEnabled());
             if (holder.enableSwitch.isChecked()) {
-                new AlarmManager(context).setAlarmClockInSystemManager(alarm);
+                new AlarmClockManager(context).setAlarmInSystemManager(alarm);
             } else {
-                new AlarmManager(context).canselAlarmClockInSystemManager(alarm);
+                new AlarmClockManager(context).canselAlarmInSystemManager(alarm);
             }
 
             Disposable dispose = Completable.fromAction(() -> {
@@ -174,18 +171,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         if (a.isMonday()) sb.append(context.getString(R.string.monday_short_tittle)).append(" ");
         if (a.isTuesday()) sb.append(context.getString(R.string.tuesday_short_tittle)).append(" ");
-        ;
-        if (a.isWednesday())
-            sb.append(context.getString(R.string.wednesday_short_tittle)).append(" ");
-        ;
-        if (a.isThursday())
-            sb.append(context.getString(R.string.thursday_short_tittle)).append(" ");
-        ;
+        if (a.isWednesday()) sb.append(context.getString(R.string.wednesday_short_tittle)).append(" ");
+        if (a.isThursday()) sb.append(context.getString(R.string.thursday_short_tittle)).append(" ");
         if (a.isFriday()) sb.append(context.getString(R.string.friday_short_tittle)).append(" ");
-        ;
-        if (a.isSaturday())
-            sb.append(context.getString(R.string.saturday_short_tittle)).append(" ");
-        ;
+        if (a.isSaturday()) sb.append(context.getString(R.string.saturday_short_tittle)).append(" ");
         if (a.isSunday()) sb.append(context.getString(R.string.sunday_short_tittle));
 
         return sb.toString();
@@ -221,7 +210,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
                 if (itemId == R.id.miDelete) {
                     for (Alarm alarm : selectedItemsInActionMode) {
-                        new AlarmManager(context).canselAlarmClockInSystemManager(alarm);
+                        new AlarmClockManager(context).canselAlarmInSystemManager(alarm);
 
                         Disposable dispose = Completable.fromAction(() -> {
                                     new DatabaseManager().deleteAlarm(alarm);

@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmManager;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 
 public class EditFragmentViewModelFactory implements ViewModelProvider.Factory {
@@ -20,6 +20,6 @@ public class EditFragmentViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new EditFragmentViewModel(new AlarmManager(context), new DatabaseManager());
+        return (T) new EditFragmentViewModel(new AlarmClockManager(context), new DatabaseManager());
     }
 }

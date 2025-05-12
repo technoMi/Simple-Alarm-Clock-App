@@ -7,6 +7,7 @@ import androidx.room.Room;
 import com.mi.simple_alarm_clock_app.database.AppDatabase;
 import com.mi.simple_alarm_clock_app.database.RepeatingAlarmDao;
 import com.mi.simple_alarm_clock_app.database.SingleAlarmDao;
+import com.mi.simple_alarm_clock_app.model.Alarm;
 
 public class App extends Application  {
 

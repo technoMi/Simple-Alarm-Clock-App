@@ -114,6 +114,8 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
     @Override
     public void onPause() {
         super.onPause();
-        listAdapter.clearCompositeDisposable();
+        if (listAdapter != null) {
+            listAdapter.clearCompositeDisposable();
+        }
     }
 }
