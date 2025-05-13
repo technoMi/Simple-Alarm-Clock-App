@@ -56,7 +56,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         compositeDisposable.add(
                 Completable.fromAction(() -> {
-                            alarm.calculateNextTriggerTime();
+                            alarm.doAfterAlarmTriggered();
                             acManager.resetAlarm(alarm);
                             dbManager.updateAlarm(alarm);
                         })

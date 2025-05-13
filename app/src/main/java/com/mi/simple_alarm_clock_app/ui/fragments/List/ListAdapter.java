@@ -86,6 +86,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         holder.enableSwitch.setOnClickListener(v -> {
             alarm.setEnabled(!alarm.isEnabled());
             if (holder.enableSwitch.isChecked()) {
+                alarm.doBeforeAlarmTurnedOn();
                 new AlarmClockManager(context).setAlarmInSystemManager(alarm);
             } else {
                 new AlarmClockManager(context).canselAlarmInSystemManager(alarm);

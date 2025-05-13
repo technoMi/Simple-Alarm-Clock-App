@@ -1,15 +1,21 @@
 package com.mi.simple_alarm_clock_app;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.mi.simple_alarm_clock_app.alarmclock.TimeUtils;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -36,15 +42,15 @@ public class Tools {
         calendar.setTimeInMillis(dateTimeInMillis);
 
         String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-        String month = String.valueOf(calendar.get(Calendar.MONTH));
+        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
         String year = String.valueOf(calendar.get(Calendar.YEAR));
 
         return day + "." + month + "." + year;
     }
 
     public static String getFormattedTimeTittleFromMillis(long timeInMillis) {
-
         Calendar calendar = Calendar.getInstance();
+
         calendar.setTimeInMillis(timeInMillis);
 
         int hour = calendar.get(Calendar.HOUR_OF_DAY);

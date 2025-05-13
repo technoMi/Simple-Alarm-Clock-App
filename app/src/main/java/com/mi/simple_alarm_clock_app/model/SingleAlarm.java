@@ -16,12 +16,22 @@ public class SingleAlarm extends Alarm {
     }
 
     @Override
-    public void calculateNextTriggerTime() {
-        this.setEnabled(false);
+    public void doBeforeAlarmTurnedOn() {
+        calculateNextTriggerTime();
+    }
 
+    @Override
+    public void doAfterAlarmTriggered() {
+        this.setEnabled(false);
+    }
+
+    @Override
+    public void calculateNextTriggerTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(this.getTimeInMillis());
-        calendar.add(Calendar.DAY_OF_WEEK, 1);
+        while (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
+        }
 
         this.setTimeInMillis(calendar.getTimeInMillis());
     }

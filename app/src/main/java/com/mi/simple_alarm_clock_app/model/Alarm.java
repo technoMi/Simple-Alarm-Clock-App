@@ -2,11 +2,10 @@ package com.mi.simple_alarm_clock_app.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity
-public abstract class Alarm implements ITimeSettable {
+public abstract class Alarm implements ITimeRecalculation, IAlarmStateHandler {
 
     public Alarm(
             int id,

@@ -125,6 +125,16 @@ public class RepeatingAlarm extends Alarm {
     }
 
     @Override
+    public void doBeforeAlarmTurnedOn() {
+
+    }
+
+    @Override
+    public void doAfterAlarmTriggered() {
+
+    }
+
+    @Override
     public void calculateNextTriggerTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(getTimeInMillis());
