@@ -126,7 +126,9 @@ public class RepeatingAlarm extends Alarm {
 
     @Override
     public void doBeforeAlarmTurnedOn() {
-        calculateNextTriggerTime();
+        if (isNotToday()) {
+            calculateNextTriggerTime();
+        }
     }
 
     @Override
@@ -139,20 +141,6 @@ public class RepeatingAlarm extends Alarm {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(getTimeInMillis());
 
-        int i;
-        do {
-            calendar.add(Calendar.DAY_OF_WEEK, 1);
-            i = calendar.get(Calendar.DAY_OF_WEEK);
-        } while (
-                !((isMonday() && i == Calendar.MONDAY) ||
-                        (isTuesday() && i == Calendar.TUESDAY) ||
-                        (isWednesday() && i == Calendar.WEDNESDAY) ||
-                        (isThursday() && i == Calendar.THURSDAY) ||
-                        (isFriday() && i == Calendar.FRIDAY) ||
-                        (isSaturday() && i == Calendar.SATURDAY) ||
-                        (isSunday() && i == Calendar.SUNDAY)
-        )  || (calendar.getTimeInMillis() < System.currentTimeMillis()));
-
         int hour = TimeUtils.getHourFromMillis(getTimeInMillis());
         int minute = TimeUtils.getMinuteFromMillis(getTimeInMillis());
 
@@ -161,6 +149,49 @@ public class RepeatingAlarm extends Alarm {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
+        do {
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
+        } while (isNotTriggerDay(calendar) || isEarlierThanCurrentTime(calendar));
+
         setTimeInMillis(calendar.getTimeInMillis());
+    }
+
+    private boolean isNotTriggerDay(Calendar calendar) {
+        int i = calendar.get(Calendar.DAY_OF_WEEK);
+        return !((isMonday() && i == Calendar.MONDAY) ||
+                (isTuesday() && i == Calendar.TUESDAY) ||
+                (isWednesday() && i == Calendar.WEDNESDAY) ||
+                (isThursday() && i == Calendar.THURSDAY) ||
+                (isFriday() && i == Calendar.FRIDAY) ||
+                (isSaturday() && i == Calendar.SATURDAY) ||
+                (isSunday() && i == Calendar.SUNDAY)
+        );
+    }
+
+    private boolean isEarlierThanCurrentTime(Calendar calendar) {
+
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(System.currentTimeMillis());
+        c.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
+        c.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+
+        if (calendar.getTimeInMillis() == c.getTimeInMillis()) return false;
+
+        return (calendar.getTimeInMillis() <= c.getTimeInMillis());
+    }
+
+    private boolean isNotToday() {
+        Calendar todayDayOfMonth = Calendar.getInstance();
+        Calendar dayOfMonthOfAlarm = Calendar.getInstance();
+
+        todayDayOfMonth.setTimeInMillis(TimeUtils.getTodayDateTimeInMillis());
+        dayOfMonthOfAlarm.setTimeInMillis(getTimeInMillis());
+
+        int todayDayNum = todayDayOfMonth.get(Calendar.DAY_OF_MONTH);
+        int alarmDayNum = dayOfMonthOfAlarm.get(Calendar.DAY_OF_MONTH);
+
+        return (todayDayNum != alarmDayNum);
     }
 }

@@ -28,13 +28,6 @@ public class TimeUtils {
     public static long getTodayDateTimeInMillis() {
         Calendar calendar = Calendar.getInstance();
 
-        int currentYear = calendar.get(Calendar.YEAR);
-        int currentMonth = calendar.get(Calendar.MONTH);
-        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-
-        calendar.set(Calendar.YEAR, currentYear);
-        calendar.set(Calendar.MONTH, currentMonth);
-        calendar.set(Calendar.DAY_OF_MONTH, currentDay);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
