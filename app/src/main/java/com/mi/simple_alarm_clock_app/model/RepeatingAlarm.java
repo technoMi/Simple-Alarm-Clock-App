@@ -28,9 +28,9 @@ public class RepeatingAlarm extends Alarm {
                 id,
                 name,
                 TimeUtils.getAlarmTimeInMillis(
-                    TimeUtils.getTodayDateTimeInMillis(),
-                    hour,
-                    minute
+                        TimeUtils.getTodayDateTimeInMillis(),
+                        hour,
+                        minute
                 ),
                 isEnabled);
         this.isMonday = isMonday;
@@ -126,12 +126,12 @@ public class RepeatingAlarm extends Alarm {
 
     @Override
     public void doBeforeAlarmTurnedOn() {
-
+        calculateNextTriggerTime();
     }
 
     @Override
     public void doAfterAlarmTriggered() {
-
+        calculateNextTriggerTime();
     }
 
     @Override
@@ -139,19 +139,19 @@ public class RepeatingAlarm extends Alarm {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(getTimeInMillis());
 
-        int i = 0;
+        int i;
         do {
             calendar.add(Calendar.DAY_OF_WEEK, 1);
             i = calendar.get(Calendar.DAY_OF_WEEK);
-        } while (!(
-                (isMonday() && i == Calendar.MONDAY) ||
-                (isTuesday() && i == Calendar.TUESDAY) ||
-                (isWednesday() && i == Calendar.WEDNESDAY) ||
-                (isThursday() && i == Calendar.THURSDAY) ||
-                (isFriday() && i == Calendar.FRIDAY) ||
-                (isSaturday() && i == Calendar.SATURDAY) ||
-                (isSunday() && i == Calendar.SUNDAY)
-        ));
+        } while (
+                !((isMonday() && i == Calendar.MONDAY) ||
+                        (isTuesday() && i == Calendar.TUESDAY) ||
+                        (isWednesday() && i == Calendar.WEDNESDAY) ||
+                        (isThursday() && i == Calendar.THURSDAY) ||
+                        (isFriday() && i == Calendar.FRIDAY) ||
+                        (isSaturday() && i == Calendar.SATURDAY) ||
+                        (isSunday() && i == Calendar.SUNDAY)
+        )  || (calendar.getTimeInMillis() < System.currentTimeMillis()));
 
         int hour = TimeUtils.getHourFromMillis(getTimeInMillis());
         int minute = TimeUtils.getMinuteFromMillis(getTimeInMillis());
