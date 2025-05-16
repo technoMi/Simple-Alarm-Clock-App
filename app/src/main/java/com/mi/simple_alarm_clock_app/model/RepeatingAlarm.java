@@ -126,7 +126,7 @@ public class RepeatingAlarm extends Alarm {
 
     @Override
     public void doBeforeAlarmTurnedOn() {
-        if (isNotToday()) {
+        while (getTimeInMillis() < System.currentTimeMillis()) {
             calculateNextTriggerTime();
         }
     }
@@ -151,7 +151,7 @@ public class RepeatingAlarm extends Alarm {
 
         do {
             calendar.add(Calendar.DAY_OF_WEEK, 1);
-        } while (isNotTriggerDay(calendar) || isEarlierThanCurrentTime(calendar));
+        } while (isNotTriggerDay(calendar));
 
         setTimeInMillis(calendar.getTimeInMillis());
     }
@@ -166,32 +166,5 @@ public class RepeatingAlarm extends Alarm {
                 (isSaturday() && i == Calendar.SATURDAY) ||
                 (isSunday() && i == Calendar.SUNDAY)
         );
-    }
-
-    private boolean isEarlierThanCurrentTime(Calendar calendar) {
-
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(System.currentTimeMillis());
-        c.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
-        c.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-
-        if (calendar.getTimeInMillis() == c.getTimeInMillis()) return false;
-
-        return (calendar.getTimeInMillis() <= c.getTimeInMillis());
-    }
-
-    private boolean isNotToday() {
-        Calendar todayDayOfMonth = Calendar.getInstance();
-        Calendar dayOfMonthOfAlarm = Calendar.getInstance();
-
-        todayDayOfMonth.setTimeInMillis(TimeUtils.getTodayDateTimeInMillis());
-        dayOfMonthOfAlarm.setTimeInMillis(getTimeInMillis());
-
-        int todayDayNum = todayDayOfMonth.get(Calendar.DAY_OF_MONTH);
-        int alarmDayNum = dayOfMonthOfAlarm.get(Calendar.DAY_OF_MONTH);
-
-        return (todayDayNum != alarmDayNum);
     }
 }
