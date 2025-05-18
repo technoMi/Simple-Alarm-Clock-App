@@ -2,6 +2,7 @@ package com.mi.simple_alarm_clock_app;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.widget.Toast;
 
@@ -76,5 +77,20 @@ public class Tools {
     public static boolean getPermissionStatus(Context context, String permission) {
         int status = ContextCompat.checkSelfPermission(context, permission);
         return (status == PackageManager.PERMISSION_GRANTED);
+    }
+
+    public static void checkActivityExtras(Context context, Intent intent) {
+        if (intent.getBooleanExtra("time_zone_changed", false)) {
+            MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(context)
+                    .setTitle(context.getString(R.string.attention))
+                    .setMessage(context.getString(R.string.time_zone_changed))
+                    .setPositiveButton(context.getString(R.string.ok), (dialog, which) -> {
+                        // nothing
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+
+            intent.removeExtra("time_zone_changed");
+        }
     }
 }

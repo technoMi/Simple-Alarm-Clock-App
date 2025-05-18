@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.provider.Settings;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,11 +34,24 @@ import android.widget.Toast;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
+import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
+import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
+import com.mi.simple_alarm_clock_app.model.Alarm;
+import com.mi.simple_alarm_clock_app.ui.fragments.List.AlarmListFragmentViewModelFactory;
 import com.mi.simple_alarm_clock_app.ui.fragments.List.ListAdapter;
 import com.mi.simple_alarm_clock_app.ui.fragments.List.ListViewModel;
 
-public class AlarmListFragment extends Fragment implements MenuProvider {
+import java.util.ArrayList;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+public class AlarmListFragment extends Fragment implements MenuProvider, ListAdapter.ListAdapterListener {
+
+    private final String TAG = "AlarmListFragment";
 
     private FragmentAlarmListBinding binding;
 
@@ -47,6 +62,8 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
     private ListViewModel viewModel;
 
     private ListAdapter listAdapter;
+
+    private boolean actionMode;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,18 +87,20 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        MaterialToolbar toolbar = view.findViewById(R.id.mtToolbar);
-//        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-
         requireActivity().addMenuProvider(this, getViewLifecycleOwner());
 
-        viewModel = new ViewModelProvider(this).get(ListViewModel.class);
+        listAdapter = new ListAdapter(context, this);
+        binding.rvAlarmList.setAdapter(listAdapter);
 
-        checkExtras();
+        checkActivityExtras();
+
+        viewModel = new ViewModelProvider(
+                this,
+                new AlarmListFragmentViewModelFactory(requireContext())
+        ).get(ListViewModel.class);
 
         viewModel.liveAlarms.observe(getViewLifecycleOwner(), alarms -> {
-            listAdapter = new ListAdapter(context, alarms);
-            binding.rvAlarmList.setAdapter(listAdapter);
+            listAdapter.setAlarmsToAdapter(alarms);
         });
 
         binding.rvAlarmList.setLayoutManager(new LinearLayoutManager(context));
@@ -103,6 +122,41 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
     }
 
     @Override
+    public void onListItemClick(Alarm alarm, ListAdapter.ViewHolder holder) {
+        if (actionMode) {
+            boolean contains = viewModel.liveAlarmsInActionMode.getValue().contains(alarm);
+            if (contains) {
+                viewModel.removeAlarmFromSelectedItemsInActionMode(alarm);
+                listAdapter.setDrawable(holder, R.drawable.alarm_list_item_bg);
+            } else {
+                viewModel.addItemToSelectedItemsInActionMode(alarm);
+                listAdapter.setDrawable(holder, R.drawable.alarm_list_selected_item_bg);
+            }
+        }
+    }
+
+    @Override
+    public void onListItemLongClick(Alarm alarm, ListAdapter.ViewHolder holder) {
+        if (!actionMode) {
+            actionMode = true;
+
+            viewModel.addItemToSelectedItemsInActionMode(alarm);
+
+            listAdapter.setDrawable(holder, R.drawable.alarm_list_selected_item_bg);
+
+            setActionMode();
+        } else {
+            // todo не забыть очистить список выбранных Alarms
+            //closeActionMode();
+        }
+    }
+
+    @Override
+    public void onEnableSwitchClick(Alarm alarm, boolean isChecked) {
+        viewModel.updateAlarmState(alarm, isChecked);
+    }
+
+    @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         int itemId = menuItem.getItemId();
         if (itemId == R.id.miSettings) {
@@ -111,31 +165,69 @@ public class AlarmListFragment extends Fragment implements MenuProvider {
         return true;
     }
 
+    private void checkActivityExtras() {
+        Tools.checkActivityExtras(context, requireActivity().getIntent());
+    }
+
     private void navigate(int destination) {
         navController.navigate(destination);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (listAdapter != null) {
-            listAdapter.clearCompositeDisposable();
-        }
-    }
+    private void setActionMode() {
+        ActionMode.Callback callback = new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                MenuInflater menuInflater = mode.getMenuInflater();
+                menuInflater.inflate(R.menu.fragment_list_action_mode_menu, menu);
 
-    private void checkExtras() {
-        Intent intent = requireActivity().getIntent();
-        if (intent.getBooleanExtra("time_zone_changed", false)) {
-            MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(context)
-                    .setTitle(getString(R.string.attention))
-                    .setMessage(getString(R.string.time_zone_changed))
-                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                        // nothing
-                    });
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
+                return true;
+            }
 
-            intent.removeExtra("time_zone_changed");
-        }
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                int itemId = menuItem.getItemId();
+
+                if (itemId == R.id.miDelete) {
+                    for (Alarm alarm : viewModel.liveAlarmsInActionMode.getValue()) {
+                        new AlarmClockManager(context).canselAlarmInSystemManager(alarm);
+
+                        Disposable dispose = Completable.fromAction(() -> {
+                                    new DatabaseManager().deleteAlarm(alarm);
+                                })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        () -> {
+                                            Log.i(TAG, "Successfully deleting of alarm in the database");
+                                        }, throwable -> {
+                                            Log.w(TAG, throwable.getCause());
+                                        }
+                                );
+
+                        viewModel.removeAlarmFromSelectedItemsInActionMode(alarm);
+                    }
+                    listAdapter.notifyDataSetChanged();
+                    //actionMode.finish();
+                }
+                if (itemId == R.id.miSelectAll) {
+
+                }
+
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                actionMode = false;
+                //selectedItemsInActionMode.clear();
+            }
+        };
+
+        requireActivity().startActionMode(callback);
     }
 }

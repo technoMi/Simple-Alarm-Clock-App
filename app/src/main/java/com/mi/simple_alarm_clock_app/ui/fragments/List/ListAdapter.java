@@ -23,6 +23,7 @@ import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
+import com.mi.simple_alarm_clock_app.ui.fragments.AlarmListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,15 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
+    public interface ListAdapterListener {
+        void onListItemClick(Alarm alarm, ViewHolder viewHolder);
+        void onListItemLongClick(Alarm alarm, ViewHolder holder);
+        void onEnableSwitchClick(Alarm alarm, boolean isChecked);
+    }
+
     private final String TAG = "ListAdapter";
+
+    private ListAdapterListener listener;
 
     private List<Alarm> alarms;
 
@@ -43,20 +52,18 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private LayoutInflater inflater;
 
-    private boolean actionMode;
-
-    private CompositeDisposable compositeDisposable;
-
-    private ArrayList<Alarm> selectedItemsInActionMode;
-
-    public ListAdapter(Context context, List<Alarm> alarms) {
+    public ListAdapter(Context context, AlarmListFragment alarmListFragment) {
         inflater = LayoutInflater.from(context);
         this.context = context;
+
+        listener = alarmListFragment;
+
+        alarms = new ArrayList<>();
+    }
+
+    public void setAlarmsToAdapter(List<Alarm> alarms) {
         this.alarms = alarms;
-
-        compositeDisposable = new CompositeDisposable();
-
-        actionMode = false;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -84,51 +91,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         holder.enableSwitch.setChecked(alarm.isEnabled());
 
         holder.enableSwitch.setOnClickListener(v -> {
-            alarm.setEnabled(!alarm.isEnabled());
-            if (holder.enableSwitch.isChecked()) {
-                alarm.doBeforeAlarmTurnedOn();
-                new AlarmClockManager(context).setAlarmInSystemManager(alarm);
-            } else {
-                new AlarmClockManager(context).canselAlarmInSystemManager(alarm);
-            }
-
-            Disposable dispose = Completable.fromAction(() -> {
-                        new DatabaseManager().updateAlarm(alarm);
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            () -> {
-                                Log.i(TAG, "Successfully update of alarm in the database");
-                            }, throwable -> {
-                                Log.w(TAG, throwable.getCause());
-                            }
-                    );
-
-            compositeDisposable.add(dispose);
+            boolean isChecked = holder.enableSwitch.isChecked();
+            listener.onEnableSwitchClick(alarm, isChecked);
         });
 
         holder.itemContainer.setOnClickListener(v -> {
-            if (actionMode) {
-                if (selectedItemsInActionMode.contains(alarm)) {
-                    selectedItemsInActionMode.remove(alarm);
-                    setDrawable(holder.itemContainer, R.drawable.alarm_list_item_bg);
-                } else {
-                    selectedItemsInActionMode.add(alarm);
-                    setDrawable(holder.itemContainer, R.drawable.alarm_list_selected_item_bg);
-                }
-            }
+            listener.onListItemClick(alarm, holder);
         });
 
         holder.itemContainer.setOnLongClickListener(v -> {
-            if (!actionMode) {
-                actionMode = true;
-                selectedItemsInActionMode = new ArrayList<>();
-
-                setDrawable(holder.itemContainer, R.drawable.alarm_list_selected_item_bg);
-
-                setActionMode();
-            }
+            listener.onListItemLongClick(alarm, holder);
             return false;
         });
     }
@@ -139,7 +111,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        View itemContainer;
+        public View itemContainer;
         TextView alarmName;
         TextView alarmTime;
         TextView daysOfWeek;
@@ -181,76 +153,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         return sb.toString();
     }
 
-    private void setDrawable(View view, int drawableId) {
-        view.setBackground(
+    public void setDrawable(ViewHolder holder, int drawableId) {
+        holder.itemContainer.setBackground(
                 AppCompatResources.getDrawable(
                         context,
                         drawableId
                 )
         );
-    }
-
-    private void setActionMode() {
-        ActionMode.Callback callback = new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                MenuInflater menuInflater = mode.getMenuInflater();
-                menuInflater.inflate(R.menu.fragment_list_action_mode_menu, menu);
-
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-                return true;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                int itemId = menuItem.getItemId();
-
-                if (itemId == R.id.miDelete) {
-                    for (Alarm alarm : selectedItemsInActionMode) {
-                        new AlarmClockManager(context).canselAlarmInSystemManager(alarm);
-
-                        Disposable dispose = Completable.fromAction(() -> {
-                                    new DatabaseManager().deleteAlarm(alarm);
-                                })
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        () -> {
-                                            Log.i(TAG, "Successfully deleting of alarm in the database");
-                                        }, throwable -> {
-                                            Log.w(TAG, throwable.getCause());
-                                        }
-                                );
-
-                        compositeDisposable.add(dispose);
-
-                        selectedItemsInActionMode.remove(alarm);
-                    }
-                    notifyDataSetChanged();
-                    actionMode.finish();
-                }
-                if (itemId == R.id.miSelectAll) {
-
-                }
-
-                return true;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                actionMode = false;
-                selectedItemsInActionMode.clear();
-            }
-        };
-
-        ((AppCompatActivity) context).startActionMode(callback);
-    }
-
-    public void clearCompositeDisposable() {
-        compositeDisposable.clear();
     }
 }
