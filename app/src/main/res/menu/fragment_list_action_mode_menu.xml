@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/miSelectAll"
-        android:icon="@drawable/baseline_select_all_24"
-        android:title="Delete"
-        app:showAsAction="always"/>
-
-    <item
         android:id="@+id/miDelete"
         android:icon="@drawable/baseline_delete_24"
         android:title="Delete"

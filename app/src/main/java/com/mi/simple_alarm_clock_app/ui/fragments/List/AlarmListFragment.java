@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -46,6 +47,8 @@ import java.util.ArrayList;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -62,6 +65,8 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
     private ListViewModel viewModel;
 
     private ListAdapter listAdapter;
+
+    private ActionMode.Callback actionModeCallback;
 
     private boolean actionMode;
 
@@ -126,10 +131,10 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
         if (actionMode) {
             boolean contains = viewModel.liveAlarmsInActionMode.getValue().contains(alarm);
             if (contains) {
-                viewModel.removeAlarmFromSelectedItemsInActionMode(alarm);
+                viewModel.removeAlarmFromSelectedItemsInActionMode(alarm, holder);
                 listAdapter.setDrawable(holder, R.drawable.alarm_list_item_bg);
             } else {
-                viewModel.addItemToSelectedItemsInActionMode(alarm);
+                viewModel.addItemToSelectedItemsInActionMode(alarm, holder);
                 listAdapter.setDrawable(holder, R.drawable.alarm_list_selected_item_bg);
             }
         }
@@ -138,16 +143,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
     @Override
     public void onListItemLongClick(Alarm alarm, ListAdapter.ViewHolder holder) {
         if (!actionMode) {
-            actionMode = true;
-
-            viewModel.addItemToSelectedItemsInActionMode(alarm);
-
-            listAdapter.setDrawable(holder, R.drawable.alarm_list_selected_item_bg);
-
             setActionMode();
-        } else {
-            // todo не забыть очистить список выбранных Alarms
-            //closeActionMode();
         }
     }
 
@@ -174,7 +170,12 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
     }
 
     private void setActionMode() {
-        ActionMode.Callback callback = new ActionMode.Callback() {
+
+        actionMode = true;
+
+        binding.btnAdd.setVisibility(View.INVISIBLE);
+
+        actionModeCallback = new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 MenuInflater menuInflater = mode.getMenuInflater();
@@ -193,30 +194,10 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
                 int itemId = menuItem.getItemId();
 
                 if (itemId == R.id.miDelete) {
-                    for (Alarm alarm : viewModel.liveAlarmsInActionMode.getValue()) {
-                        new AlarmClockManager(context).canselAlarmInSystemManager(alarm);
-
-                        Disposable dispose = Completable.fromAction(() -> {
-                                    new DatabaseManager().deleteAlarm(alarm);
-                                })
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        () -> {
-                                            Log.i(TAG, "Successfully deleting of alarm in the database");
-                                        }, throwable -> {
-                                            Log.w(TAG, throwable.getCause());
-                                        }
-                                );
-
-                        viewModel.removeAlarmFromSelectedItemsInActionMode(alarm);
-                    }
-                    listAdapter.notifyDataSetChanged();
-                    //actionMode.finish();
+                    viewModel.deleteSelectedAlarmsInActionMode();
                 }
-                if (itemId == R.id.miSelectAll) {
 
-                }
+                actionMode.finish();
 
                 return true;
             }
@@ -224,10 +205,12 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 actionMode = false;
-                //selectedItemsInActionMode.clear();
+                binding.btnAdd.setVisibility(View.VISIBLE);
+                viewModel.clearListOfAlarmsInActionMode();
+                listAdapter.setDrawableForAllHolders(viewModel.getHoldersOfSelectedItems(), R.drawable.alarm_list_item_bg);
             }
         };
 
-        requireActivity().startActionMode(callback);
+        requireActivity().startActionMode(actionModeCallback);
     }
 }

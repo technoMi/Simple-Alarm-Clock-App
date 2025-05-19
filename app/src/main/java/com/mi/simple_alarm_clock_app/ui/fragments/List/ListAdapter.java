@@ -1,38 +1,24 @@
 package com.mi.simple_alarm_clock_app.ui.fragments.List;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
-import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
-import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.ui.fragments.AlarmListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
@@ -46,7 +32,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private ListAdapterListener listener;
 
-    private List<Alarm> alarms;
+    public List<Alarm> alarms;
 
     private final Context context;
 
@@ -62,7 +48,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     public void setAlarmsToAdapter(List<Alarm> alarms) {
-        this.alarms = alarms;
+        updateAlarmsList(alarms);
+    }
+
+    public void updateAlarmsList(List<Alarm> alarms) {
+        this.alarms.clear();
+        this.alarms.addAll(alarms);
         notifyDataSetChanged();
     }
 
@@ -160,5 +151,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                         drawableId
                 )
         );
+    }
+
+    public void setDrawableForAllHolders(ArrayList<RecyclerView.ViewHolder> holders, int drawableId) {
+        for (RecyclerView.ViewHolder holder : holders) {
+            setDrawable((ViewHolder) holder, drawableId);
+        };
     }
 }
