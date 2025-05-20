@@ -36,6 +36,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mi.simple_alarm_clock_app.R;
 import com.mi.simple_alarm_clock_app.Tools;
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmClockManager;
+import com.mi.simple_alarm_clock_app.alarmclock.TimeUtils;
 import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.databinding.FragmentAlarmListBinding;
 import com.mi.simple_alarm_clock_app.model.Alarm;
@@ -106,6 +107,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
             if (actionMode != null) {
                 actionMode.finish();
                 actionMode = null;
+                setNextAlarmTimeInUI();
             }
         });
 
@@ -114,16 +116,27 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
         });
 
         binding.rvAlarmList.setLayoutManager(new LinearLayoutManager(context));
-
-        binding.btnAdd.setOnClickListener(btnAddView -> {
-            navigate(R.id.action_firstFragment_to_alarmEditFragment);
-        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
         viewModel.getAllAlarmsFromDatabase();
+
+        setNextAlarmTimeInUI();
+    }
+
+    private void setNextAlarmTimeInUI() {
+        try {
+            long timeInMillis = new AlarmClockManager(context).getNextAlarmTimeInMillis();
+            binding.nextAlarmInscription.setText(getString(R.string.next_alarm_inscription));
+            binding.nextAlarmTime.setText(Tools.getFormattedTimeTittleFromMillis(timeInMillis));
+            binding.nextAlarmDate.setText(Tools.getDateTittleFromMillis(timeInMillis));
+        } catch (NullPointerException e) {
+            binding.nextAlarmInscription.setText("");
+            binding.nextAlarmTime.setText("0:0");
+            binding.nextAlarmDate.setText("Нет установленных будильников");
+        }
     }
 
     @Override
@@ -155,6 +168,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
     @Override
     public void onEnableSwitchClick(Alarm alarm, boolean isChecked) {
         viewModel.updateAlarmState(alarm, isChecked);
+        setNextAlarmTimeInUI();
     }
 
     @Override
@@ -175,8 +189,6 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
     }
 
     private void setActionMode() {
-
-        binding.btnAdd.setVisibility(View.INVISIBLE);
 
         ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
             @Override
@@ -208,7 +220,6 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 actionMode = null;
-                binding.btnAdd.setVisibility(View.VISIBLE);
                 viewModel.clearListOfAlarmsInActionMode();
                 listAdapter.setDrawableForAllHolders(viewModel.getHoldersOfSelectedItems(), R.drawable.alarm_list_item_bg);
             }

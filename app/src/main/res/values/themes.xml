@@ -6,7 +6,7 @@
 
     <style name="Theme.Light" parent="Base.Theme.SimpleAlarmClockApp">
         <item name="colorPrimary">@color/blue</item>
-        <item name="colorPrimaryDark">@color/blue</item>
+        <item name="colorPrimaryDark">@color/dark_blue</item>
     </style>
 
 

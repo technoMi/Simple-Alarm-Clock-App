@@ -40,6 +40,8 @@ public class AlarmClockManager {
         PendingIntent alarmPendingIntent = getAlarmPendingIntent(alarm);
 
         alarmManager.setAlarmClock(alarmClockInfo, alarmPendingIntent);
+
+        alarmManager.getNextAlarmClock();;
     }
 
     private PendingIntent getAlarmAppInfoIntent() {
@@ -71,5 +73,13 @@ public class AlarmClockManager {
             Log.d(TAG, TAG + " Recalculate time for alarm. ID: " + alarm.getId());
             setAlarmInSystemManager(alarm);
         }
+    }
+
+    public long getNextAlarmTimeInMillis() throws NullPointerException {
+        AlarmManager.AlarmClockInfo alarmClockInfo = alarmManager.getNextAlarmClock();
+
+        long timeInMillis = alarmClockInfo.getTriggerTime();
+
+        return timeInMillis;
     }
 }
