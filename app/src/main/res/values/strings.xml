@@ -21,5 +21,4 @@
     <string name="time_zone_changed">Изменился часовой пояc, необходимо перенастроить будильники</string>
     <string name="next_alarm_inscription">Следующий будильник в</string>
 
-    <string name="alarms_updated"></string>
 </resources>
