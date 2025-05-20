@@ -66,9 +66,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
 
     private ListAdapter listAdapter;
 
-    private ActionMode.Callback actionModeCallback;
-
-    private boolean actionMode;
+    private ActionMode actionMode;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,6 +102,13 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
                 new AlarmListFragmentViewModelFactory(requireContext())
         ).get(ListViewModel.class);
 
+        viewModel.liveFlagOfDeletionAlarmsFromActionMode.observe(getViewLifecycleOwner(), b -> {
+            if (actionMode != null) {
+                actionMode.finish();
+                actionMode = null;
+            }
+        });
+
         viewModel.liveAlarms.observe(getViewLifecycleOwner(), alarms -> {
             listAdapter.setAlarmsToAdapter(alarms);
         });
@@ -128,7 +133,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
 
     @Override
     public void onListItemClick(Alarm alarm, ListAdapter.ViewHolder holder) {
-        if (actionMode) {
+        if (actionMode != null) {
             boolean contains = viewModel.liveAlarmsInActionMode.getValue().contains(alarm);
             if (contains) {
                 viewModel.removeAlarmFromSelectedItemsInActionMode(alarm, holder);
@@ -142,7 +147,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
 
     @Override
     public void onListItemLongClick(Alarm alarm, ListAdapter.ViewHolder holder) {
-        if (!actionMode) {
+        if (actionMode == null) {
             setActionMode();
         }
     }
@@ -171,15 +176,15 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
 
     private void setActionMode() {
 
-        actionMode = true;
-
         binding.btnAdd.setVisibility(View.INVISIBLE);
 
-        actionModeCallback = new ActionMode.Callback() {
+        ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 MenuInflater menuInflater = mode.getMenuInflater();
                 menuInflater.inflate(R.menu.fragment_list_action_mode_menu, menu);
+
+                actionMode = mode;
 
                 return true;
             }
@@ -197,14 +202,12 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
                     viewModel.deleteSelectedAlarmsInActionMode();
                 }
 
-                actionMode.finish();
-
                 return true;
             }
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                actionMode = false;
+                actionMode = null;
                 binding.btnAdd.setVisibility(View.VISIBLE);
                 viewModel.clearListOfAlarmsInActionMode();
                 listAdapter.setDrawableForAllHolders(viewModel.getHoldersOfSelectedItems(), R.drawable.alarm_list_item_bg);

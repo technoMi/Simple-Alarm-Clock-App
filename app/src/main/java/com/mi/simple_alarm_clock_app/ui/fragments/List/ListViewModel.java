@@ -36,7 +36,10 @@ public class ListViewModel extends ViewModel {
     private final MutableLiveData<ArrayList<Alarm>> mutableAlarmsInActionMode = new MutableLiveData<>(new ArrayList<>());
     public LiveData<ArrayList<Alarm>> liveAlarmsInActionMode = mutableAlarmsInActionMode;
 
-    private final ArrayList<RecyclerView.ViewHolder> holders = new ArrayList<>();
+    private final MutableLiveData<Boolean> alarmsInActionModeDeleted = new MutableLiveData<>();
+    public LiveData<Boolean> liveFlagOfDeletionAlarmsFromActionMode = alarmsInActionModeDeleted;
+
+    private final ArrayList<RecyclerView.ViewHolder> holdersOfAlarmsInActionMode = new ArrayList<>();
 
     public ListViewModel(AlarmClockManager alarmClockManager, DatabaseManager databaseManager) {
         this.alarmClockManager = alarmClockManager;
@@ -54,7 +57,7 @@ public class ListViewModel extends ViewModel {
     public void addItemToSelectedItemsInActionMode(Alarm alarm, RecyclerView.ViewHolder holder) {
         ArrayList<Alarm> updatedList = mutableAlarmsInActionMode.getValue();
         updatedList.add(alarm);
-        holders.add(holder);
+        holdersOfAlarmsInActionMode.add(holder);
         mutableAlarmsInActionMode.setValue(updatedList);
     }
 
@@ -62,11 +65,11 @@ public class ListViewModel extends ViewModel {
         ArrayList<Alarm> list = mutableAlarmsInActionMode.getValue();
         list.remove(alarm);
         mutableAlarmsInActionMode.setValue(list);
-        holders.remove(holder);
+        holdersOfAlarmsInActionMode.remove(holder);
     }
 
     public ArrayList<RecyclerView.ViewHolder> getHoldersOfSelectedItems() {
-        return holders;
+        return holdersOfAlarmsInActionMode;
     }
 
     public void deleteSelectedAlarmsInActionMode() {
@@ -89,8 +92,10 @@ public class ListViewModel extends ViewModel {
                         }, throwable -> {
                             Log.w(TAG, throwable.getCause());
                         }, () -> {
-                            holders.clear();
+                            holdersOfAlarmsInActionMode.clear();
                             getAllAlarmsFromDatabase();
+
+                            alarmsInActionModeDeleted.setValue(true);
                             Log.i(TAG, "Successfully deleting of alarm");
                         }
                 );
