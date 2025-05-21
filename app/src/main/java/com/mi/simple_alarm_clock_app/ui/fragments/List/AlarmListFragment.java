@@ -116,7 +116,7 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
         } catch (NullPointerException e) {
             binding.nextAlarmInscription.setText("");
             binding.nextAlarmTime.setText(getString(R.string.time_zero_zero));
-            binding.nextAlarmDate.setText("Нет установленных будильников");
+            binding.nextAlarmDate.setText(getString(R.string.no_alarms));
         }
     }
 

@@ -5,6 +5,7 @@
     <string name="invalid_form">Минимально требуется указать время, а также дату или дни недели</string>
     <string name="certain_time_tittle">По определённым дням</string>
     <string name="alarm_no_name">Без названия</string>
+    <string name="no_alarms">Нет установленных будильников</string>
 
     <string name="ok">Хорошо</string>
     <string name="cansel">Отмена</string>
