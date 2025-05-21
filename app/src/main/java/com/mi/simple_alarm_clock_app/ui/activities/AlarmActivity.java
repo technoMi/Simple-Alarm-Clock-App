@@ -3,6 +3,7 @@ package com.mi.simple_alarm_clock_app.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.mi.simple_alarm_clock_app.alarmclock.AlarmSoundPlayer;
@@ -21,6 +22,10 @@ public class AlarmActivity extends AppCompatActivity {
         binding = ActivityAlarmClockBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setElevation(0);
+        actionBar.setBackgroundDrawable(null);
 
         soundPlayer = new AlarmSoundPlayer(this);
 

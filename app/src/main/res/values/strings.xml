@@ -12,6 +12,7 @@
     <string name="delete">Удалить</string>
     <string name="attention">Внимание</string>
     <string name="confirm">Подтвердите действие</string>
+    <string name="alarm_hint">Нажмите на кнопку, чтобы отключить будильник</string>
 
     <string name="monday_short_tittle">ПН</string>
     <string name="tuesday_short_tittle">ВТ</string>
