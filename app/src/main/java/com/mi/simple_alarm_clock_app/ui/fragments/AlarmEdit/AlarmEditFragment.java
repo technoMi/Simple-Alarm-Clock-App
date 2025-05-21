@@ -10,6 +10,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +99,8 @@ public class AlarmEditFragment extends Fragment {
         });
 
         binding.btnSave.setOnClickListener(v -> {
-            saveAlarm();
+            String name = String.valueOf(binding.etAlarmName.getText());
+            saveAlarm(name);
         });
 
         binding.cbMonday.setOnClickListener(daysOfWeekCheckBoxesOnClickListener);
@@ -131,8 +135,8 @@ public class AlarmEditFragment extends Fragment {
         });
     }
 
-    private void saveAlarm() {
-        viewModel.setAlarm();
+    private void saveAlarm(String name) {
+        viewModel.setAlarm(name);
     }
 
     private void clearDaysOfWeekCheckBoxes() {

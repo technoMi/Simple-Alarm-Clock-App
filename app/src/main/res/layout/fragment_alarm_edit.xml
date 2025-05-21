@@ -15,23 +15,30 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/nextAlarmInscription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="@string/next_alarm_inscription_for_edit"/>
 
             <TextView
                 android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="50dp"
-                android:text="00:00"
-                android:textSize="82sp" />
+                android:layout_height="match_parent"
+                android:textSize="86sp"
+                android:text="@string/time_zero_zero"
+                tools:text="23:59"/>
 
             <TextView
                 android:id="@+id/tvAlarmDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="22sp" />
+                android:textSize="20sp"
+                tools:text="01.01.1970"/>
 
         </LinearLayout>
 

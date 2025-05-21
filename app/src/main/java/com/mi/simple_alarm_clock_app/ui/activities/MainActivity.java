@@ -24,14 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setElevation(0);
-//        actionBar.setBackgroundDrawable(null);
-
-        // todo в последнюю очередь закончить с разрешениями
-        if (!Settings.canDrawOverlays(this)) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, 9);
-        }
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setElevation(0);
+        actionBar.setBackgroundDrawable(null);
     }
 }

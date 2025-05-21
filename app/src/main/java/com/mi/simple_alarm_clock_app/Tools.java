@@ -79,18 +79,7 @@ public class Tools {
         return (status == PackageManager.PERMISSION_GRANTED);
     }
 
-    public static void checkActivityExtras(Context context, Intent intent) {
-        if (intent.getBooleanExtra("time_zone_changed", false)) {
-            MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(context)
-                    .setTitle(context.getString(R.string.attention))
-                    .setMessage(context.getString(R.string.time_zone_changed))
-                    .setPositiveButton(context.getString(R.string.ok), (dialog, which) -> {
-                        // nothing
-                    });
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
-
-            intent.removeExtra("time_zone_changed");
-        }
+    public static boolean checkActivityExtras(Intent intent) {
+        return intent.getBooleanExtra("time_zone_changed", false);
     }
 }

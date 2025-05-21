@@ -7,7 +7,10 @@
     <string name="alarm_no_name">Без названия</string>
 
     <string name="ok">Хорошо</string>
+    <string name="cansel">Отмена</string>
+    <string name="delete">Удалить</string>
     <string name="attention">Внимание</string>
+    <string name="confirm">Подтвердите действие</string>
 
     <string name="monday_short_tittle">ПН</string>
     <string name="tuesday_short_tittle">ВТ</string>
@@ -19,6 +22,11 @@
 
     <string name="everyday_mode_tittle">Ежедневно</string>
     <string name="time_zone_changed">Изменился часовой пояc, необходимо перенастроить будильники</string>
-    <string name="next_alarm_inscription">Следующий будильник в</string>
+    <string name="next_alarm_inscription_for_list">Следующий будильник в</string>
+    <string name="next_alarm_inscription_for_edit">Следующий будильник в…</string>
+    <string name="time_zero_zero">00:00</string>
+
+    <string name="can_draw_overlays_alert_tittle">Есть просьба…</string>
+    <string name="can_draw_overlays_alert_message">Для вызова будильников требуется разрешить приложению работать в фоне.</string>
 
 </resources>

@@ -103,13 +103,13 @@ public class EditFragmentViewModel extends ViewModel {
         this.alarmType = alarmType;
     }
 
-    public void setAlarm() {
+    public void setAlarm(String name) {
         boolean isValidate = isAlarmValidate();
 
         if (!isValidate) {
             isValidateMutable.setValue(false);
         } else {
-            saveAlarm();
+            saveAlarm(name);
         }
     }
 
@@ -117,7 +117,7 @@ public class EditFragmentViewModel extends ViewModel {
         return (mutableTimeInMillis.getValue() != null) && (alarmType != null);
     }
 
-    private void saveAlarm() {
+    private void saveAlarm(String alarmName) {
         int id = new DatabaseManager().getNewAlarmEntityItemID(alarmType);
 
         if (alarmType == AlarmType.SINGLE) {
@@ -126,7 +126,7 @@ public class EditFragmentViewModel extends ViewModel {
 
             SingleAlarm alarm = new SingleAlarm(
                     id,
-                    "",
+                    alarmName,
                     timeInMillis,
                     true
             );
@@ -140,7 +140,7 @@ public class EditFragmentViewModel extends ViewModel {
 
             RepeatingAlarm alarm = new RepeatingAlarm(
                     id,
-                    "",
+                    alarmName,
                     hour,
                     minute,
                     true,
