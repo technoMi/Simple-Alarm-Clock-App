@@ -12,4 +12,10 @@ public interface IAlarmStateHandler {
     perform actions after an alarm has been triggered.
     */
     void doAfterAlarmTriggered();
+
+    /*
+    This method is used to recalculate the alarm response time after
+    the alarm has been triggered.
+    */
+    void calculateNextTriggerTime();
 }

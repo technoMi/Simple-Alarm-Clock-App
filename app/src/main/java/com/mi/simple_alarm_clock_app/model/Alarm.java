@@ -5,7 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
-public abstract class Alarm implements ITimeRecalculation, IAlarmStateHandler {
+public abstract class Alarm implements IAlarmStateHandler {
 
     public Alarm(
             int id,
