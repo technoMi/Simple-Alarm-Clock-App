@@ -11,23 +11,29 @@ import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import java.util.List;
 
 @Dao
-public interface RepeatingAlarmDao {
+public interface RepeatingAlarmDao extends AlarmDao<RepeatingAlarm> {
 
+    @Override
     @Query("SELECT * FROM repeating_alarms ORDER BY name DESC")
-    List<RepeatingAlarm> getAllRepeatingAlarmClocks();
+    List<RepeatingAlarm> getAllAlarms();
 
+    @Override
     @Insert(entity = RepeatingAlarm.class)
-    void insertNewScheduledRepeatingAlarmClock(RepeatingAlarm alarmClock);
+    void insertNewAlarm(RepeatingAlarm alarmClock);
 
+    @Override
     @Delete(entity = RepeatingAlarm.class)
-    void deleteScheduledRepeatingAlarmClock(RepeatingAlarm alarmClock);
+    void deleteAlarm(RepeatingAlarm alarmClock);
 
+    @Override
     @Query("SELECT * FROM repeating_alarms WHERE id == :id")
-    RepeatingAlarm getItemById(int id);
+    RepeatingAlarm getAlarmById(int id);
 
+    @Override
     @Query("SELECT EXISTS(SELECT 1 FROM repeating_alarms WHERE id == :id)")
-    boolean doesItemExistById(int id);
+    boolean doesAlarmExistById(int id);
 
+    @Override
     @Update(entity = RepeatingAlarm.class)
-    void updateScheduledAlarmClock(RepeatingAlarm alarmClock);
+    void updateAlarm(RepeatingAlarm alarmClock);
 }

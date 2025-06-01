@@ -28,8 +28,8 @@ public class DatabaseManager {
             RepeatingAlarmDao repeatingAlarmDao = App.getInstance().getRepeatingAlarmDao();
 
             ArrayList<Alarm> allAlarmsList = new ArrayList<>();
-            ArrayList<SingleAlarm> singleAlarmList = (ArrayList<SingleAlarm>) singleAlarmDao.getAllSingleAlarmClocks();
-            ArrayList<RepeatingAlarm> repeatingAlarmList = (ArrayList<RepeatingAlarm>) repeatingAlarmDao.getAllRepeatingAlarmClocks();
+            ArrayList<SingleAlarm> singleAlarmList = (ArrayList<SingleAlarm>) singleAlarmDao.getAllAlarms();
+            ArrayList<RepeatingAlarm> repeatingAlarmList = (ArrayList<RepeatingAlarm>) repeatingAlarmDao.getAllAlarms();
 
             allAlarmsList.addAll(singleAlarmList);
             allAlarmsList.addAll(repeatingAlarmList);
@@ -51,12 +51,12 @@ public class DatabaseManager {
 
     private SingleAlarm getSingleAlarmById(int id) {
         SingleAlarmDao alarmDao = App.getInstance().getSingleAlarmDao();
-        return alarmDao.getItemById(id);
+        return alarmDao.getAlarmById(id);
     }
 
     private RepeatingAlarm getRepeatingAlarmById(int id) {
         RepeatingAlarmDao alarmDao = App.getInstance().getRepeatingAlarmDao();
-        return alarmDao.getItemById(id);
+        return alarmDao.getAlarmById(id);
     }
 
 
@@ -71,12 +71,12 @@ public class DatabaseManager {
 
     private void saveSingleAlarm(SingleAlarm newItem) {
         SingleAlarmDao alarmDao = App.getInstance().getSingleAlarmDao();
-        alarmDao.insertNewScheduledSingleAlarmClock(newItem);
+        alarmDao.insertNewAlarm(newItem);
     }
 
     private void saveRepeatingAlarm(RepeatingAlarm newItem) {
         RepeatingAlarmDao alarmDao = App.getInstance().getRepeatingAlarmDao();
-        alarmDao.insertNewScheduledRepeatingAlarmClock(newItem);
+        alarmDao.insertNewAlarm(newItem);
     }
 
 
@@ -91,12 +91,12 @@ public class DatabaseManager {
 
     private void updateSingleAlarmClock(SingleAlarm item) {
         SingleAlarmDao alarmDao = App.getInstance().getSingleAlarmDao();
-        alarmDao.updateScheduledAlarmClock(item);
+        alarmDao.updateAlarm(item);
     }
 
     private void updateRepeatingAlarmClock(RepeatingAlarm item) {
         RepeatingAlarmDao alarmDao = App.getInstance().getRepeatingAlarmDao();
-        alarmDao.updateScheduledAlarmClock(item);
+        alarmDao.updateAlarm(item);
     }
 
 
@@ -111,12 +111,12 @@ public class DatabaseManager {
 
     private void deleteSingleAlarm(SingleAlarm item) {
         SingleAlarmDao alarmDao = App.getInstance().getSingleAlarmDao();
-        alarmDao.deleteScheduledSingleAlarmClock(item);
+        alarmDao.deleteAlarm(item);
     }
 
     private void deleteRepeatingAlarm(RepeatingAlarm item) {
         RepeatingAlarmDao alarmDao = App.getInstance().getRepeatingAlarmDao();
-        alarmDao.deleteScheduledRepeatingAlarmClock(item);
+        alarmDao.deleteAlarm(item);
     }
 
 

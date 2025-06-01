@@ -13,23 +13,29 @@ import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 import java.util.List;
 
 @Dao
-public interface SingleAlarmDao {
+public interface SingleAlarmDao extends AlarmDao<SingleAlarm> {
 
+    @Override
     @Query("SELECT * FROM single_alarms ORDER BY name DESC")
-    List<SingleAlarm> getAllSingleAlarmClocks();
+    List<SingleAlarm> getAllAlarms();
 
+    @Override
     @Insert(entity = SingleAlarm.class)
-    void insertNewScheduledSingleAlarmClock(Alarm alarmClock);
+    void insertNewAlarm(SingleAlarm alarmClock);
 
+    @Override
     @Delete(entity = SingleAlarm.class)
-    void deleteScheduledSingleAlarmClock(Alarm alarmClock);
+    void deleteAlarm(SingleAlarm alarmClock);
 
+    @Override
     @Query("SELECT * FROM single_alarms WHERE id == :id")
-    SingleAlarm getItemById(int id);
+    SingleAlarm getAlarmById(int id);
 
+    @Override
     @Query("SELECT EXISTS(SELECT 1 FROM single_alarms WHERE id == :id)")
-    boolean doesItemExistById(int id);
+    boolean doesAlarmExistById(int id);
 
+    @Override
     @Update(entity = SingleAlarm.class)
-    void updateScheduledAlarmClock(SingleAlarm alarmClock);
+    void updateAlarm(SingleAlarm alarmClock);
 }
