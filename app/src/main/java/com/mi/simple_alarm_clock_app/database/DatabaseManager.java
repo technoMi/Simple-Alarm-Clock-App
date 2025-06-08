@@ -61,12 +61,17 @@ public class DatabaseManager {
 
 
     public void saveAlarm(Alarm alarm) {
-        if (alarm instanceof SingleAlarm) {
-            saveSingleAlarm((SingleAlarm) alarm);
-        }
-        if (alarm instanceof RepeatingAlarm) {
-            saveRepeatingAlarm((RepeatingAlarm) alarm);
-        }
+
+
+        AlarmDaoRepository.getDaoFor(alarm).getDao().insertNewAlarm(alarm);
+
+
+//        if (alarm instanceof SingleAlarm) {
+//            saveSingleAlarm((SingleAlarm) alarm);
+//        }
+//        if (alarm instanceof RepeatingAlarm) {
+//            saveRepeatingAlarm((RepeatingAlarm) alarm);
+//        }
     }
 
     private void saveSingleAlarm(SingleAlarm newItem) {
