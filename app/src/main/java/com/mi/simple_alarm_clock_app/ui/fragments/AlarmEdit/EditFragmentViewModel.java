@@ -42,7 +42,7 @@ public class EditFragmentViewModel extends ViewModel {
     private final MutableLiveData<Long> mutableDateTimeInMillis = new MutableLiveData<>();
     public LiveData<Long> dateTimeInMillis = mutableDateTimeInMillis;
 
-    private final MutableLiveData<Long> mutableTimeInMillis = new MutableLiveData<>();
+    private final MutableLiveData<Long> mutableTimeInMillis = new MutableLiveData<>(0L);
     public LiveData<Long> timeInMillis = mutableTimeInMillis;
 
     private boolean isMonday;

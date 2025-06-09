@@ -133,14 +133,14 @@ public class AlarmEditFragment extends Fragment {
         for (int i = 0; i < chars.length; i++) {
             if (Character.isDigit(chars[i]) && chars[i] != '0') {
                 int startValue = Character.getNumericValue(chars[i]);
-                int finalI = i;
+                int position = i;
 
                 ValueAnimator animator = ValueAnimator.ofInt(startValue, 0);
                 animator.setDuration((long) startValue * 90);
                 animator.setInterpolator(new DecelerateInterpolator());
 
                 animator.addUpdateListener(animation -> {
-                    animatedText.setCharAt(finalI, Character.forDigit((int) animation.getAnimatedValue(), 10));
+                    animatedText.setCharAt(position, Character.forDigit((int) animation.getAnimatedValue(), 10));
                     binding.tvTime.setText(animatedText.toString());
                 });
 
