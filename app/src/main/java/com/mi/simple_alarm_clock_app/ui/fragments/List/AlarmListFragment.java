@@ -172,7 +172,9 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
                 AlertDialog alertDialog = dialogBuilder.create();
                 alertDialog.show();
             } else {
-                navigate(R.id.action_firstFragment_to_alarmEditFragment);
+                Bundle bundle = new Bundle();
+                bundle.putString("next_alarm_time", binding.nextAlarmTime.getText().toString());
+                navigate(R.id.action_firstFragment_to_alarmEditFragment, bundle);
             }
         }
         return true;
@@ -195,8 +197,8 @@ public class AlarmListFragment extends Fragment implements MenuProvider, ListAda
         }
     }
 
-    private void navigate(int destination) {
-        navController.navigate(destination);
+    private void navigate(int destination, Bundle bundle) {
+        navController.navigate(destination, bundle);
     }
 
     private void setActionMode() {

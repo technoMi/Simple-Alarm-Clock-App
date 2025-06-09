@@ -1,5 +1,6 @@
 package com.mi.simple_alarm_clock_app.ui.fragments.AlarmEdit;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -13,6 +14,8 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.TextView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -109,7 +112,43 @@ public class AlarmEditFragment extends Fragment {
         binding.cbSunday.setOnClickListener(daysOfWeekCheckBoxesOnClickListener);
 
         super.onViewCreated(view, savedInstanceState);
+
+        startFragmentAnimation();
     }
+
+    private void startFragmentAnimation() {
+        animateTimeToZero();
+    }
+
+    private void animateTimeToZero() {
+
+        String time = getArguments().getString(
+                "next_alarm_time",
+                getString(R.string.time_zero_zero)
+        );
+
+        char[] chars = time.toCharArray();
+        StringBuilder animatedText = new StringBuilder(time);
+
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isDigit(chars[i]) && chars[i] != '0') {
+                int startValue = Character.getNumericValue(chars[i]);
+                int finalI = i;
+
+                ValueAnimator animator = ValueAnimator.ofInt(startValue, 0);
+                animator.setDuration((long) startValue * 90);
+                animator.setInterpolator(new DecelerateInterpolator());
+
+                animator.addUpdateListener(animation -> {
+                    animatedText.setCharAt(finalI, Character.forDigit((int) animation.getAnimatedValue(), 10));
+                    binding.tvTime.setText(animatedText.toString());
+                });
+
+                animator.start();
+            }
+        }
+    }
+
 
     private void createTimePicker() {
         MaterialTimePicker timePicker = Tools.getTimePickerFragment();

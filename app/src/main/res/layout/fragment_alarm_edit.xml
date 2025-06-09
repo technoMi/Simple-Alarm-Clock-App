@@ -29,9 +29,9 @@
                 android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textSize="86sp"
                 android:text="@string/time_zero_zero"
-                tools:text="23:59"/>
+                android:textSize="86sp"
+                tools:text="23:59" />
 
             <TextView
                 android:id="@+id/tvAlarmDate"
