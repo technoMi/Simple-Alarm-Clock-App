@@ -10,6 +10,8 @@ import com.mi.simple_alarm_clock_app.database.DatabaseManager;
 import com.mi.simple_alarm_clock_app.model.Alarm;
 import com.mi.simple_alarm_clock_app.ui.activities.AlarmActivity;
 
+import java.util.Objects;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -24,7 +26,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(Actions.ALARM_ACTION)) {
+        if (Objects.equals(intent.getAction(), Actions.ALARM_ACTION)) {
 
             int alarmId = intent.getIntExtra("id", -1);
 

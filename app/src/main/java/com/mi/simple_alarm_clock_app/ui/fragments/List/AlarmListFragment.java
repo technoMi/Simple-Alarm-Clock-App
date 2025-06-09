@@ -34,6 +34,8 @@ import com.mi.simple_alarm_clock_app.ui.fragments.List.AlarmListFragmentViewMode
 import com.mi.simple_alarm_clock_app.ui.fragments.List.ListAdapter;
 import com.mi.simple_alarm_clock_app.ui.fragments.List.ListViewModel;
 
+import java.util.List;
+
 public class AlarmListFragment extends Fragment implements MenuProvider, ListAdapter.ListAdapterListener {
 
     private final String TAG = "AlarmListFragment";

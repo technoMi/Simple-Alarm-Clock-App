@@ -14,7 +14,6 @@ import com.mi.simple_alarm_clock_app.model.AlarmType;
 import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
 import com.mi.simple_alarm_clock_app.model.SingleAlarm;
 
-import java.util.Calendar;
 import java.util.TimeZone;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -27,8 +26,8 @@ public class EditFragmentViewModel extends ViewModel {
 
     private final String TAG = "EditFragmentViewModel";
 
-    private AlarmClockManager alarmManager;
-    private DatabaseManager dbManager;
+    private final AlarmClockManager alarmManager;
+    private final DatabaseManager dbManager;
 
     private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -110,6 +109,7 @@ public class EditFragmentViewModel extends ViewModel {
             isValidateMutable.setValue(false);
         } else {
             saveAlarm(name);
+            alarmClockCreatedMutable.setValue(true);
         }
     }
 
@@ -121,42 +121,46 @@ public class EditFragmentViewModel extends ViewModel {
         int id = new DatabaseManager().getNewAlarmEntityItemID(alarmType);
 
         if (alarmType == AlarmType.SINGLE) {
-
-            long timeInMillis = mutableDateTimeInMillis.getValue() + mutableTimeInMillis.getValue();
-
-            SingleAlarm alarm = new SingleAlarm(
-                    id,
-                    alarmName,
-                    timeInMillis,
-                    true
-            );
-            saveAlarmInSystemManager(alarm);
-            saveAlarmInDatabase(alarm);
+            saveSingleAlarmInDatabase(id, alarmName);
         }
-
         if (alarmType == AlarmType.REPEATING) {
-            int hour = TimeUtils.getHourFromMillis(mutableTimeInMillis.getValue());
-            int minute = TimeUtils.getMinuteFromMillis(mutableTimeInMillis.getValue());
-
-            RepeatingAlarm alarm = new RepeatingAlarm(
-                    id,
-                    alarmName,
-                    hour,
-                    minute,
-                    true,
-                    isMonday,
-                    isTuesday,
-                    isWednesday,
-                    isThursday,
-                    isFriday,
-                    isSaturday,
-                    isSunday
-            );
-            saveAlarmInSystemManager(alarm);
-            saveAlarmInDatabase(alarm);
+            saveRepeatingAlarmInDatabase(id, alarmName);
         }
+    }
 
-        alarmClockCreatedMutable.setValue(true);
+    private void saveSingleAlarmInDatabase(int id, String name) {
+        long timeInMillis = mutableDateTimeInMillis.getValue() + mutableTimeInMillis.getValue();
+
+        SingleAlarm alarm = new SingleAlarm(
+                id,
+                name,
+                timeInMillis,
+                true
+        );
+        saveAlarmInSystemManager(alarm);
+        saveAlarmInDatabase(alarm);
+    }
+
+    private void saveRepeatingAlarmInDatabase(int id, String name) {
+        int hour = TimeUtils.getHourFromMillis(mutableTimeInMillis.getValue());
+        int minute = TimeUtils.getMinuteFromMillis(mutableTimeInMillis.getValue());
+
+        RepeatingAlarm alarm = new RepeatingAlarm(
+                id,
+                name,
+                hour,
+                minute,
+                true,
+                isMonday,
+                isTuesday,
+                isWednesday,
+                isThursday,
+                isFriday,
+                isSaturday,
+                isSunday
+        );
+        saveAlarmInSystemManager(alarm);
+        saveAlarmInDatabase(alarm);
     }
 
     private void saveAlarmInSystemManager(Alarm alarm) {

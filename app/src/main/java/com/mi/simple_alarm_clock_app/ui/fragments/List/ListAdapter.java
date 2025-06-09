@@ -36,7 +36,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private final Context context;
 
-    private LayoutInflater inflater;
+    private final LayoutInflater inflater;
 
     public ListAdapter(Context context, AlarmListFragment alarmListFragment) {
         inflater = LayoutInflater.from(context);

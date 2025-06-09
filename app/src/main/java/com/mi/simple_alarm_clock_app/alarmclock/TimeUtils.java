@@ -1,9 +1,5 @@
 package com.mi.simple_alarm_clock_app.alarmclock;
 
-import com.mi.simple_alarm_clock_app.model.Alarm;
-import com.mi.simple_alarm_clock_app.model.RepeatingAlarm;
-
-import java.sql.Time;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -11,7 +7,7 @@ public class TimeUtils {
     public static long getAlarmTimeInMillis(long dateInMillis, int hour, int minute) {
         if (dateInMillis != 0 && hour != -1 && minute != -1) {
             Calendar calendar = Calendar.getInstance();
-            //calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+
             calendar.setTimeInMillis(dateInMillis);
 
             calendar.set(Calendar.HOUR_OF_DAY, hour);

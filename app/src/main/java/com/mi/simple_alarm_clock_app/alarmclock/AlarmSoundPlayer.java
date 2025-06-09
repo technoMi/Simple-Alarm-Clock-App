@@ -7,7 +7,7 @@ import android.net.Uri;
 
 public class AlarmSoundPlayer {
 
-    private MediaPlayer mediaPlayer;
+    private final MediaPlayer mediaPlayer;
 
     public AlarmSoundPlayer(Context context) {
         mediaPlayer = MediaPlayer.create(context, getSoundUri());

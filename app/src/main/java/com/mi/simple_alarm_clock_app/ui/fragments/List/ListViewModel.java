@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class ListViewModel extends ViewModel {
 
-    private String TAG = "ListViewModel";
+    private final String TAG = "ListViewModel";
 
     private final AlarmClockManager alarmClockManager;
 
@@ -73,39 +73,37 @@ public class ListViewModel extends ViewModel {
     }
 
     public void deleteSelectedAlarmsInActionMode() {
-        //todo убрать disposable
-        Disposable disposable = Observable.create(emitter -> {
-                    ArrayList<Alarm> list = mutableAlarmsInActionMode.getValue();
-                    for (Alarm alarm : list) {
-                        new DatabaseManager().deleteAlarm(alarm);
-                        emitter.onNext(alarm);
-                    }
-                    emitter.onComplete();
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate(disposables::clear)
-                .subscribe(
-                        alarm -> {
-                            alarmClockManager.canselAlarmInSystemManager((Alarm) alarm);
-                            removeAlarmFromSelectedItemsInActionMode((Alarm) alarm, null);
-                        }, throwable -> {
-                            Log.w(TAG, throwable.getCause());
-                        }, () -> {
-                            holdersOfAlarmsInActionMode.clear();
-                            getAllAlarmsFromDatabase();
+        disposables.add(Observable.create(emitter -> {
+                            ArrayList<Alarm> list = mutableAlarmsInActionMode.getValue();
+                            for (Alarm alarm : list) {
+                                new DatabaseManager().deleteAlarm(alarm);
+                                emitter.onNext(alarm);
+                            }
+                            emitter.onComplete();
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                alarm -> {
+                                    alarmClockManager.canselAlarmInSystemManager((Alarm) alarm);
+                                    removeAlarmFromSelectedItemsInActionMode((Alarm) alarm, null);
+                                }, throwable -> {
+                                    Log.w(TAG, throwable.getCause());
+                                }, () -> {
+                                    holdersOfAlarmsInActionMode.clear();
+                                    getAllAlarmsFromDatabase();
 
-                            alarmsInActionModeDeleted.setValue(true);
-                            Log.i(TAG, "Successfully deleting of alarm");
-                        }
-                );
+                                    alarmsInActionModeDeleted.setValue(true);
+                                    Log.i(TAG, "Successfully deleting of alarm");
+                                }
+                        )
+        );
     }
 
     public void getAllAlarmsFromDatabase() {
         disposables.add(new DatabaseManager().getAllAlarms()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate(disposables::clear)
                 .subscribe(
                         alarms -> {
                             mutableAlarms.setValue(alarms);
@@ -130,7 +128,6 @@ public class ListViewModel extends ViewModel {
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .doOnTerminate(disposables::clear)
                         .subscribe(
                                 () -> {
                                     Log.i(TAG, "Successfully update of alarm in the database");
@@ -139,5 +136,11 @@ public class ListViewModel extends ViewModel {
                                 }
                         )
         );
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        disposables.clear();
     }
 }
