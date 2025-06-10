@@ -3,6 +3,12 @@
     <style name="Base.Theme.SimpleAlarmClockApp" parent="Theme.Material3.DayNight">
         <item name="buttonTint">@color/black</item>
         <item name="colorControlNormal">@color/black</item>
+
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
+
     </style>
 
     <style name="Theme.Light" parent="Base.Theme.SimpleAlarmClockApp">
